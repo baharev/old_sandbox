@@ -39,11 +39,17 @@ class lp_impl {
 
 		int add_col(double lb, double ub);
 
+		// x + y - z = 0
 		void add_row(int x, int y, int z);
 
-		bool simplex();
+		// c <= ax + by - z
+		void add_lo_row(double a, int x, double b, int y, double c);
 
-		int get_status() { return glp_get_status(lp); }
+		void fix_col(int index, double value);
+
+		void refresh(int index = 0);
+
+		void tighten_col_bnds(int i, double& lb, double& ub);
 
 		void dump(const char* file);
 
@@ -85,11 +91,24 @@ class lp_impl {
 
 		lp_impl& operator=(const lp_impl& );
 
+		void throw_if_numerical_problems(int error, int line);
+
+		void throw_if_infeasible(int status, int line);
+
+		void throw_if_inconsistent_bnds(double lb, double ub, int line);
+
+		double solve_for(int index, int direction);
+
+		void reset_obj(int index);
+
+		void write_back(int j, double inf, double sup, double& lb, double& ub);
+
 		glp_prob* lp;
 
 		glp_smcp* parm;
 };
 
+/*
 const int DB = GLP_DB;
 const int EQ = GLP_SF_EQ;
 const int FX = GLP_FX;
@@ -100,7 +119,7 @@ const int NOFEAS  = GLP_NOFEAS;
 const int OFF = GLP_OFF;
 const int ON  = GLP_ON;
 const int OPT = GLP_OPT;
-
+*/
 }
 
 #endif /* LP_IMPL_HPP_ */

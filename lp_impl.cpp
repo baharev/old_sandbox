@@ -20,8 +20,9 @@
 //
 //=============================================================================
 
-#include "lp_impl.hpp"
 #include <iostream>
+#include "exceptions.hpp"
+#include "lp_impl.hpp"
 
 using std::clog;
 using std::endl;
@@ -42,6 +43,8 @@ lp_impl::lp_impl() {
 	parm = new glp_smcp;
 
 	glp_init_smcp(parm);
+
+	glp_set_obj_dir(lp, GLP_MIN);
 }
 
 lp_impl::~lp_impl() {
@@ -51,6 +54,44 @@ lp_impl::~lp_impl() {
 	glp_delete_prob(lp);
 
 	glp_free_env();
+}
+
+void lp_impl::throw_if_numerical_problems(int error, int line) {
+
+	if (error != 0) {
+
+		clog << "Numerical problems, code: " << error << "; ";
+		clog << __FILE__ ", line " << line << endl;
+
+		throw asol::numerical_problems();
+	}
+}
+
+void lp_impl::throw_if_infeasible(int status, int line) {
+
+	if (status == GLP_OPT) {
+		return;
+	}
+
+	if (status == GLP_NOFEAS) {
+		throw asol::infeasible_problem();
+	}
+
+	clog << "Unexpected status: " << status << "; " __FILE__ ", ";
+	clog << "line " << line << endl;
+
+	throw asol::numerical_problems();
+}
+
+void lp_impl::throw_if_inconsistent_bnds(double lb, double ub, int line) {
+
+	if (lb > ub) {
+
+		clog << "Inconsistent bounds, lb > ub: " << lb << " > " << ub << "; ";
+		clog << __FILE__ ", line " << line << endl;
+
+		throw asol::numerical_problems();
+	}
 }
 
 void lp_impl::set_max_restart(const int limit) {
@@ -84,15 +125,75 @@ void lp_impl::add_row(int x, int y, int z) {
 	glp_set_row_stat(lp, i, GLP_BS);
 }
 
-bool lp_impl::simplex() {
+void lp_impl::fix_col(int index, double value) {
 
-	int ret = glp_simplex(lp, parm);
+	glp_set_col_bnds(lp, index, GLP_FX, value, value);
 
-	if (ret) {
-		clog << "Numerical problems in the simplex solver, code: " << ret << endl;
-		return true;
+	refresh();
+}
+
+void lp_impl::refresh(int index) {
+
+	int error_code = glp_simplex(lp, parm);
+
+	if (index!=0) {
+
+		reset_obj(index);
 	}
-	return false;
+
+	throw_if_numerical_problems(error_code, __LINE__);
+
+	int status = glp_get_status(lp);
+
+	throw_if_infeasible(status, __LINE__);
+}
+
+void lp_impl::reset_obj(int index) {
+
+	glp_set_obj_dir(lp, GLP_MIN);
+
+	glp_set_obj_coef(lp, index, 0.0);
+}
+
+void lp_impl::write_back(int j, double inf, double sup, double& lb, double& ub) {
+
+	bool improved = false;
+
+	if (inf>lb) {
+		lb = inf;
+		improved = true;
+	}
+
+	if (sup<ub) {
+		ub = sup;
+		improved = true;
+	}
+
+	if (improved) {
+		glp_set_col_bnds(lp, j, GLP_DB, lb, ub);
+	}
+}
+
+double lp_impl::solve_for(int index, int direction) {
+
+	glp_set_obj_dir(lp, direction);
+
+	glp_set_obj_coef(lp, index, 1.0);
+
+	refresh(index);
+
+	return glp_get_col_prim(lp, index);
+}
+
+void lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
+
+	const double inf = solve_for(index, GLP_MIN);
+
+	const double sup = solve_for(index, GLP_MAX);
+
+	throw_if_inconsistent_bnds(inf, sup, __LINE__);
+
+	write_back(index, inf, sup, lb, ub);
 }
 
 void lp_impl::dump(const char* file) {

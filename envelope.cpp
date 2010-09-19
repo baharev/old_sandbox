@@ -20,21 +20,78 @@
 //
 //==============================================================================
 
+#include <assert.h>
 #include <ostream>
 #include "envelope.hpp"
 #include "lp_impl.hpp"
+#include "exceptions.hpp"
 
 lp_solver::lp_impl* asol::var::lp(new lp_solver::lp_impl());
 
+namespace {
+
+// Based on the C-XSC source code
+void mult(const double xl, const double xu, const double yl, const double yu, double& zl, double& zu) {
+
+	if (xl >=0) {                          /*  0 <= [x]                 */
+
+		if (yl >=0)                        /*  0 <= [y]                 */
+			zl=xl*yl;
+		else                               /*  [y] <= 0  or  0 \in [y]  */
+			zl=xu*yl;
+
+		if (yu <=0)                        /*  [y] <= 0                 */
+			zu=xl*yu;
+		else                               /*  0 <= [y]  or  0 \in [y]  */
+			zu=xu*yu;
+
+	} else if (xu<=0) {                    /*  [x] <= 0                 */
+
+		if (yu<=0)                         /*  [y] <= 0                 */
+			zl=xu*yu;
+		else                               /*  0 <= [y]  or  0 \in [y]  */
+			zl=xl*yu;
+
+		if (yl>=0)                         /*  0 <= [y]                 */
+			zu=xu*yl;
+		else                               /*  [y] <= 0  or  0 \in [y]  */
+			zu=xl*yl;
+
+	} else {                               /*  0 \in [x]                */
+
+		if (yl>=0) {                       /*  0 <= [y]                 */
+			zl=xl*yu;
+			zu=xu*yu;
+		} else if (yu<=0) {                /*  [y] <= 0                 */
+			zl=xu*yl;
+			zu=xl*yl;
+		} else {                           /*  0 \in [x], 0 \in [y]     */
+			const double lu = xl*yu;
+			const double ul = xu*yl;
+			const double ll = xl*yl;
+			const double uu = xu*yu;
+			zl=(lu<ul)?lu:ul;
+			zu=(ll>uu)?ll:uu;
+		}
+
+	}
+
+	assert(zl<=zu);
+}
+
+}
+
 namespace asol {
 
-class infeasible_problem {
+void dbg_consistency(const var& a) {
+	assert(a.lb <= a.ub);
+	assert(a.index >= 1);
+}
 
-};
-
-class numerical_problems {
-
-};
+void dbg_consistency(const var& x, const var& y) {
+	dbg_consistency(x);
+	dbg_consistency(y);
+}
 
 void var::dump_lp(const char* file) {
 
@@ -43,10 +100,14 @@ void var::dump_lp(const char* file) {
 
 var::var(double lb, double ub) : index(-1), lb(lb), ub(ub) {
 
+	assert(lb <= ub);
+
 	index = lp->add_col(lb, ub);
 }
 
 void var::fix_at(double val) {
+
+	dbg_consistency(*this);
 
 	if ((lb>val) || (val>ub)) {
 
@@ -55,34 +116,12 @@ void var::fix_at(double val) {
 
 	lb = ub = val;
 
-	lp->set_col_bnds(index, lp_solver::FX, lb, ub);
-
-	//---
-
-	bool error = lp->simplex();
-
-	if (error) {
-
-		throw numerical_problems();
-	}
-
-	int status = lp->get_status();
-
-	if (status == lp_solver::NOFEAS) {
-
-		throw infeasible_problem();
-	}
-	else if (status == lp_solver::OPT) {
-		;
-	}
-	else {
-		; // FIXME
-	}
-
-	//---
+	lp->fix_col(index, val);
 }
 
 const var operator+(const var& x, const var& y) {
+
+	dbg_consistency(x, y);
 
 	double lb = x.lb + y.lb;
 	double ub = x.ub + y.ub;
@@ -92,12 +131,26 @@ const var operator+(const var& x, const var& y) {
 	// x + y - z = 0
 	var::lp->add_row(x.index, y.index, z.index);
 
-	// TODO Finish!
+	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
 
 	return z;
 }
 
-std::ostream& operator<<(std::ostream& os, const var& v){
+const var operator*(const var& x, const var& y) {
+
+	dbg_consistency(x, y);
+
+	double lb =  1.0;
+	double ub = -1.0;
+
+	mult(x.lb, x.ub, y.lb, y.ub, lb, ub);
+
+	var z(lb, ub);
+
+	return z;
+}
+
+std::ostream& operator<<(std::ostream& os, const var& v) {
 
 	return os << "[ " << v.lb << ", " << v.ub << "]" << std::flush;
 }

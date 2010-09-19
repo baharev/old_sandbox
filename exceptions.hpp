@@ -20,48 +20,19 @@
 //
 //==============================================================================
 
-#ifndef ENVELOPE_HPP_
-#define ENVELOPE_HPP_
-
-#include <iosfwd>
-
-namespace lp_solver {
-
-	class lp_impl;
-}
+#ifndef EXCEPTIONS_HPP_
+#define EXCEPTIONS_HPP_
 
 namespace asol {
 
-class var {
-
-public:
-
-	var(double lb, double ub);
-
-	void fix_at(double val);
-
-	friend const var operator+(const var& x, const var& y);
-
-	friend const var operator*(const var& x, const var& y);
-
-	friend std::ostream& operator<<(std::ostream& , const var& );
-
-	friend void dbg_consistency(const var& a);
-
-	static void dump_lp(const char* file);
-
-private:
-
-	int index;
-	double lb;
-	double ub;
-
-	static lp_solver::lp_impl* lp;
+class infeasible_problem {
 
 };
 
-void dbg_consistency(const var& x, const var& y);
+class numerical_problems {
+
+};
 
 }
 
-#endif /* ENVELOPE_HPP_ */
+#endif /* EXCEPTIONS_HPP_ */
