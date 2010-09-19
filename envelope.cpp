@@ -79,6 +79,15 @@ void mult(const double xl, const double xu, const double yl, const double yu, do
 	assert(zl<=zu);
 }
 
+void sort(double& lb, double& ub) {
+
+	if (lb > ub) {
+		double temp = lb;
+		lb = ub;
+		ub = temp;
+	}
+}
+
 }
 
 namespace asol {
@@ -129,7 +138,85 @@ const var operator+(const var& x, const var& y) {
 	var z(lb, ub);
 
 	// x + y - z = 0
-	var::lp->add_row(x.index, y.index, z.index);
+	var::lp->add_add_row(x.index, y.index, z.index);
+
+	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+
+	return z;
+}
+
+const var operator+(const var& x, double y) {
+
+	dbg_consistency(x);
+
+	var z(x.lb+y, x.ub+y);
+
+	// x - z = -y
+	var::lp->add_shift_row(x.index, z.index, y);
+
+	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+
+	return z;
+}
+
+const var operator+(double x, const var& y) {
+
+	return y+x;
+}
+
+const var operator-(const var& x, double y) {
+
+	return x+(-y);
+}
+
+const var operator-(const var& x, const var& y) {
+
+	dbg_consistency(x, y);
+
+	double lb = x.lb - y.ub;
+	double ub = x.ub - y.lb;
+
+	var z(lb, ub);
+
+	// x - y - z = 0
+	var::lp->add_sub_row(x.index, y.index, z.index);
+
+	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+
+	return z;
+}
+
+bool contains_zero(const var& x) {
+
+	dbg_consistency(x);
+
+	return (x.lb<=0)&&(0<=x.ub);
+}
+
+const var sqr(const var& x) {
+
+	dbg_consistency(x);
+
+	double lb = x.lb*x.lb;
+	double ub = x.ub*x.ub;
+
+	sort(lb, ub);
+
+	if (contains_zero(x)) {
+
+		lb = 0.0;
+	}
+
+	var z(lb, ub);
+
+	// xL*xU <= (xL+xU)*x - z
+	var::lp->add_lo_row(x.lb+x.ub, x.index, z.index, x.lb*x.ub);
+
+	// 2*xL*x - z <= xL*xL
+	var::lp->add_up_row(2*x.lb, x.index, z.index, x.lb*x.lb);
+
+	// 2*xU*x - z <= xU*xU
+	var::lp->add_up_row(2*x.ub, x.index, z.index, x.ub*x.ub);
 
 	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
 
@@ -140,12 +227,31 @@ const var operator*(const var& x, const var& y) {
 
 	dbg_consistency(x, y);
 
+	if (x.index==y.index) {
+		// FIXME You really should not write things like x*x ...
+		return sqr(x);
+	}
+
 	double lb =  1.0;
 	double ub = -1.0;
 
 	mult(x.lb, x.ub, y.lb, y.ub, lb, ub);
 
 	var z(lb, ub);
+
+	// yL*xU <= yL*x + xU*y - z
+	var::lp->add_lo_row(y.lb, x.index, x.ub, y.index, z.index, y.lb*x.ub);
+
+	// yU*xL <= yU*x + xL*y - z
+	var::lp->add_lo_row(y.ub, x.index, x.lb, y.index, z.index, y.ub*x.lb);
+
+	// yL*x + xL*y - z <= yL*xL
+	var::lp->add_up_row(y.lb, x.index, x.lb, y.index, z.index, y.lb*x.lb);
+
+	// yU*x + xU*y - z <= yU*xU
+	var::lp->add_up_row(y.ub, x.index, x.ub, y.index, z.index, y.ub*x.ub);
+
+	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
 
 	return z;
 }

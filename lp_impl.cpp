@@ -42,6 +42,8 @@ lp_impl::lp_impl() {
 
 	parm = new glp_smcp;
 
+	parm->presolve = GLP_OFF;
+
 	glp_init_smcp(parm);
 
 	glp_set_obj_dir(lp, GLP_MIN);
@@ -103,22 +105,83 @@ int lp_impl::add_col(double lb, double ub) {
 
 	int j = glp_add_cols(lp, 1);
 
-	glp_set_col_bnds(lp, j, GLP_DB, lb, ub);
+	int type = (lb == ub)?GLP_FX:GLP_DB;
+
+	glp_set_col_bnds(lp, j, type, lb, ub);
 
 	glp_set_col_stat(lp, j, GLP_NL);
 
 	return j;
 }
 
-void lp_impl::add_row(int x, int y, int z) {
+// x - z = -y
+void lp_impl::add_shift_row(int x, int z, double y) {
+
+	add_lu_row(1.0, x, z, -y, GLP_FX);
+}
+
+// c <= ax - z
+void lp_impl::add_lo_row(double a, int x, int z, double c) {
+
+	add_lu_row(a, x, z, c, GLP_LO);
+}
+
+// ax - z <= c
+void lp_impl::add_up_row(double a, int x, int z, double c) {
+
+	add_lu_row(a, x, z, c, GLP_UP);
+}
+
+// c <= ax + by - z
+void lp_impl::add_lo_row(double a, int x, double b, int y, int z, double c) {
+
+	add_lu_row(a, x, b, y, z, c, GLP_LO);
+}
+
+// ax + by - z <= c
+void lp_impl::add_up_row(double a, int x, double b, int y, int z, double c) {
+
+	add_lu_row(a, x, b, y, z, c, GLP_UP);
+}
+
+// x + y - z = 0
+void lp_impl::add_add_row(int x, int y, int z) {
+
+	add_lu_row(1.0, x, 1.0, y, z, 0.0, GLP_FX);
+}
+
+// x - y - z = 0
+void lp_impl::add_sub_row(int x, int y, int z) {
+
+	add_lu_row(1.0, x, -1.0, y, z, 0.0, GLP_FX);
+}
+
+// (c <=) ax - z (<= c)
+void lp_impl::add_lu_row(double a, int x, int z, double c, int type) {
 
 	int i = glp_add_rows(lp, 1);
 
-	glp_set_row_bnds(lp, i, GLP_FX, 0.0, 0.0);
+	glp_set_row_bnds(lp, i, type, c, c);
+
+	int ind[] = { 0, x, z };
+
+	double val[] = { 0.0, a, -1.0 };
+
+	glp_set_mat_row(lp, i, 2, ind, val);
+
+	glp_set_row_stat(lp, i, GLP_BS);
+}
+
+// (c <=) ax + by - z (<= c)
+void lp_impl::add_lu_row(double a, int x, double b, int y, int z, double c, int type) {
+
+	int i = glp_add_rows(lp, 1);
+
+	glp_set_row_bnds(lp, i, type, c, c);
 
 	int ind[] = { 0, x, y, z };
 
-	double val[] = { 0.0, 1.0, 1.0, -1.0 };
+	double val[] = { 0.0, a, b, -1.0 };
 
 	glp_set_mat_row(lp, i, 3, ind, val);
 
@@ -170,6 +233,7 @@ void lp_impl::write_back(int j, double inf, double sup, double& lb, double& ub) 
 	}
 
 	if (improved) {
+		// FIXME Is it necessary?
 		glp_set_col_bnds(lp, j, GLP_DB, lb, ub);
 	}
 }

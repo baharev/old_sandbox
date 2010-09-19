@@ -39,15 +39,28 @@ class lp_impl {
 
 		int add_col(double lb, double ub);
 
+		// x - z = -y
+		void add_shift_row(int x, int z, double y);
+
 		// x + y - z = 0
-		void add_row(int x, int y, int z);
+		void add_add_row(int x, int y, int z);
+
+		// x - y - z = 0
+		void add_sub_row(int x, int y, int z);
+
+		// c <= ax - z
+		void add_lo_row(double a, int x, int z, double c);
+
+		// ax - z <= c
+		void add_up_row(double a, int x, int z, double c);
 
 		// c <= ax + by - z
-		void add_lo_row(double a, int x, double b, int y, double c);
+		void add_lo_row(double a, int x, double b, int y, int z, double c);
+
+		// ax + by - z <= c
+		void add_up_row(double a, int x, double b, int y, int z, double c);
 
 		void fix_col(int index, double value);
-
-		void refresh(int index = 0);
 
 		void tighten_col_bnds(int i, double& lb, double& ub);
 
@@ -98,6 +111,12 @@ class lp_impl {
 		void throw_if_inconsistent_bnds(double lb, double ub, int line);
 
 		double solve_for(int index, int direction);
+
+		void add_lu_row(double a, int x, int z, double c, int type);
+
+		void add_lu_row(double a, int x, double b, int y, int z, double c, int type);
+
+		void refresh(int index = 0);
 
 		void reset_obj(int index);
 

@@ -26,19 +26,56 @@
 using namespace std;
 using namespace asol;
 
-int main() {
+void dummy_1() {
 
 	var x(1, 2);
 
 	var y(2, 4);
 
-	var z = x+y;
+	var u = x+y;
 
-	z.fix_at(5);
+	u.fix_at(6);
+
+	cout << "u: " << u << endl;
+
+	var v = x*y;
+
+	v.fix_at(8);
+
+	var w = u + v;
+
+	var::dump_lp("debug.txt");
+}
+
+void example() {
+
+	var x1(0.6, 0.7);
+	var x2(0.2, 0.3);
+	var x3(0.1, 0.2);
+
+	var y1(0.1, 0.4);
+	var y2(0.2, 0.4);
+	var y3(0.3, 0.5);
+
+	var sx = x1 + x2 + x3;
+	var sy = y1 + y2 + y3;
+
+	sx.fix_at(1);
+	sy.fix_at(1);
+
+	var z = (x2-1)*(y3-1)-(x3-x2)*y2;
+
+	//var z = x1*y1 + x1*y2 + x2*y2 + x3*y1;
+	// [0.23, 0.76] -> [0.386667, 0.60]
 
 	cout << "z: " << z << endl;
 
 	var::dump_lp("debug.txt");
+}
+
+int main() {
+
+	example();
 
 	return 0;
 }

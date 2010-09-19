@@ -42,7 +42,15 @@ public:
 
 	friend const var operator+(const var& x, const var& y);
 
+	friend const var operator+(const var& x, double y);
+
+	friend const var operator-(const var& x, const var& y);
+
 	friend const var operator*(const var& x, const var& y);
+
+	friend const var sqr(const var& x);
+
+	friend bool contains_zero(const var& x);
 
 	friend std::ostream& operator<<(std::ostream& , const var& );
 
@@ -59,6 +67,10 @@ private:
 	static lp_solver::lp_impl* lp;
 
 };
+
+const var operator+(double x, const var& y);
+
+const var operator-(const var& x, double y);
 
 void dbg_consistency(const var& x, const var& y);
 
