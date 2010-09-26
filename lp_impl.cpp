@@ -103,7 +103,7 @@ bool lp_impl::col_type_db_or_fx(int j) const {
 	return (type==GLP_DB) || (type==GLP_FX);
 }
 
-void lp_impl::assert_value_within_bnds(int j, double value, int line) {
+void lp_impl::assert_col_type(int j, int line) {
 
 	int type = glp_get_col_type(lp, j);
 
@@ -112,6 +112,11 @@ void lp_impl::assert_value_within_bnds(int j, double value, int line) {
 		clog << __FILE__ ", line " << line << endl;
 		throw asol::assertion_error();
 	}
+}
+
+void lp_impl::assert_value_within_bnds(int j, double value, int line) {
+
+	assert_col_type(j, line);
 
 	double lb = glp_get_col_lb(lp, j);
 	double ub = glp_get_col_ub(lp, j);
@@ -120,6 +125,20 @@ void lp_impl::assert_value_within_bnds(int j, double value, int line) {
 		// This should have been checked in envelope.cpp
 		throw asol::assertion_error();
 	}
+}
+
+void lp_impl::assert_feasible_bounds(int j, double l, double u, int line) {
+
+	assert_col_type(j, line);
+
+	double lb = glp_get_col_lb(lp, j);
+	double ub = glp_get_col_ub(lp, j);
+
+	if (lb > l || ub < u) {
+
+		throw asol::assertion_error();
+	}
+
 }
 
 void lp_impl::set_max_restart(const int limit) {
@@ -234,6 +253,15 @@ void lp_impl::fix_col(int index, double value) {
 	assert_value_within_bnds(index, value, __LINE__);
 
 	glp_set_col_bnds(lp, index, GLP_FX, value, value);
+
+	refresh();
+}
+
+void lp_impl::set_bounds(int index, double lb, double ub) {
+
+	assert_feasible_bounds(index, lb, ub, __LINE__);
+
+	glp_set_col_bnds(lp, index, GLP_DB, lb, ub);
 
 	refresh();
 }

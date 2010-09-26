@@ -35,6 +35,9 @@ namespace {
 // Based on the C-XSC source code
 void mult(const double xl, const double xu, const double yl, const double yu, double& zl, double& zu) {
 
+	assert(xl<=xu);
+	assert(yl<=yu);
+
 	if (xl >=0) {                          /*  0 <= [x]                 */
 
 		if (yl >=0)                        /*  0 <= [y]                 */
@@ -84,6 +87,9 @@ void mult(const double xl, const double xu, const double yl, const double yu, do
 // Based on the C-XSC source code
 void division(const double xl, const double xu, const double yl, const double yu, double& zl, double& zu) {
 
+	assert(xl<=xu);
+	assert(yl<=yu);
+
 	if (yl>0) {
 
 		if (xl>=0)
@@ -129,15 +135,9 @@ void sort(double& lb, double& ub) {
 
 namespace asol {
 
-void dbg_consistency(const var& a) {
-	assert(a.lb <= a.ub);
-	assert(a.index >= 1);
-	assert(var::lp->col_type_db_or_fx(a.index));
-}
-
 void dbg_consistency(const var& x, const var& y) {
-	dbg_consistency(x);
-	dbg_consistency(y);
+	x.check_consistency();
+	y.check_consistency();
 }
 
 void var::dump_lp(const char* file) {
@@ -154,7 +154,7 @@ var::var(double lb, double ub) : index(-1), lb(lb), ub(ub) {
 
 void var::fix_at(double val) {
 
-	dbg_consistency(*this);
+	check_consistency();
 
 	if ((lb>val) || (val>ub)) {
 
@@ -185,7 +185,7 @@ const var operator+(const var& x, const var& y) {
 
 const var operator+(const var& x, double y) {
 
-	dbg_consistency(x);
+	x.check_consistency();
 
 	var z(x.lb+y, x.ub+y);
 
@@ -224,23 +224,23 @@ const var operator-(const var& x, const var& y) {
 	return z;
 }
 
-bool contains_zero(const var& x) {
+bool var::contains_zero() const {
 
-	dbg_consistency(x);
+	check_consistency();
 
-	return (x.lb<=0)&&(0<=x.ub);
+	return (lb<=0)&&(0<=ub);
 }
 
 const var sqr(const var& x) {
 
-	dbg_consistency(x);
+	x.check_consistency();
 
 	double lb = x.lb*x.lb;
 	double ub = x.ub*x.ub;
 
 	sort(lb, ub);
 
-	if (contains_zero(x)) {
+	if (x.contains_zero()) {
 
 		lb = 0.0;
 	}
@@ -307,7 +307,7 @@ const var operator*(const var& x, const var& y) {
 
 const var operator*(const double c, const var& x) {
 
-	dbg_consistency(x);
+	x.check_consistency();
 
 	double lb = c*x.lb;
 	double ub = c*x.ub;
@@ -328,11 +328,63 @@ const var operator*(const var& x, const double c) {
 	return c*x;
 }
 
-const var operator/(const var& x, const var& y) {
+void var::intersect(double l, double u) {
+
+	check_consistency();
+
+	bool improved = false;
+
+	if (l>lb) {
+		lb = l;
+		improved = true;
+	}
+
+	if (u<ub) {
+		ub = u;
+		improved = true;
+	}
+
+	if (lb>ub)
+		throw infeasible_problem();
+
+	if (improved) {
+
+		var::lp->set_bounds(index, lb, ub);
+	}
+
+}
+
+// z = x*y
+void var::propagate(var& x, var& y) {
+
+	check_consistency();
+	dbg_consistency(x, y);
+
+	if (!x.contains_zero()) { // y = z/x
+		double y_lb =  1.0;
+		double y_ub = -1.0;
+		division(lb, ub, x.lb, x.ub, y_lb, y_ub);
+		y.intersect(y_lb, y_ub);
+	}
+
+	if (!y.contains_zero()) {  // x = z/y
+		double x_lb =  1.0;
+		double x_ub = -1.0;
+		division(lb, ub, y.lb, y.ub, x_lb, x_ub);
+		x.intersect(x_lb, x_ub);
+	}
+
+	double z_lb =  1.0; // z = x*y
+	double z_ub = -1.0;
+	mult(x.lb, x.ub, y.lb, y.ub, z_lb, z_ub);
+	intersect(z_lb, z_ub);
+}
+
+const var operator/(var& x, var& y) {
 
 	dbg_consistency(x, y);
 
-	assert(!contains_zero(y));
+	assert(!y.contains_zero());
 
 	if (x.index==y.index) {
 		// FIXME You really should not write things like x/x ...
@@ -358,6 +410,8 @@ const var operator/(const var& x, const var& y) {
 
 		std::cout << "z: " << z << std::endl;
 
+		x.propagate(y, z);
+
 	} while (improved);
 
 	return z;
@@ -366,6 +420,12 @@ const var operator/(const var& x, const var& y) {
 std::ostream& operator<<(std::ostream& os, const var& v) {
 
 	return os << "[ " << v.lb << ", " << v.ub << "]" << std::flush;
+}
+
+void var::check_consistency() const {
+	assert(lb <= ub);
+	assert(index >= 1);
+	assert(var::lp->col_type_db_or_fx(index));
 }
 
 }

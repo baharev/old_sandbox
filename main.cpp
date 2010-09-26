@@ -80,8 +80,8 @@ void example_Hansen() {
 
 	const var xy = x*y;
 
-	const var numerator   = 5*x-4*sqr(y)+14*xy;
-	const var denominator = sqr(x)+y+xy;
+	var numerator   = 5*x-4*sqr(y)+14*xy;
+	var denominator = sqr(x)+y+xy;
 
 	cout << endl << "xy" << endl << xy << endl;
 	cout << endl << "5x-4y^2+14xy" << endl << numerator << endl;

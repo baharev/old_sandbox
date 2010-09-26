@@ -52,17 +52,21 @@ public:
 
 	friend const var operator*(const double c, const var& x);
 
-	friend const var operator/(const var& x, const var& y);
+	friend const var operator/(var& x, var& y);
 
 	friend const var sqr(const var& x);
 
-	friend bool contains_zero(const var& x);
+	bool contains_zero() const;
 
 	friend void add_mult_envelope(const var& x, const var& y, const var& z, bool reset=false);
 
+	void propagate(var& x, var& y);
+
+	void intersect(double lb, double ub);
+
 	friend std::ostream& operator<<(std::ostream& , const var& );
 
-	friend void dbg_consistency(const var& a);
+	void check_consistency() const;
 
 	static void dump_lp(const char* file);
 

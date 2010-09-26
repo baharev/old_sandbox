@@ -67,6 +67,8 @@ class lp_impl {
 
 		void fix_col(int index, double value);
 
+		void set_bounds(int index, double lb, double ub);
+
 		bool tighten_col_bnds(int i, double& lb, double& ub);
 
 		bool col_type_db_or_fx(int index) const;
@@ -117,7 +119,11 @@ class lp_impl {
 
 		void throw_if_inconsistent_bnds(double lb, double ub, int line);
 
+		void assert_col_type(int j, int line);
+
 		void assert_value_within_bnds(int j, double value, int line);
+
+		void assert_feasible_bounds(int j, double lb, double ub, int line);
 
 		double solve_for(int index, int direction);
 
