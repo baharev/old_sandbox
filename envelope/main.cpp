@@ -92,9 +92,29 @@ void example_Hansen() {
 	cout << endl << "z = (5x-4y^2+14xy)/(x^2+y+xy)" << endl << z << endl;
 }
 
+
+void example_1() {
+
+	var x(2.0, 4.0);
+
+	var y = (x-1)/(sqr(x)+2);
+
+	cout << endl << "y = (x-1)/(x^2+2)" << endl << y << endl;
+
+}
+
+void example_2() {
+
+	var x(1.0, 2.0);
+
+	var y = (sqr(x)+x)/(16*x-9);
+
+	cout << endl << "y = (x^2+x)/(16*x-9)" << endl << y << endl;
+}
+
 int main() {
 
-	example_Hansen();
+	example_2();
 
 	return 0;
 }

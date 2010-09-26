@@ -380,7 +380,7 @@ void var::propagate(var& x, var& y) {
 	intersect(z_lb, z_ub);
 }
 
-const var operator/(var& x, var& y) {
+const var operator/(const var& x, const var& y) {
 
 	dbg_consistency(x, y);
 
@@ -398,19 +398,18 @@ const var operator/(var& x, var& y) {
 
 	var z(lb, ub);
 
-	// TODO Finish implementation; propagate bilinear term
-
 	bool improved = false;
 
 	do {
 
 		add_mult_envelope(y, z, x, improved);
 
-		improved = var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+		// improved =
+		var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
 
-		std::cout << "z: " << z << std::endl;
+		//std::cout << "z: " << z << std::endl;
 
-		x.propagate(y, z);
+		//x.propagate(y, z);
 
 	} while (improved);
 

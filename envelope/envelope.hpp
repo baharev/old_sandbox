@@ -52,7 +52,7 @@ public:
 
 	friend const var operator*(const double c, const var& x);
 
-	friend const var operator/(var& x, var& y);
+	friend const var operator/(const var& x, const var& y);
 
 	friend const var sqr(const var& x);
 
