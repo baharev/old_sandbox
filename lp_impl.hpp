@@ -42,6 +42,9 @@ class lp_impl {
 		// x - z = -y
 		void add_shift_row(int x, int z, double y);
 
+		// c*x - z = 0
+		void add_cx_row(double c, int x, int z);
+
 		// x + y - z = 0
 		void add_add_row(int x, int y, int z);
 
@@ -55,16 +58,20 @@ class lp_impl {
 		void add_up_row(double a, int x, int z, double c);
 
 		// c <= ax + by - z
-		void add_lo_row(double a, int x, double b, int y, int z, double c);
+		int add_lo_row(double a, int x, double b, int y, int z, double c);
 
 		// ax + by - z <= c
-		void add_up_row(double a, int x, double b, int y, int z, double c);
+		int add_up_row(double a, int x, double b, int y, int z, double c);
+
+		void remove_envelope(int index[5]);
 
 		void fix_col(int index, double value);
 
-		void tighten_col_bnds(int i, double& lb, double& ub);
+		bool tighten_col_bnds(int i, double& lb, double& ub);
 
-		void dump(const char* file);
+		bool col_type_db_or_fx(int index) const;
+
+		void dump(const char* file) const;
 
 		//int warm_up() { return glp_warm_up(lp); }
 
@@ -110,11 +117,13 @@ class lp_impl {
 
 		void throw_if_inconsistent_bnds(double lb, double ub, int line);
 
+		void assert_value_within_bnds(int j, double value, int line);
+
 		double solve_for(int index, int direction);
 
 		void add_lu_row(double a, int x, int z, double c, int type);
 
-		void add_lu_row(double a, int x, double b, int y, int z, double c, int type);
+		int add_lu_row(double a, int x, double b, int y, int z, double c, int type);
 
 		void refresh(int index = 0);
 
@@ -127,18 +136,6 @@ class lp_impl {
 		glp_smcp* parm;
 };
 
-/*
-const int DB = GLP_DB;
-const int EQ = GLP_SF_EQ;
-const int FX = GLP_FX;
-const int MSG_ERR = GLP_MSG_ERR;
-const int MSG_OFF = GLP_MSG_OFF;
-const int MSG_ON  = GLP_MSG_ON;
-const int NOFEAS  = GLP_NOFEAS;
-const int OFF = GLP_OFF;
-const int ON  = GLP_ON;
-const int OPT = GLP_OPT;
-*/
 }
 
 #endif /* LP_IMPL_HPP_ */

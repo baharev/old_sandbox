@@ -96,6 +96,32 @@ void lp_impl::throw_if_inconsistent_bnds(double lb, double ub, int line) {
 	}
 }
 
+bool lp_impl::col_type_db_or_fx(int j) const {
+
+	int type = glp_get_col_type(lp, j);
+
+	return (type==GLP_DB) || (type==GLP_FX);
+}
+
+void lp_impl::assert_value_within_bnds(int j, double value, int line) {
+
+	int type = glp_get_col_type(lp, j);
+
+	if (!col_type_db_or_fx(j)) {
+		clog << "Error: col " << j << " is of type " << type << "; ";
+		clog << __FILE__ ", line " << line << endl;
+		throw asol::assertion_error();
+	}
+
+	double lb = glp_get_col_lb(lp, j);
+	double ub = glp_get_col_ub(lp, j);
+
+	if (value < lb || value > ub) {
+		// This should have been checked in envelope.cpp
+		throw asol::assertion_error();
+	}
+}
+
 void lp_impl::set_max_restart(const int limit) {
 
 	set_restart_limit(limit);
@@ -120,6 +146,12 @@ void lp_impl::add_shift_row(int x, int z, double y) {
 	add_lu_row(1.0, x, z, -y, GLP_FX);
 }
 
+// c*x - z = 0
+void lp_impl::add_cx_row(double c, int x, int z) {
+
+	add_lu_row(c, x, z, 0, GLP_FX);
+}
+
 // c <= ax - z
 void lp_impl::add_lo_row(double a, int x, int z, double c) {
 
@@ -133,15 +165,15 @@ void lp_impl::add_up_row(double a, int x, int z, double c) {
 }
 
 // c <= ax + by - z
-void lp_impl::add_lo_row(double a, int x, double b, int y, int z, double c) {
+int lp_impl::add_lo_row(double a, int x, double b, int y, int z, double c) {
 
-	add_lu_row(a, x, b, y, z, c, GLP_LO);
+	return add_lu_row(a, x, b, y, z, c, GLP_LO);
 }
 
 // ax + by - z <= c
-void lp_impl::add_up_row(double a, int x, double b, int y, int z, double c) {
+int lp_impl::add_up_row(double a, int x, double b, int y, int z, double c) {
 
-	add_lu_row(a, x, b, y, z, c, GLP_UP);
+	return add_lu_row(a, x, b, y, z, c, GLP_UP);
 }
 
 // x + y - z = 0
@@ -154,6 +186,13 @@ void lp_impl::add_add_row(int x, int y, int z) {
 void lp_impl::add_sub_row(int x, int y, int z) {
 
 	add_lu_row(1.0, x, -1.0, y, z, 0.0, GLP_FX);
+}
+
+void lp_impl::remove_envelope(int index[5]) {
+
+	glp_del_rows(lp, 4, index);
+	// TODO Figure out a more efficient way...
+	glp_std_basis(lp);
 }
 
 // (c <=) ax - z (<= c)
@@ -173,7 +212,7 @@ void lp_impl::add_lu_row(double a, int x, int z, double c, int type) {
 }
 
 // (c <=) ax + by - z (<= c)
-void lp_impl::add_lu_row(double a, int x, double b, int y, int z, double c, int type) {
+int lp_impl::add_lu_row(double a, int x, double b, int y, int z, double c, int type) {
 
 	int i = glp_add_rows(lp, 1);
 
@@ -186,9 +225,13 @@ void lp_impl::add_lu_row(double a, int x, double b, int y, int z, double c, int 
 	glp_set_mat_row(lp, i, 3, ind, val);
 
 	glp_set_row_stat(lp, i, GLP_BS);
+
+	return i;
 }
 
 void lp_impl::fix_col(int index, double value) {
+
+	assert_value_within_bnds(index, value, __LINE__);
 
 	glp_set_col_bnds(lp, index, GLP_FX, value, value);
 
@@ -218,7 +261,24 @@ void lp_impl::reset_obj(int index) {
 	glp_set_obj_coef(lp, index, 0.0);
 }
 
-void lp_impl::write_back(int j, double inf, double sup, double& lb, double& ub) {
+double lp_impl::solve_for(int index, int direction) {
+
+	glp_set_obj_dir(lp, direction);
+
+	glp_set_obj_coef(lp, index, 1.0);
+
+	refresh(index);
+
+	return glp_get_col_prim(lp, index);
+}
+
+bool lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
+
+	const double inf = solve_for(index, GLP_MIN);
+
+	const double sup = solve_for(index, GLP_MAX);
+
+	throw_if_inconsistent_bnds(inf, sup, __LINE__);
 
 	bool improved = false;
 
@@ -232,35 +292,10 @@ void lp_impl::write_back(int j, double inf, double sup, double& lb, double& ub) 
 		improved = true;
 	}
 
-	if (improved) {
-		// FIXME Is it necessary?
-		glp_set_col_bnds(lp, j, GLP_DB, lb, ub);
-	}
+	return improved;
 }
 
-double lp_impl::solve_for(int index, int direction) {
-
-	glp_set_obj_dir(lp, direction);
-
-	glp_set_obj_coef(lp, index, 1.0);
-
-	refresh(index);
-
-	return glp_get_col_prim(lp, index);
-}
-
-void lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
-
-	const double inf = solve_for(index, GLP_MIN);
-
-	const double sup = solve_for(index, GLP_MAX);
-
-	throw_if_inconsistent_bnds(inf, sup, __LINE__);
-
-	write_back(index, inf, sup, lb, ub);
-}
-
-void lp_impl::dump(const char* file) {
+void lp_impl::dump(const char* file) const {
 
 	glp_write_lp(lp, NULL, file);
 

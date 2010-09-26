@@ -73,9 +73,28 @@ void example() {
 	var::dump_lp("debug.txt");
 }
 
+void example_Hansen() {
+
+	const var x(1.0, 10.0);
+	const var y(1.0, 10.0);
+
+	const var xy = x*y;
+
+	const var numerator   = 5*x-4*sqr(y)+14*xy;
+	const var denominator = sqr(x)+y+xy;
+
+	cout << endl << "xy" << endl << xy << endl;
+	cout << endl << "5x-4y^2+14xy" << endl << numerator << endl;
+	cout << endl << "x^2+y+xy" << endl << denominator << endl;
+
+	const var z = numerator/denominator;
+
+	cout << endl << "z = (5x-4y^2+14xy)/(x^2+y+xy)" << endl << z << endl;
+}
+
 int main() {
 
-	example();
+	example_Hansen();
 
 	return 0;
 }

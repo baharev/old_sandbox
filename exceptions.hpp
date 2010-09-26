@@ -33,6 +33,10 @@ class numerical_problems {
 
 };
 
+class assertion_error {
+
+};
+
 }
 
 #endif /* EXCEPTIONS_HPP_ */

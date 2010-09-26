@@ -25,6 +25,8 @@
 #include "envelope.hpp"
 #include "lp_impl.hpp"
 #include "exceptions.hpp"
+// FIXME Remove and introduce logging
+#include <iostream>
 
 lp_solver::lp_impl* asol::var::lp(new lp_solver::lp_impl());
 
@@ -79,6 +81,41 @@ void mult(const double xl, const double xu, const double yl, const double yu, do
 	assert(zl<=zu);
 }
 
+// Based on the C-XSC source code
+void division(const double xl, const double xu, const double yl, const double yu, double& zl, double& zu) {
+
+	if (yl>0) {
+
+		if (xl>=0)
+			zl=xl/yu;
+		else
+			zl=xl/yl;
+
+		if (xu<=0)
+			zu=xu/yu;
+		else
+			zu=xu/yl;
+
+	}
+	else if (yu<0) {
+
+		if (xu<=0)
+			zl=xu/yl;
+		else
+			zl=xu/yu;
+
+		if (xl>=0)
+			zu=xl/yl;
+		else
+			zu=xl/yu;
+	}
+	else {
+		assert(false);
+	}
+
+	assert(zl<=zu);
+}
+
 void sort(double& lb, double& ub) {
 
 	if (lb > ub) {
@@ -95,6 +132,7 @@ namespace asol {
 void dbg_consistency(const var& a) {
 	assert(a.lb <= a.ub);
 	assert(a.index >= 1);
+	assert(var::lp->col_type_db_or_fx(a.index));
 }
 
 void dbg_consistency(const var& x, const var& y) {
@@ -223,6 +261,27 @@ const var sqr(const var& x) {
 	return z;
 }
 
+void add_mult_envelope(const var& x, const var& y, const var& z, bool reset) {
+
+	static int prev[] = { -1, -1, -1, -1, -1 };
+
+	if (reset) {
+		var::lp->remove_envelope(prev);
+	}
+
+	// yL*xU <= yL*x + xU*y - z
+	prev[1] = var::lp->add_lo_row(y.lb, x.index, x.ub, y.index, z.index, y.lb*x.ub);
+
+	// yU*xL <= yU*x + xL*y - z
+	prev[2] = var::lp->add_lo_row(y.ub, x.index, x.lb, y.index, z.index, y.ub*x.lb);
+
+	// yL*x + xL*y - z <= yL*xL
+	prev[3] = var::lp->add_up_row(y.lb, x.index, x.lb, y.index, z.index, y.lb*x.lb);
+
+	// yU*x + xU*y - z <= yU*xU
+	prev[4] = var::lp->add_up_row(y.ub, x.index, x.ub, y.index, z.index, y.ub*x.ub);
+}
+
 const var operator*(const var& x, const var& y) {
 
 	dbg_consistency(x, y);
@@ -239,19 +298,67 @@ const var operator*(const var& x, const var& y) {
 
 	var z(lb, ub);
 
-	// yL*xU <= yL*x + xU*y - z
-	var::lp->add_lo_row(y.lb, x.index, x.ub, y.index, z.index, y.lb*x.ub);
-
-	// yU*xL <= yU*x + xL*y - z
-	var::lp->add_lo_row(y.ub, x.index, x.lb, y.index, z.index, y.ub*x.lb);
-
-	// yL*x + xL*y - z <= yL*xL
-	var::lp->add_up_row(y.lb, x.index, x.lb, y.index, z.index, y.lb*x.lb);
-
-	// yU*x + xU*y - z <= yU*xU
-	var::lp->add_up_row(y.ub, x.index, x.ub, y.index, z.index, y.ub*x.ub);
+	add_mult_envelope(x, y, z);
 
 	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+
+	return z;
+}
+
+const var operator*(const double c, const var& x) {
+
+	dbg_consistency(x);
+
+	double lb = c*x.lb;
+	double ub = c*x.ub;
+
+	sort(lb, ub);
+
+	var z(lb, ub);
+
+	var::lp->add_cx_row(c, x.index, z.index);
+
+	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+
+	return z;
+}
+
+const var operator*(const var& x, const double c) {
+
+	return c*x;
+}
+
+const var operator/(const var& x, const var& y) {
+
+	dbg_consistency(x, y);
+
+	assert(!contains_zero(y));
+
+	if (x.index==y.index) {
+		// FIXME You really should not write things like x/x ...
+		return var(1,1);
+	}
+
+	double lb =  1.0;
+	double ub = -1.0;
+
+	division(x.lb, x.ub, y.lb, y.ub, lb, ub);
+
+	var z(lb, ub);
+
+	// TODO Finish implementation; propagate bilinear term
+
+	bool improved = false;
+
+	do {
+
+		add_mult_envelope(y, z, x, improved);
+
+		improved = var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+
+		std::cout << "z: " << z << std::endl;
+
+	} while (improved);
 
 	return z;
 }

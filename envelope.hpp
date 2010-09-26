@@ -38,6 +38,8 @@ public:
 
 	var(double lb, double ub);
 
+	var& operator=(const var& rhs);
+
 	void fix_at(double val);
 
 	friend const var operator+(const var& x, const var& y);
@@ -48,9 +50,15 @@ public:
 
 	friend const var operator*(const var& x, const var& y);
 
+	friend const var operator*(const double c, const var& x);
+
+	friend const var operator/(const var& x, const var& y);
+
 	friend const var sqr(const var& x);
 
 	friend bool contains_zero(const var& x);
+
+	friend void add_mult_envelope(const var& x, const var& y, const var& z, bool reset=false);
 
 	friend std::ostream& operator<<(std::ostream& , const var& );
 
@@ -71,6 +79,8 @@ private:
 const var operator+(double x, const var& y);
 
 const var operator-(const var& x, double y);
+
+const var operator*(const var& x, const double c);
 
 void dbg_consistency(const var& x, const var& y);
 
