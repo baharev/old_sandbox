@@ -74,6 +74,25 @@ void compute_s(const affine x[], affine s[]) {
 	}
 }
 
+void example_t_i() {
+
+	affine::set_max_used_index(0);
+
+	affine x[] = { affine(0.0), affine(0.0,1.0), affine(0.0,1.0), affine(0.0,1.0) };
+
+	affine T(330.0, 380.0);
+
+	compute_Lambda(T);
+
+	affine s2 = (Lambda[2][1]-Lambda[2][3])*x[1]+(Lambda[2][2]-Lambda[2][3])*x[2]+Lambda[2][3];
+
+	cout << "s2: " << endl << s2 << endl;
+
+	affine t2 = x[2]/s2;
+
+	cout << "t[2] :  " << endl << t2 << endl;
+}
+
 void run() {
 
 	affine::set_max_used_index(0);
@@ -949,9 +968,8 @@ void example_9() {
 
 int main() {
 
+	example_t_i();
 /*
-	example_7();
-
 	run();
 
 	example_1();
