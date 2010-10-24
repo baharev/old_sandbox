@@ -166,6 +166,13 @@ void var::fix_at(double val) {
 	lp->fix_col(index, val);
 }
 
+bool var::tighten_bounds() {
+
+	check_consistency();
+
+	return lp->tighten_col_bnds(index, lb, ub);
+}
+
 const var operator+(const var& x, const var& y) {
 
 	dbg_consistency(x, y);

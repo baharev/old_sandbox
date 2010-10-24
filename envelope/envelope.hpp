@@ -42,6 +42,8 @@ public:
 
 	void fix_at(double val);
 
+	bool tighten_bounds();
+
 	friend const var operator+(const var& x, const var& y);
 
 	friend const var operator+(const var& x, double y);
