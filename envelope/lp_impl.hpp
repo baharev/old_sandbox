@@ -71,6 +71,10 @@ class lp_impl {
 
 		bool tighten_col_bnds(int i, double& lb, double& ub);
 
+		bool tighten_col_lb(int i, double& lb);
+
+		bool tighten_col_ub(int i, double& ub);
+
 		bool col_type_db_or_fx(int index) const;
 
 		void dump(const char* file) const;

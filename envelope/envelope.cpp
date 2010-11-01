@@ -387,7 +387,7 @@ void var::propagate(var& x, var& y) {
 	intersect(z_lb, z_ub);
 }
 
-const var operator/(const var& x, const var& y) {
+const var operator/(var& x, var& y) {
 
 	dbg_consistency(x, y);
 
@@ -411,12 +411,16 @@ const var operator/(const var& x, const var& y) {
 
 		add_mult_envelope(y, z, x, improved);
 
-		// improved =
+		improved =
+		// FIXME Should check if z.ub <= col_ub in LP
+		//var::lp->tighten_col_ub(z.index, z.ub);
 		var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
 
-		//std::cout << "z: " << z << std::endl;
+		z.intersect(5.189, 482);
 
-		//x.propagate(y, z);
+		std::cout << "z: " << z << std::endl;
+
+		x.propagate(y, z);
 
 	} while (improved);
 

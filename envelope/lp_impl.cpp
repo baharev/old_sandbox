@@ -300,13 +300,9 @@ double lp_impl::solve_for(int index, int direction) {
 	return glp_get_col_prim(lp, index);
 }
 
-bool lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
+bool lp_impl::tighten_col_lb(int index, double& lb) {
 
 	const double inf = solve_for(index, GLP_MIN);
-
-	const double sup = solve_for(index, GLP_MAX);
-
-	throw_if_inconsistent_bnds(inf, sup, __LINE__);
 
 	bool improved = false;
 
@@ -315,12 +311,32 @@ bool lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
 		improved = true;
 	}
 
+	return improved;
+}
+
+bool lp_impl::tighten_col_ub(int index, double& ub) {
+
+	const double sup = solve_for(index, GLP_MAX);
+
+	bool improved = false;
+
 	if (sup<ub) {
 		ub = sup;
 		improved = true;
 	}
 
 	return improved;
+}
+
+bool lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
+
+	const bool improved_lb = tighten_col_lb(index, lb);
+
+	const bool improved_ub = tighten_col_ub(index, ub);
+
+	throw_if_inconsistent_bnds(lb, ub, __LINE__);
+
+	return improved_lb || improved_ub;
 }
 
 void lp_impl::dump(const char* file) const {

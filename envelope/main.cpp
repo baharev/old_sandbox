@@ -66,8 +66,8 @@ void example() {
 
 void example_Hansen() {
 
-	const var x(1.0, 10.0);
-	const var y(1.0, 10.0);
+	var x(1, 10);
+	var y(1, 10);
 
 	const var xy = x*y;
 
@@ -81,9 +81,17 @@ void example_Hansen() {
 	const var z = numerator/denominator;
 
 	cout << endl << "z = (5x-4y^2+14xy)/(x^2+y+xy)" << endl << z << endl;
+
+	// Base variables are not tightened, that is why z is not sharp
+
+	//x.tighten_bounds();
+	//y.tighten_bounds();
+
+	//cout << endl << "x" << endl << x << endl;
+	//cout << endl << "y" << endl << y << endl;
 }
 
-
+/*
 void example_1() {
 
 	var x(2.0, 4.0);
@@ -102,7 +110,7 @@ void example_2() {
 
 	cout << endl << "y = (x^2+x)/(16*x-9)" << endl << y << endl;
 }
-
+*/
 void example_Wilson() {
 
 	var x1(0, 1);
@@ -170,7 +178,8 @@ void example_Wilson() {
 
 int main() {
 
-	example_Wilson();
+	example_Hansen();
+	//example_Wilson();
 
 	return 0;
 }
