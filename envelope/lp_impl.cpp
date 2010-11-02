@@ -268,6 +268,40 @@ void lp_impl::set_bounds(int index, double lb, double ub) {
 
 void lp_impl::refresh(int index) {
 
+	// TODO Fix the variables according to their primal values
+/*	const int m = glp_get_num_rows(lp);
+
+	for (int i=1; i<=m; ++i) {
+
+		glp_set_row_stat(lp, i, GLP_BS);
+	}
+
+	const int n = glp_get_num_cols(lp);
+
+	for (int j=1; j<=n; ++j) {
+
+		const double x = glp_get_col_prim(lp, j);
+
+		const double x_mid = (glp_get_col_ub(lp, j)-glp_get_col_lb(lp, j))/2;
+
+		const int stat = (x<=x_mid)?GLP_NL:GLP_NU;
+
+		glp_set_col_stat(lp, j, stat);
+	}
+
+	glp_warm_up(lp);
+
+	for (int j=1; j<=n; ++j) {
+
+		const double d = glp_get_col_dual(lp, j);
+
+		const int stat = (d>=0)?GLP_NL:GLP_NU;
+
+		glp_set_col_stat(lp, j, stat);
+	}
+
+	parm->meth = GLP_DUAL;
+*/
 	int error_code = glp_simplex(lp, parm);
 
 	if (index!=0) {

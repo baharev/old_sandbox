@@ -413,12 +413,12 @@ const var operator/(var& x, var& y) {
 
 		improved =
 		// FIXME Should check if z.ub <= col_ub in LP
-		//var::lp->tighten_col_ub(z.index, z.ub);
-		var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+		var::lp->tighten_col_ub(z.index, z.ub);
+		//var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
 
 		z.intersect(5.189, 482);
 
-		std::cout << "z: " << z << std::endl;
+		std::cout << std::endl << "z: " << z << std::endl;
 
 		x.propagate(y, z);
 
