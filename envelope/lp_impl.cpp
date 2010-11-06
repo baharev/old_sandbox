@@ -47,6 +47,8 @@ lp_impl::lp_impl() {
 	glp_init_smcp(parm);
 
 	glp_set_obj_dir(lp, GLP_MIN);
+
+	dual_feasible = false;
 }
 
 lp_impl::~lp_impl() {
@@ -154,8 +156,6 @@ int lp_impl::add_col(double lb, double ub) {
 
 	glp_set_col_bnds(lp, j, type, lb, ub);
 
-	glp_set_col_stat(lp, j, GLP_NL);
-
 	return j;
 }
 
@@ -210,8 +210,26 @@ void lp_impl::add_sub_row(int x, int y, int z) {
 void lp_impl::remove_envelope(int index[5]) {
 
 	glp_del_rows(lp, 4, index);
-	// TODO Figure out a more efficient way...
-	glp_std_basis(lp);
+}
+
+void lp_impl::get_row_status(const int rows[5], int stat[5]) const {
+
+	for (int i=1; i<=4; ++i) {
+		stat[i] = glp_get_row_stat(lp, rows[i]);
+	}
+}
+
+void lp_impl::set_row_status(const int rows[5], const int stat[5]) {
+
+	for (int i=1; i<=4; ++i) {
+		glp_set_row_stat(lp, rows[i], stat[i]);
+	}
+}
+
+void lp_impl::basis_is_dual_feasible() {
+
+	// TODO Check if true ?
+	dual_feasible = true;
 }
 
 // (c <=) ax - z (<= c)
@@ -227,7 +245,7 @@ void lp_impl::add_lu_row(double a, int x, int z, double c, int type) {
 
 	glp_set_mat_row(lp, i, 2, ind, val);
 
-	glp_set_row_stat(lp, i, GLP_BS);
+	//glp_set_row_stat(lp, i, GLP_BS);
 }
 
 // (c <=) ax + by - z (<= c)
@@ -242,8 +260,6 @@ int lp_impl::add_lu_row(double a, int x, double b, int y, int z, double c, int t
 	double val[] = { 0.0, a, b, -1.0 };
 
 	glp_set_mat_row(lp, i, 3, ind, val);
-
-	glp_set_row_stat(lp, i, GLP_BS);
 
 	return i;
 }
@@ -302,11 +318,25 @@ void lp_impl::refresh(int index) {
 
 	parm->meth = GLP_DUAL;
 */
+
+	if (dual_feasible) {
+
+		parm->meth = GLP_DUAL;
+	}
+	else {
+
+		glp_std_basis(lp);
+	}
+
 	int error_code = glp_simplex(lp, parm);
+
+	dual_feasible = false;
+
+	parm->meth = GLP_PRIMAL;
 
 	if (index!=0) {
 
-		reset_obj(index);
+		reset_obj(index); // TODO Not in solve for because of throw, necessary?
 	}
 
 	throw_if_numerical_problems(error_code, __LINE__);

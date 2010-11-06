@@ -65,6 +65,12 @@ class lp_impl {
 
 		void remove_envelope(int index[5]);
 
+		void get_row_status(const int rows[5], int stat[5]) const;
+
+		void set_row_status(const int rows[5], const int stat[5]);
+
+		void basis_is_dual_feasible();
+
 		void fix_col(int index, double value);
 
 		void set_bounds(int index, double lb, double ub);
@@ -144,6 +150,8 @@ class lp_impl {
 		glp_prob* lp;
 
 		glp_smcp* parm;
+
+		bool dual_feasible;
 };
 
 }

@@ -270,23 +270,30 @@ const var sqr(const var& x) {
 
 void add_mult_envelope(const var& x, const var& y, const var& z, bool reset) {
 
-	static int prev[] = { -1, -1, -1, -1, -1 };
+	static int rows[] = { -1, -1, -1, -1, -1 };
+	static int stat[] = { -1, -1, -1, -1, -1 };
 
 	if (reset) {
-		var::lp->remove_envelope(prev);
+		var::lp->get_row_status(rows, stat);
+		var::lp->remove_envelope(rows);
 	}
 
 	// yL*xU <= yL*x + xU*y - z
-	prev[1] = var::lp->add_lo_row(y.lb, x.index, x.ub, y.index, z.index, y.lb*x.ub);
+	rows[1] = var::lp->add_lo_row(y.lb, x.index, x.ub, y.index, z.index, y.lb*x.ub);
 
 	// yU*xL <= yU*x + xL*y - z
-	prev[2] = var::lp->add_lo_row(y.ub, x.index, x.lb, y.index, z.index, y.ub*x.lb);
+	rows[2] = var::lp->add_lo_row(y.ub, x.index, x.lb, y.index, z.index, y.ub*x.lb);
 
 	// yL*x + xL*y - z <= yL*xL
-	prev[3] = var::lp->add_up_row(y.lb, x.index, x.lb, y.index, z.index, y.lb*x.lb);
+	rows[3] = var::lp->add_up_row(y.lb, x.index, x.lb, y.index, z.index, y.lb*x.lb);
 
 	// yU*x + xU*y - z <= yU*xU
-	prev[4] = var::lp->add_up_row(y.ub, x.index, x.ub, y.index, z.index, y.ub*x.ub);
+	rows[4] = var::lp->add_up_row(y.ub, x.index, x.ub, y.index, z.index, y.ub*x.ub);
+
+	if (reset) {
+		var::lp->set_row_status(rows, stat);
+		var::lp->basis_is_dual_feasible();
+	}
 }
 
 const var operator*(const var& x, const var& y) {
