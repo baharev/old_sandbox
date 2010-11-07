@@ -78,7 +78,13 @@ private:
 	double lb;
 	double ub;
 
-	static lp_solver::lp_impl* lp;
+	static void lp_add_lo_row(double a, int x, int z, double c);
+	static void lp_add_up_row(double a, int x, int z, double c);
+	static int lp_add_lo_row(double a, int x, double b, int y, int z, double c);
+	static int lp_add_up_row(double a, int x, double b, int y, int z, double c);
+
+	static lp_solver::lp_impl* lp_min;
+	static lp_solver::lp_impl* lp_max;
 
 };
 

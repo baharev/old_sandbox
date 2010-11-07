@@ -37,7 +37,9 @@ class lp_impl {
 
 		lp_impl();
 
-		int add_col(double lb, double ub);
+		int add_col_nonbasic_on_lb(double lb, double ub);
+
+		int add_col_nonbasic_on_ub(double lb, double ub);
 
 		// x - z = -y
 		void add_shift_row(int x, int z, double y);
@@ -68,8 +70,6 @@ class lp_impl {
 		void get_row_status(const int rows[5], int stat[5]) const;
 
 		void set_row_status(const int rows[5], const int stat[5]);
-
-		void basis_is_dual_feasible();
 
 		void fix_col(int index, double value);
 
@@ -137,9 +137,15 @@ class lp_impl {
 
 		double solve_for(int index, int direction);
 
+		int add_new_col(double lb, double ub, int status);
+
+		int add_new_row(int type, double bound);
+
 		void add_lu_row(double a, int x, int z, double c, int type);
 
 		int add_lu_row(double a, int x, double b, int y, int z, double c, int type);
+
+		void make_dual_feas_basis();
 
 		void refresh(int index = 0);
 

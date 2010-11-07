@@ -22,13 +22,16 @@
 
 #include <assert.h>
 #include <ostream>
+#include <string>
+// FIXME Remove and introduce logging
+#include <iostream>
 #include "envelope.hpp"
 #include "lp_impl.hpp"
 #include "exceptions.hpp"
-// FIXME Remove and introduce logging
-#include <iostream>
 
-lp_solver::lp_impl* asol::var::lp(new lp_solver::lp_impl());
+
+lp_solver::lp_impl* asol::var::lp_min(new lp_solver::lp_impl());
+lp_solver::lp_impl* asol::var::lp_max(new lp_solver::lp_impl());
 
 namespace {
 
@@ -142,14 +145,26 @@ void dbg_consistency(const var& x, const var& y) {
 
 void var::dump_lp(const char* file) {
 
-	lp->dump(file);
+	using std::string;
+
+	string fmin(file);
+	string fmax(file);
+
+	fmin += "_min";
+	fmax += "_max";
+
+	lp_min->dump(fmin.c_str());
+	lp_max->dump(fmax.c_str());
 }
 
 var::var(double lb, double ub) : index(-1), lb(lb), ub(ub) {
 
 	assert(lb <= ub);
 
-	index = lp->add_col(lb, ub);
+	int index_min = lp_min->add_col_nonbasic_on_lb(lb, ub);
+	int index_max = lp_max->add_col_nonbasic_on_ub(lb, ub);
+	assert(index_min == index_max);
+	index = index_min;
 }
 
 void var::fix_at(double val) {
@@ -163,14 +178,18 @@ void var::fix_at(double val) {
 
 	lb = ub = val;
 
-	lp->fix_col(index, val);
+	lp_min->fix_col(index, val);
+	lp_max->fix_col(index, val);
 }
 
 bool var::tighten_bounds() {
 
 	check_consistency();
 
-	return lp->tighten_col_bnds(index, lb, ub);
+	bool min_improved = lp_min->tighten_col_lb(index, lb);
+	bool max_improved = lp_max->tighten_col_ub(index, ub);
+
+	return min_improved || max_improved;
 }
 
 const var operator+(const var& x, const var& y) {
@@ -183,9 +202,10 @@ const var operator+(const var& x, const var& y) {
 	var z(lb, ub);
 
 	// x + y - z = 0
-	var::lp->add_add_row(x.index, y.index, z.index);
+	var::lp_min->add_add_row(x.index, y.index, z.index);
+	var::lp_max->add_add_row(x.index, y.index, z.index);
 
-	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+	z.tighten_bounds();
 
 	return z;
 }
@@ -197,9 +217,10 @@ const var operator+(const var& x, double y) {
 	var z(x.lb+y, x.ub+y);
 
 	// x - z = -y
-	var::lp->add_shift_row(x.index, z.index, y);
+	var::lp_min->add_shift_row(x.index, z.index, y);
+	var::lp_max->add_shift_row(x.index, z.index, y);
 
-	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+	z.tighten_bounds();
 
 	return z;
 }
@@ -224,9 +245,10 @@ const var operator-(const var& x, const var& y) {
 	var z(lb, ub);
 
 	// x - y - z = 0
-	var::lp->add_sub_row(x.index, y.index, z.index);
+	var::lp_min->add_sub_row(x.index, y.index, z.index);
+	var::lp_max->add_sub_row(x.index, y.index, z.index);
 
-	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+	z.tighten_bounds();
 
 	return z;
 }
@@ -236,6 +258,34 @@ bool var::contains_zero() const {
 	check_consistency();
 
 	return (lb<=0)&&(0<=ub);
+}
+
+void var::lp_add_lo_row(double a, int x, int z, double c) {
+
+	lp_min->add_lo_row(a, x, z, c);
+	lp_max->add_lo_row(a, x, z, c);
+}
+
+void var::lp_add_up_row(double a, int x, int z, double c) {
+
+	lp_min->add_up_row(a, x, z, c);
+	lp_max->add_up_row(a, x, z, c);
+}
+
+int var::lp_add_lo_row(double a, int x, double b, int y, int z, double c) {
+
+	int i_min = lp_min->add_lo_row(a, x, b, y, z, c);
+	int i_max = lp_max->add_lo_row(a, x, b, y, z, c);
+	assert(i_min == i_max);
+	return i_min;
+}
+
+int var::lp_add_up_row(double a, int x, double b, int y, int z, double c) {
+
+	int i_min = lp_min->add_up_row(a, x, b, y, z, c);
+	int i_max = lp_max->add_up_row(a, x, b, y, z, c);
+	assert(i_min == i_max);
+	return i_min;
 }
 
 const var sqr(const var& x) {
@@ -255,15 +305,15 @@ const var sqr(const var& x) {
 	var z(lb, ub);
 
 	// xL*xU <= (xL+xU)*x - z
-	var::lp->add_lo_row(x.lb+x.ub, x.index, z.index, x.lb*x.ub);
+	var::lp_add_lo_row(x.lb+x.ub, x.index, z.index, x.lb*x.ub);
 
 	// 2*xL*x - z <= xL*xL
-	var::lp->add_up_row(2*x.lb, x.index, z.index, x.lb*x.lb);
+	var::lp_add_up_row(2*x.lb, x.index, z.index, x.lb*x.lb);
 
 	// 2*xU*x - z <= xU*xU
-	var::lp->add_up_row(2*x.ub, x.index, z.index, x.ub*x.ub);
+	var::lp_add_up_row(2*x.ub, x.index, z.index, x.ub*x.ub);
 
-	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+	z.tighten_bounds();
 
 	return z;
 }
@@ -271,28 +321,31 @@ const var sqr(const var& x) {
 void add_mult_envelope(const var& x, const var& y, const var& z, bool reset) {
 
 	static int rows[] = { -1, -1, -1, -1, -1 };
-	static int stat[] = { -1, -1, -1, -1, -1 };
+	static int stat_min[] = { -1, -1, -1, -1, -1 };
+	static int stat_max[] = { -1, -1, -1, -1, -1 };
 
 	if (reset) {
-		var::lp->get_row_status(rows, stat);
-		var::lp->remove_envelope(rows);
+		var::lp_min->get_row_status(rows, stat_min);
+		var::lp_max->get_row_status(rows, stat_max);
+		var::lp_min->remove_envelope(rows);
+		var::lp_max->remove_envelope(rows);
 	}
 
 	// yL*xU <= yL*x + xU*y - z
-	rows[1] = var::lp->add_lo_row(y.lb, x.index, x.ub, y.index, z.index, y.lb*x.ub);
+	rows[1] = var::lp_add_lo_row(y.lb, x.index, x.ub, y.index, z.index, y.lb*x.ub);
 
 	// yU*xL <= yU*x + xL*y - z
-	rows[2] = var::lp->add_lo_row(y.ub, x.index, x.lb, y.index, z.index, y.ub*x.lb);
+	rows[2] = var::lp_add_lo_row(y.ub, x.index, x.lb, y.index, z.index, y.ub*x.lb);
 
 	// yL*x + xL*y - z <= yL*xL
-	rows[3] = var::lp->add_up_row(y.lb, x.index, x.lb, y.index, z.index, y.lb*x.lb);
+	rows[3] = var::lp_add_up_row(y.lb, x.index, x.lb, y.index, z.index, y.lb*x.lb);
 
 	// yU*x + xU*y - z <= yU*xU
-	rows[4] = var::lp->add_up_row(y.ub, x.index, x.ub, y.index, z.index, y.ub*x.ub);
+	rows[4] = var::lp_add_up_row(y.ub, x.index, x.ub, y.index, z.index, y.ub*x.ub);
 
 	if (reset) {
-		var::lp->set_row_status(rows, stat);
-		var::lp->basis_is_dual_feasible();
+		var::lp_min->set_row_status(rows, stat_min);
+		var::lp_max->set_row_status(rows, stat_max);
 	}
 }
 
@@ -314,7 +367,7 @@ const var operator*(const var& x, const var& y) {
 
 	add_mult_envelope(x, y, z);
 
-	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+	z.tighten_bounds();
 
 	return z;
 }
@@ -330,9 +383,10 @@ const var operator*(const double c, const var& x) {
 
 	var z(lb, ub);
 
-	var::lp->add_cx_row(c, x.index, z.index);
+	var::lp_min->add_cx_row(c, x.index, z.index);
+	var::lp_max->add_cx_row(c, x.index, z.index);
 
-	var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
+	z.tighten_bounds();
 
 	return z;
 }
@@ -362,10 +416,9 @@ void var::intersect(double l, double u) {
 		throw infeasible_problem();
 
 	if (improved) {
-
-		var::lp->set_bounds(index, lb, ub);
+		var::lp_min->set_bounds(index, lb, ub);
+		var::lp_max->set_bounds(index, lb, ub);
 	}
-
 }
 
 // z = x*y
@@ -420,7 +473,7 @@ const var operator/(var& x, var& y) {
 
 		improved =
 		// FIXME Should check if z.ub <= col_ub in LP
-		var::lp->tighten_col_ub(z.index, z.ub);
+		var::lp_max->tighten_col_ub(z.index, z.ub);
 		//var::lp->tighten_col_bnds(z.index, z.lb, z.ub);
 
 		z.intersect(5.189, 482);
@@ -442,7 +495,8 @@ std::ostream& operator<<(std::ostream& os, const var& v) {
 void var::check_consistency() const {
 	assert(lb <= ub);
 	assert(index >= 1);
-	assert(var::lp->col_type_db_or_fx(index));
+	assert(var::lp_min->col_type_db_or_fx(index));
+	assert(var::lp_max->col_type_db_or_fx(index));
 }
 
 }

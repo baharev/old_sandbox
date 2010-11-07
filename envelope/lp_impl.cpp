@@ -44,6 +44,8 @@ lp_impl::lp_impl() {
 
 	parm->presolve = GLP_OFF;
 
+	parm->meth = GLP_DUAL;
+
 	glp_init_smcp(parm);
 
 	glp_set_obj_dir(lp, GLP_MIN);
@@ -148,13 +150,25 @@ void lp_impl::set_max_restart(const int limit) {
 	set_restart_limit(limit);
 }
 
-int lp_impl::add_col(double lb, double ub) {
+int lp_impl::add_col_nonbasic_on_lb(double lb, double ub) {
+
+	return add_new_col(lb, ub, GLP_NL);
+}
+
+int lp_impl::add_col_nonbasic_on_ub(double lb, double ub) {
+
+	return add_new_col(lb, ub, GLP_NU);
+}
+
+int lp_impl::add_new_col(double lb, double ub, int stat) {
 
 	int j = glp_add_cols(lp, 1);
 
 	int type = (lb == ub)?GLP_FX:GLP_DB;
 
 	glp_set_col_bnds(lp, j, type, lb, ub);
+
+	glp_set_col_stat(lp, j, stat);
 
 	return j;
 }
@@ -226,34 +240,33 @@ void lp_impl::set_row_status(const int rows[5], const int stat[5]) {
 	}
 }
 
-void lp_impl::basis_is_dual_feasible() {
+int lp_impl::add_new_row(int type, double bound) {
 
-	// TODO Check if true ?
-	dual_feasible = true;
+	int i = glp_add_rows(lp, 1);
+
+	glp_set_row_bnds(lp, i, type, bound, bound);
+
+	glp_set_row_stat(lp, i, GLP_BS);
+
+	return i;
 }
 
 // (c <=) ax - z (<= c)
 void lp_impl::add_lu_row(double a, int x, int z, double c, int type) {
 
-	int i = glp_add_rows(lp, 1);
-
-	glp_set_row_bnds(lp, i, type, c, c);
+	int i = add_new_row(type, c);
 
 	int ind[] = { 0, x, z };
 
 	double val[] = { 0.0, a, -1.0 };
 
 	glp_set_mat_row(lp, i, 2, ind, val);
-
-	//glp_set_row_stat(lp, i, GLP_BS);
 }
 
 // (c <=) ax + by - z (<= c)
 int lp_impl::add_lu_row(double a, int x, double b, int y, int z, double c, int type) {
 
-	int i = glp_add_rows(lp, 1);
-
-	glp_set_row_bnds(lp, i, type, c, c);
+	int i = add_new_row(type, c);
 
 	int ind[] = { 0, x, y, z };
 
@@ -282,30 +295,13 @@ void lp_impl::set_bounds(int index, double lb, double ub) {
 	refresh();
 }
 
-void lp_impl::refresh(int index) {
+void lp_impl::make_dual_feas_basis() {
 
-	// TODO Fix the variables according to their primal values
-/*	const int m = glp_get_num_rows(lp);
-
-	for (int i=1; i<=m; ++i) {
-
-		glp_set_row_stat(lp, i, GLP_BS);
-	}
-
-	const int n = glp_get_num_cols(lp);
-
-	for (int j=1; j<=n; ++j) {
-
-		const double x = glp_get_col_prim(lp, j);
-
-		const double x_mid = (glp_get_col_ub(lp, j)-glp_get_col_lb(lp, j))/2;
-
-		const int stat = (x<=x_mid)?GLP_NL:GLP_NU;
-
-		glp_set_col_stat(lp, j, stat);
-	}
+	glp_std_basis(lp);
 
 	glp_warm_up(lp);
+
+	const int n = glp_get_num_cols(lp);
 
 	for (int j=1; j<=n; ++j) {
 
@@ -316,23 +312,17 @@ void lp_impl::refresh(int index) {
 		glp_set_col_stat(lp, j, stat);
 	}
 
-	parm->meth = GLP_DUAL;
-*/
+	dual_feasible = true;
+}
 
-	if (dual_feasible) {
+void lp_impl::refresh(int index) {
 
-		parm->meth = GLP_DUAL;
-	}
-	else {
+	if (!dual_feasible) {
 
-		glp_std_basis(lp);
+		make_dual_feas_basis();
 	}
 
 	int error_code = glp_simplex(lp, parm);
-
-	dual_feasible = false;
-
-	parm->meth = GLP_PRIMAL;
 
 	if (index!=0) {
 
