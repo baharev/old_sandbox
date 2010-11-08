@@ -465,9 +465,19 @@ const var operator/(var& x, var& y) {
 
 	var z(lb, ub);
 
+	//z.intersect(lb, -12.0);
+	//z.intersect(5.189, ub);
+	//z.intersect(lb, -2.956);
+	//z.intersect(lb, -1.0);
+
 	bool improved = false;
 
+	int counter = 0;
+
+
+
 	do {
+		double diam_prev = z.ub-z.lb;
 
 		add_mult_envelope(y, z, x, improved);
 
@@ -476,9 +486,12 @@ const var operator/(var& x, var& y) {
 		//var::lp_max->tighten_col_ub(z.index, z.ub);
 		z.tighten_bounds();
 
-		//z.intersect(5.189, 482);
+		using namespace std;
 
-		std::cout << std::endl << "z: " << z << std::endl;
+		cout << endl << "z: " << z << ", pass: " << ++counter << endl;
+
+		if ((diam_prev-(z.ub-z.lb))<1.0e-6*diam_prev)
+			break;
 
 		x.propagate(y, z);
 
@@ -490,6 +503,19 @@ const var operator/(var& x, var& y) {
 std::ostream& operator<<(std::ostream& os, const var& v) {
 
 	return os << "[ " << v.lb << ", " << v.ub << "]" << std::flush;
+}
+
+
+void var::copy_bounds(double& lo, double& up) const {
+
+	lo = lb;
+	up = ub;
+}
+
+void var::reset() {
+
+	lp_min->reset();
+	lp_max->reset();
 }
 
 void var::check_consistency() const {

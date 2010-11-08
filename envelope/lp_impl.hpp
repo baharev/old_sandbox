@@ -37,6 +37,8 @@ class lp_impl {
 
 		lp_impl();
 
+		void reset();
+
 		int add_col_nonbasic_on_lb(double lb, double ub);
 
 		int add_col_nonbasic_on_ub(double lb, double ub);
@@ -122,6 +124,8 @@ class lp_impl {
 		lp_impl(const lp_impl& );
 
 		lp_impl& operator=(const lp_impl& );
+
+		void init();
 
 		void throw_if_numerical_problems(int error, int line);
 

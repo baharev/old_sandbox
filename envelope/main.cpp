@@ -91,12 +91,102 @@ void example_Hansen() {
 	//cout << endl << "y" << endl << y << endl;
 }
 
-/*
+void example_challange() {
+
+	var w(-0.9, -0.6);
+	var x(-0.1,  0.2);
+
+	var u = sqr(w) + sqr(x);
+
+	var y( 0.3,  0.7);
+	var z(-0.2,  0.1);
+
+	var v = sqr(y) + sqr(z);
+
+	var b(-1, 1);
+	var c(-1, 1);
+
+	var d = b*(x*y - w*z) + c*(x*z + w*y);
+
+	var a(7.0, 9.0);
+
+	var num = a*(u-v)+2*d;
+
+	var den = u+v;
+
+	var f = num/den;
+
+	cout << "f: " << f << endl;
+}
+
+void example_digression() {
+
+	enum { W, X, Y, Z, N, D, SIZE };
+
+	double lb[SIZE]; double ub[SIZE];
+
+	lb[W] = -0.9; ub[W] = -0.6;
+	lb[X] = -0.1; ub[X] =  0.2;
+	lb[Y] =  0.3; ub[Y] =  0.7;
+	lb[Z] = -0.2; ub[Z] =  0.1;
+
+	lb[N] = -100; ub[N] =  100;
+	lb[D] = -100; ub[D] =  100;
+
+	//while (true) {
+
+		var w(lb[W], ub[W]);
+		var x(lb[X], ub[X]);
+		var y(lb[Y], ub[Y]);
+		var z(lb[Z], ub[Z]);
+
+		var num = 2*(x*z+w*y);
+
+		num.intersect(lb[N], ub[N]);
+
+		var den = sqr(w)+sqr(x)+sqr(y)+sqr(z);
+
+		den.intersect(lb[D], ub[D]);
+
+		var s = num/den;
+
+		cout << "s: " << s << endl;
+
+		num.tighten_bounds();
+		den.tighten_bounds();
+
+		w.tighten_bounds();
+		x.tighten_bounds();
+		y.tighten_bounds();
+		z.tighten_bounds();
+
+		num.copy_bounds(lb[N], ub[N]);
+		den.copy_bounds(lb[D], ub[D]);
+
+		w.copy_bounds(lb[W], ub[W]);
+		x.copy_bounds(lb[X], ub[X]);
+		y.copy_bounds(lb[Y], ub[Y]);
+		z.copy_bounds(lb[Z], ub[Z]);
+
+		cout << "w: " << w << endl;
+		cout << "x: " << x << endl;
+		cout << "y: " << y << endl;
+		cout << "z: " << z << endl;
+
+		var::reset();
+	//}
+}
+
+
 void example_1() {
 
 	var x(2.0, 4.0);
 
-	var y = (x-1)/(sqr(x)+2);
+	var num = x-1;
+
+	var den = sqr(x)+2;
+
+	var y = num/den;
 
 	cout << endl << "y = (x-1)/(x^2+2)" << endl << y << endl;
 
@@ -106,11 +196,15 @@ void example_2() {
 
 	var x(1.0, 2.0);
 
-	var y = (sqr(x)+x)/(16*x-9);
+	var num = sqr(x)+x;
+
+	var den = 16*x-9;
+
+	var y = num/den;
 
 	cout << endl << "y = (x^2+x)/(16*x-9)" << endl << y << endl;
 }
-*/
+
 void example_Wilson() {
 
 	var x1(0, 1);
@@ -179,6 +273,15 @@ void example_Wilson() {
 int main() {
 
 	example_Hansen();
+
+	//example_1();
+
+	//example_2();
+
+	//example_challange();
+
+	//example_digression();
+
 	//example_Wilson();
 
 	return 0;

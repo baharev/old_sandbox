@@ -44,13 +44,7 @@ lp_impl::lp_impl() {
 
 	glp_init_smcp(parm);
 
-	parm->presolve = GLP_OFF;
-
-	parm->meth = GLP_DUAL;
-
-	glp_set_obj_dir(lp, GLP_MIN);
-
-	dual_feasible = false;
+	init();
 }
 
 lp_impl::~lp_impl() {
@@ -60,6 +54,26 @@ lp_impl::~lp_impl() {
 	glp_delete_prob(lp);
 
 	glp_free_env();
+}
+
+void lp_impl::init() {
+
+	parm->presolve = GLP_OFF;
+
+	//parm->meth = GLP_DUAL;
+
+	//parm->msg_lev = GLP_OFF;
+
+	glp_set_obj_dir(lp, GLP_MIN);
+
+	dual_feasible = false;
+}
+
+void lp_impl::reset() {
+
+	glp_erase_prob(lp);
+
+	init();
 }
 
 void lp_impl::throw_if_numerical_problems(int error, int line) {
@@ -313,12 +327,6 @@ void lp_impl::make_dual_feas_basis() {
 	}
 
 	glp_warm_up(lp);
-
-	int dual_stat = glp_get_dual_stat(lp);
-
-	bool ok = dual_stat==GLP_FEAS || dual_stat== GLP_OPT;
-
-	//std::cout << "GLPK dual status: " << (ok?"FEAS":"ERROR") << endl;
 
 	dual_feasible = true;
 }

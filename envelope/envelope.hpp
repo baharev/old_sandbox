@@ -70,7 +70,11 @@ public:
 
 	void check_consistency() const;
 
+	void copy_bounds(double& lb, double& ub) const;
+
 	static void dump_lp(const char* file);
+
+	static void reset();
 
 private:
 
