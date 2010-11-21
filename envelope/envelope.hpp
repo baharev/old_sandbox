@@ -27,7 +27,7 @@
 
 namespace lp_solver {
 
-	class lp_impl;
+	class lp_pair;
 }
 
 namespace asol {
@@ -60,11 +60,9 @@ public:
 
 	bool contains_zero() const;
 
-	friend void add_mult_envelope(const var& x, const var& y, const var& z, bool reset=false);
+	void intersect(double lb, double ub);
 
 	void propagate(var& x, var& y);
-
-	void intersect(double lb, double ub);
 
 	friend std::ostream& operator<<(std::ostream& , const var& );
 
@@ -78,18 +76,13 @@ public:
 
 private:
 
+	static void add_mult_envelope(const var& x, const var& y, const var& z, bool reset=false);
+
 	int index;
 	double lb;
 	double ub;
 
-	static void lp_add_lo_row(double a, int x, int z, double c);
-	static void lp_add_up_row(double a, int x, int z, double c);
-	static int lp_add_lo_row(double a, int x, double b, int y, int z, double c);
-	static int lp_add_up_row(double a, int x, double b, int y, int z, double c);
-
-	static lp_solver::lp_impl* lp_min;
-	static lp_solver::lp_impl* lp_max;
-
+	static lp_solver::lp_pair* lp;
 };
 
 const var operator+(double x, const var& y);
