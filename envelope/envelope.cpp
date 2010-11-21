@@ -435,6 +435,13 @@ void var::reset() {
 	lp->reset();
 }
 
+void var::release_all() {
+
+	delete lp;
+	lp = 0;
+	lp_solver::lp_pair::free_environment();
+}
+
 void var::check_consistency() const {
 	assert(lb <= ub);
 	assert(index >= 1);

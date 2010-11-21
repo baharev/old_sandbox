@@ -52,6 +52,9 @@ lp_impl::~lp_impl() {
 	delete parm;
 
 	glp_delete_prob(lp);
+}
+
+void lp_impl::free_environment() {
 
 	glp_free_env();
 }

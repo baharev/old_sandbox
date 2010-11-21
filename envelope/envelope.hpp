@@ -38,8 +38,6 @@ public:
 
 	var(double lb, double ub);
 
-	var& operator=(const var& rhs);
-
 	void fix_at(double val);
 
 	bool tighten_bounds();
@@ -73,6 +71,8 @@ public:
 	static void dump_lp(const char* file);
 
 	static void reset();
+
+	static void release_all();
 
 private:
 

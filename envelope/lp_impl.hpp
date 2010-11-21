@@ -119,6 +119,8 @@ class lp_impl {
 
 		~lp_impl();
 
+		static void free_environment();
+
 	private:
 
 		lp_impl(const lp_impl& );

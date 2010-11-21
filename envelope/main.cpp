@@ -304,5 +304,7 @@ int main() {
 
 	example_Wilson();
 
+	var::release_all();
+
 	return 0;
 }

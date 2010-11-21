@@ -210,4 +210,9 @@ void lp_pair::reset() {
 	lp_max->reset();
 }
 
+void lp_pair::free_environment() {
+
+	lp_impl::free_environment();
+}
+
 }

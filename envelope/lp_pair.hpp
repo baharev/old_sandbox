@@ -75,6 +75,8 @@ public:
 
 	~lp_pair();
 
+	static void free_environment();
+
 private:
 
 	lp_pair(const lp_pair& );
