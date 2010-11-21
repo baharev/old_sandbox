@@ -175,10 +175,7 @@ const var operator+(const var& x, const var& y) {
 
 	dbg_consistency(x, y);
 
-	double lb = x.lb + y.lb;
-	double ub = x.ub + y.ub;
-
-	var z(lb, ub);
+	var z(x.lb+y.lb, x.ub+y.ub);
 
 	// x + y - z = 0
 	var::lp->add_add_row(x.index, y.index, z.index);
@@ -216,10 +213,7 @@ const var operator-(const var& x, const var& y) {
 
 	dbg_consistency(x, y);
 
-	double lb = x.lb - y.ub;
-	double ub = x.ub - y.lb;
-
-	var z(lb, ub);
+	var z(x.lb-y.ub, x.ub-y.lb);
 
 	// x - y - z = 0
 	var::lp->add_sub_row(x.index, y.index, z.index);
@@ -240,8 +234,7 @@ const var sqr(const var& x) {
 
 	x.check_consistency();
 
-	double lb = x.lb*x.lb;
-	double ub = x.ub*x.ub;
+	double lb(x.lb*x.lb), ub(x.ub*x.ub);
 
 	sort(lb, ub);
 
@@ -266,6 +259,12 @@ const var sqr(const var& x) {
 	return z;
 }
 
+const var alpha(const var& x);
+
+const var H_Liq(const var& x);
+
+const var H_Vap(const var& x);
+
 void var::add_mult_envelope(const var& x, const var& y, const var& z, bool reset) {
 
 	lp->add_mult_envelope(x.index, x.lb, x.ub, y.index, y.lb, y.ub, z.index, reset);
@@ -280,8 +279,7 @@ const var operator*(const var& x, const var& y) {
 		return sqr(x);
 	}
 
-	double lb =  1.0;
-	double ub = -1.0;
+	double lb(1.0), ub(-1.0);
 
 	mult(x.lb, x.ub, y.lb, y.ub, lb, ub);
 
@@ -298,8 +296,7 @@ const var operator*(const double c, const var& x) {
 
 	x.check_consistency();
 
-	double lb = c*x.lb;
-	double ub = c*x.ub;
+	double lb(c*x.lb), ub(c*x.ub);
 
 	sort(lb, ub);
 
@@ -377,8 +374,7 @@ const var operator/(var& x, var& y) {
 		return var(1,1);
 	}
 
-	double lb =  1.0;
-	double ub = -1.0;
+	double lb(1.0), ub(-1.0);
 
 	division(x.lb, x.ub, y.lb, y.ub, lb, ub);
 
@@ -449,4 +445,3 @@ void var::check_consistency() const {
 }
 
 }
-

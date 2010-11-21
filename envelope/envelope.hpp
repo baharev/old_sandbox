@@ -56,6 +56,12 @@ public:
 
 	friend const var sqr(const var& x);
 
+	friend const var alpha(const var& x);
+
+	friend const var H_Liq(const var& x);
+
+	friend const var H_Vap(const var& x);
+
 	bool contains_zero() const;
 
 	void intersect(double lb, double ub);
