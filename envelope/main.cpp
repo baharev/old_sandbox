@@ -27,6 +27,9 @@ using namespace std;
 using namespace asol;
 
 void dummy_1() {
+
+	var::reset();
+
 	var x(1, 2);
 	var y(2, 4);
 	var u = x+y;
@@ -39,6 +42,8 @@ void dummy_1() {
 }
 
 void example() {
+
+	var::reset();
 
 	var x1(0.6, 0.7);
 	var x2(0.2, 0.3);
@@ -66,6 +71,8 @@ void example() {
 
 void example_Hansen() {
 
+	var::reset();
+
 	var x(1, 10);
 	var y(1, 10);
 
@@ -92,6 +99,8 @@ void example_Hansen() {
 }
 
 void example_challange() {
+
+	var::reset();
 
 	var w(-0.9, -0.6);
 	var x(-0.1,  0.2);
@@ -121,6 +130,8 @@ void example_challange() {
 
 void example_digression() {
 
+	var::reset();
+
 	enum { W, X, Y, Z, N, D, SIZE };
 
 	double lb[SIZE]; double ub[SIZE];
@@ -133,7 +144,7 @@ void example_digression() {
 	lb[N] = -100; ub[N] =  100;
 	lb[D] = -100; ub[D] =  100;
 
-	//while (true) {
+	for (int i=1; i<=2; ++i) {
 
 		var w(lb[W], ub[W]);
 		var x(lb[X], ub[X]);
@@ -151,6 +162,9 @@ void example_digression() {
 		var s = num/den;
 
 		cout << "s: " << s << endl;
+
+		if (i==2)
+			break;
 
 		num.tighten_bounds();
 		den.tighten_bounds();
@@ -174,11 +188,13 @@ void example_digression() {
 		cout << "z: " << z << endl;
 
 		var::reset();
-	//}
+	}
 }
 
 
 void example_1() {
+
+	var::reset();
 
 	var x(2.0, 4.0);
 
@@ -194,6 +210,8 @@ void example_1() {
 
 void example_2() {
 
+	var::reset();
+
 	var x(1.0, 2.0);
 
 	var num = sqr(x)+x;
@@ -206,6 +224,8 @@ void example_2() {
 }
 
 void example_Wilson() {
+
+	var::reset();
 
 	var x1(0, 1);
 	var x2(0, 1);
@@ -274,15 +294,15 @@ int main() {
 
 	example_Hansen();
 
-	//example_1();
+	example_1();
 
-	//example_2();
+	example_2();
 
-	//example_challange();
+	example_challange();
 
-	//example_digression();
+	example_digression();
 
-	//example_Wilson();
+	example_Wilson();
 
 	return 0;
 }
