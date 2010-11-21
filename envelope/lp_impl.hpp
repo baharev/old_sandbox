@@ -43,6 +43,9 @@ class lp_impl {
 
 		int add_col_nonbasic_on_ub(double lb, double ub);
 
+		// x + y = c
+		void add_sum_row(int x, int y, double c);
+
 		// x - z = -y
 		void add_shift_row(int x, int z, double y);
 

@@ -190,6 +190,18 @@ int lp_impl::add_new_col(double lb, double ub, int stat) {
 	return j;
 }
 
+// x + y = c
+void lp_impl::add_sum_row(int x, int y, double c) {
+
+	int i = add_new_row(GLP_FX, c);
+
+	int ind[] = { 0, x, y };
+
+	double val[] = { 0.0, 1.0, 1.0 };
+
+	glp_set_mat_row(lp, i, 2, ind, val);
+}
+
 // x - z = -y
 void lp_impl::add_shift_row(int x, int z, double y) {
 

@@ -68,6 +68,13 @@ int lp_pair::add_col_nonbasic(double lb, double ub) {
 	return index_min;
 }
 
+// x + y = c
+void lp_pair::add_sum_row(int x_index, int y_index, double c) {
+
+	lp_min->add_sum_row(x_index, y_index, c);
+	lp_max->add_sum_row(x_index, y_index, c);
+}
+
 // x + y - z = 0
 void lp_pair::add_add_row(int x_index, int y_index, int z_index) {
 

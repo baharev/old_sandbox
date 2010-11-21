@@ -20,10 +20,11 @@
 //
 //==============================================================================
 
-#include <assert.h>
+#include <cmath>
 #include <ostream>
 // FIXME Remove and introduce logging
 #include <iostream>
+#include <assert.h>
 #include "envelope.hpp"
 #include "lp_pair.hpp"
 #include "exceptions.hpp"
@@ -223,6 +224,20 @@ const var operator-(const var& x, const var& y) {
 	return z;
 }
 
+const var operator-(double x, const var& y) {
+
+	y.check_consistency();
+
+	var z(x-y.ub, x-y.lb);
+
+	// z = x - y -> y + z = x
+	var::lp->add_sum_row(y.index, z.index, x);
+
+	z.tighten_bounds();
+
+	return z;
+}
+
 bool var::contains_zero() const {
 
 	check_consistency();
@@ -259,11 +274,111 @@ const var sqr(const var& x) {
 	return z;
 }
 
-const var alpha(const var& x);
+double y_eq(double x) {
 
-const var H_Liq(const var& x);
+	const double alpha = 3.55;
 
-const var H_Vap(const var& x);
+	return (alpha*x)/(1.0+(alpha-1.0)*x);
+}
+
+double y_derivative(double x) {
+
+	const double alpha = 3.55;
+
+	return alpha/std::pow(x*(alpha-1.0)+1.0, 2);
+}
+
+const var y_eq(const var& x) {
+
+	x.check_consistency();
+
+	var y(y_eq(x.lb), y_eq(x.ub));
+
+	// m*x0-y0<=m*x-y
+	double mL = y_derivative(x.lb);
+	var::lp->add_lo_row(mL, x.index, y.index, mL*x.lb-y.lb);
+
+	double mU = y_derivative(x.ub);
+	var::lp->add_lo_row(mU, x.index, y.index, mU*x.ub-y.ub);
+
+	double x_range = x.ub-x.lb;
+	double s = (x_range>1.0e-6)?(y.ub-y.lb)/x_range:y_derivative((x.lb+x.ub)/2);
+
+	// s*xU-yU >= s*x-y
+	var::lp->add_up_row(s, x.index, y.index, s*x.ub-y.ub);
+
+	y.tighten_bounds();
+
+	return y;
+}
+
+double H_liq(double x) {
+
+	return 0.1667*std::exp(-1.087*x);
+}
+
+double H_liq_derivative(double x) {
+
+	return -1.087*H_liq(x);
+}
+
+const var H_Liq(const var& x) {
+
+	x.check_consistency();
+
+	var z(H_liq(x.ub), H_liq(x.lb));
+
+	// m*x0-y0>=m*x-y
+	double mL = H_liq_derivative(x.lb);
+	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.lb);
+
+	double mU = H_liq_derivative(x.ub);
+	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.ub);
+
+	double x_range = x.ub-x.lb;
+	double s = (x_range>1.0e-6)?(z.ub-z.lb)/x_range:H_liq_derivative((x.lb+x.ub)/2);
+
+	// s*xU-yU <= s*x-y
+	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.ub);
+
+	z.tighten_bounds();
+
+	return z;
+}
+
+double H_vap(double x) {
+
+	return 0.1349*std::exp(-3.98*x) + 0.4397*std::exp(-0.088*x);
+}
+
+double H_vap_derivative(double x) {
+
+	return -3.98*0.1349*std::exp(-3.98*x) - 0.088*0.4397*std::exp(-0.088*x);
+}
+
+const var H_Vap(const var& x) {
+
+	x.check_consistency();
+
+	var z(H_vap(x.ub), H_vap(x.lb));
+
+	// m*x0-y0>=m*x-y
+	double mL = H_vap_derivative(x.lb);
+	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.lb);
+
+	double mU = H_vap_derivative(x.ub);
+	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.ub);
+
+	double x_range = x.ub-x.lb;
+	double s = (x_range>1.0e-6)?(z.ub-z.lb)/x_range:H_vap_derivative((x.lb+x.ub)/2);
+
+	// s*xU-yU <= s*x-y
+	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.ub);
+
+	z.tighten_bounds();
+
+	return z;
+}
 
 void var::add_mult_envelope(const var& x, const var& y, const var& z, bool reset) {
 

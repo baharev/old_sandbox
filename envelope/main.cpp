@@ -191,7 +191,6 @@ void example_digression() {
 	}
 }
 
-
 void example_1() {
 
 	var::reset();
@@ -290,7 +289,90 @@ void example_Wilson() {
 */
 }
 
+void example_Jacobsen() {
+
+	var::reset();
+
+	var x1(1.0e-4, 1.0);
+
+	var y1 = y_eq(x1);
+
+	var D(0.0, 1.12);
+
+	var d = D*y1;
+
+	var V1(2.0, 4.0);
+
+	var Lw = (V1 - D)*(60.10 - 28.06*y1);
+
+	Lw.fix_at(96.0);
+
+	var HV1 = H_Vap(x1);
+
+	var HL0 = H_Liq(y1);
+
+	var Q = V1*(HV1 - HL0) + D*HL0;
+
+	var x8(1.0e-4, 1.0);
+
+	var M8 = (1.0-D)*x8 + d;
+
+	M8.fix_at(0.5);
+
+	var x7(1.0e-4, 1.0);
+
+	var L7 = 4.0-D;
+
+	var y8 = y_eq(x8);
+
+	var M7 = 3*y8-L7*x7-d;
+
+	M7.fix_at(-0.5);
+
+/*
+	var HV8 = H_Vap(x8);
+
+	var HL7 = H_Liq(x7);
+
+	var H8 = 3*HV8 -L7*HL7 - Q;
+
+	H8.fix_at(-0.0968047);
+
+	eq7:
+	V2* y2 - (    V2 - D)* x1 - d = 0;
+	eq8:
+	V2*HV2 - (    V2 - D)*HL1 - Q = 0;
+
+	eq9:
+	V7* y7 - (1 + V7 - D)* x6 - d = -0.5;
+	eq10:
+	V7*HV7 - (1 + V7 - D)*HL6 - Q = -0.0968047;
+
+	eq11:
+	V3* y3 - (    V3 - D)* x2 - d = 0;
+	eq12:
+	V3*HV3 - (    V3 - D)*HL2 - Q = 0;
+
+	eq13:
+	V6* y6 - (1 + V6 - D)* x5 - d = -0.5;
+	eq14:
+	V6*HV6 - (1 + V6 - D)*HL5 - Q = -0.0968047;
+
+	eq15:
+	V4* y4 - (    V4 - D)* x3 - d = 0;
+	eq16:
+	V4*HV4 - (    V4 - D)*HL3 - Q = 0;
+
+	eq17:
+	V5* y5 - (    V5 - D)* x4 - d = 0;
+	eq18:
+	V5*HV5 - (    V5 - D)*HL4 - Q = 0;
+*/
+}
+
 int main() {
+
+	example_Jacobsen();
 
 	example_Hansen();
 

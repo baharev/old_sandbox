@@ -46,6 +46,8 @@ public:
 
 	friend const var operator+(const var& x, double y);
 
+	friend const var operator-(double x, const var& y);
+
 	friend const var operator-(const var& x, const var& y);
 
 	friend const var operator*(const var& x, const var& y);
@@ -56,7 +58,7 @@ public:
 
 	friend const var sqr(const var& x);
 
-	friend const var alpha(const var& x);
+	friend const var y_eq(const var& x);
 
 	friend const var H_Liq(const var& x);
 

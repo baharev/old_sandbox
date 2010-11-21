@@ -35,6 +35,9 @@ public:
 
 	int add_col_nonbasic(double lb, double ub);
 
+	// x + y = c
+	void add_sum_row(int x_index, int y_index, double c);
+
 	// x + y - z = 0
 	void add_add_row(int x_index, int y_index, int z_index);
 
