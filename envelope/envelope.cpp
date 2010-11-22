@@ -335,16 +335,16 @@ const var H_Liq(const var& x) {
 
 	// m*x0-y0>=m*x-y
 	double mL = H_liq_derivative(x.lb);
-	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.lb);
+	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.ub);
 
 	double mU = H_liq_derivative(x.ub);
-	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.ub);
+	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.lb);
 
 	double x_range = x.ub-x.lb;
-	double s = (x_range>TOL_RANGE)?(z.ub-z.lb)/x_range:H_liq_derivative((x.lb+x.ub)/2);
+	double s = (x_range>TOL_RANGE)?(z.lb-z.ub)/x_range:H_liq_derivative((x.lb+x.ub)/2);
 
 	// s*xU-yU <= s*x-y
-	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.ub);
+	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.lb);
 
 	z.tighten_bounds();
 
@@ -358,7 +358,7 @@ double H_vap(double x) {
 
 double H_vap_derivative(double x) {
 
-	return -3.98*0.1349*std::exp(-3.98*x) - 0.088*0.4397*std::exp(-0.088*x);
+	return (-3.98)*0.1349*std::exp(-3.98*x)+(-0.088)*0.4397*std::exp(-0.088*x);
 }
 
 const var H_Vap(const var& x) {
@@ -372,16 +372,16 @@ const var H_Vap(const var& x) {
 
 	// m*x0-y0>=m*x-y
 	double mL = H_vap_derivative(x.lb);
-	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.lb);
+	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.ub);
 
 	double mU = H_vap_derivative(x.ub);
-	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.ub);
+	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.lb);
 
 	double x_range = x.ub-x.lb;
-	double s = (x_range>TOL_RANGE)?(z.ub-z.lb)/x_range:H_vap_derivative((x.lb+x.ub)/2);
+	double s = (x_range>TOL_RANGE)?(z.lb-z.ub)/x_range:H_vap_derivative((x.lb+x.ub)/2);
 
 	// s*xU-yU <= s*x-y
-	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.ub);
+	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.lb);
 
 	z.tighten_bounds();
 

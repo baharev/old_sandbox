@@ -28,6 +28,7 @@
 #include "lp_impl.hpp"
 
 using std::clog;
+using std::cout;
 using std::endl;
 using std::fabs;
 
@@ -399,6 +400,8 @@ double lp_impl::solve_for(int index, int direction) {
 	glp_set_obj_dir(lp, direction);
 
 	glp_set_obj_coef(lp, index, 1.0);
+
+	cout << (direction==GLP_MIN?"MIN":"MAX") << endl;
 
 	refresh(index);
 

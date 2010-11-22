@@ -30,7 +30,7 @@ namespace lp_solver {
 
 namespace asol {
 
-	const double TOL_RANGE  = 1.0e-12;
+	const double TOL_RANGE  = 1.0e-6;
 }
 
 #endif /* CONSTANTS_HPP_ */

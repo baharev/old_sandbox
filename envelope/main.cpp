@@ -298,13 +298,19 @@ void example_Jacobsen() {
 
 	var y1 = y_eq(x1);
 
+	cout << "y1: " << y1 << endl;
+
 	//var D(0.0, 1.12);
 	var D(0.50, 0.51);
 
 	var d = D*y1;
 
+	cout << "d: " << d << endl;
+
 	//var V1(2.0, 4.0);
 	var V1(3.4, 3.5);
+
+	cout << "V1: " << V1 << endl;
 
 	var Lw = (V1 - D)*(0.6010 - 0.2806*y1);
 
@@ -312,9 +318,16 @@ void example_Jacobsen() {
 
 	var HV1 = H_Vap(x1);
 
+	cout << "HV1: " << HV1 << endl;
+	cout << "Should be: 0.408258" << endl;
+
 	var HL0 = H_Liq(y1);
 
+	cout << "HL0: " << HL0 << endl;
+
 	var Q = V1*(HV1 - HL0) + D*HL0;
+
+	cout << "Q: " << Q << endl;
 
 	//var x8(1.0e-4, 1.0);
 	var x8(1.0e-4, 0.01);
@@ -330,24 +343,25 @@ void example_Jacobsen() {
 
 	var y8 = y_eq(x8);
 
+	cout << "y8: " << y8 << endl;
+
 	var M7 = 3.0*y8-L7*x7-d;
 
 	M7.fix_at(-0.5);
-
-	// FIXME Compare results with the AMPL solution, perhaps linearization is buggy
-	//x8.tighten_bounds(); // FIXME Why does this make things work?
 
 	cout << "x[8] " << x8 << endl;
 
 	var HV8 = H_Vap(x8);
 
-/*	var HL7 = H_Liq(x7);
+	cout << "HV8: " << HV8 << endl;
+
+	var HL7 = H_Liq(x7);
 
 	var H8 = 3*HV8 -L7*HL7 - Q;
 
 	H8.fix_at(-0.0968047);
 
-	eq7:
+/*	eq7:
 	V2* y2 - (    V2 - D)* x1 - d = 0;
 	eq8:
 	V2*HV2 - (    V2 - D)*HL1 - Q = 0;
