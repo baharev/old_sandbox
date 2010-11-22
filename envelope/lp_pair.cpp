@@ -198,12 +198,32 @@ void lp_pair::set_bounds(int index, double lb, double ub) {
 	lp_max->set_bounds(index, lb, ub);
 }
 
+void lp_pair::fix_narrow_slight_infeas(int index, double& lb, double& ub) {
+
+	if (col_should_be_fixed(lb, ub)) {
+		double mid = (lb+ub)/2;
+		lb = ub = mid;
+	}
+}
+
 bool lp_pair::tighten_col(int index, double& lb, double& ub) {
+
+	if (lp_min->is_fixed(index)) {
+		assert(lp_max->is_fixed(index));
+		return false;
+	}
 
 	bool min_improved = lp_min->tighten_col_lb(index, lb);
 	bool max_improved = lp_max->tighten_col_ub(index, ub);
 
-	return min_improved || max_improved;
+	bool improved = min_improved || max_improved;
+
+	if (improved) {
+		fix_narrow_slight_infeas(index, lb, ub);
+		set_bounds(index, lb, ub);
+	}
+
+	return improved;
 }
 
 bool lp_pair::col_type_db_or_fx(int index) const {

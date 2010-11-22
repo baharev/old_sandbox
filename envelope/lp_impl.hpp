@@ -78,6 +78,8 @@ class lp_impl {
 
 		void fix_col(int index, double value);
 
+		bool is_fixed(int index);
+
 		void set_bounds(int index, double lb, double ub);
 
 		bool tighten_col_bnds(int i, double& lb, double& ub);
@@ -99,16 +101,6 @@ class lp_impl {
 		int    get_it_cnt()        { return lpx_get_int_parm(lp, LPX_K_ITCNT); }
 
 		void scale_prob(int flag) { glp_scale_prob(lp, flag); }
-
-		void set_col_bnds(int j, int type, double lb, double ub) {
-
-			glp_set_col_bnds(lp, j, type, lb, ub);
-		}
-
-		void set_row_bnds(int i, int type, double lb, double ub) {
-
-			glp_set_row_bnds(lp, i, type, lb, ub);
-		}
 
 		void set_obj_coef(int j, double val) { glp_set_obj_coef(lp, j, val); }
 
@@ -168,6 +160,8 @@ class lp_impl {
 
 		bool dual_feasible;
 };
+
+bool col_should_be_fixed(double lb, double ub);
 
 }
 

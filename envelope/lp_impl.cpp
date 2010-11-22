@@ -21,11 +21,15 @@
 //=============================================================================
 
 #include <iostream>
+#include <cmath>
+#include <assert.h>
+#include "constants.hpp"
 #include "exceptions.hpp"
 #include "lp_impl.hpp"
 
 using std::clog;
 using std::endl;
+using std::fabs;
 
 //#define HACKED_GLPK
 #ifdef HACKED_GLPK
@@ -135,6 +139,16 @@ void lp_impl::assert_col_type(int j, int line) {
 	}
 }
 
+bool col_should_be_fixed(double lb, double ub) {
+
+	double fl = fabs(lb);
+	double fu = fabs(ub);
+	double abs_max = (fl<fu)?fu:fl;
+	double delta = TOL_INFEAS*abs_max;
+
+	return (fabs(ub-lb)<delta);
+}
+
 void lp_impl::assert_value_within_bnds(int j, double value, int line) {
 
 	assert_col_type(j, line);
@@ -143,6 +157,8 @@ void lp_impl::assert_value_within_bnds(int j, double value, int line) {
 	double ub = glp_get_col_ub(lp, j);
 
 	if (value < lb || value > ub) {
+		clog << "Error: " << value << " is not in range ";
+		clog << "[ " << lb << ", " << ub << "]" << endl;
 		// This should have been checked in envelope.cpp
 		throw asol::assertion_error();
 	}
@@ -159,7 +175,6 @@ void lp_impl::assert_feasible_bounds(int j, double l, double u, int line) {
 
 		throw asol::assertion_error();
 	}
-
 }
 
 void lp_impl::set_max_restart(const int limit) {
@@ -317,9 +332,12 @@ void lp_impl::fix_col(int index, double value) {
 
 void lp_impl::set_bounds(int index, double lb, double ub) {
 
-	assert_feasible_bounds(index, lb, ub, __LINE__);
+	// FIXME Enable checking
+	//assert_feasible_bounds(index, lb, ub, __LINE__);
 
-	glp_set_col_bnds(lp, index, GLP_DB, lb, ub);
+	int type = (lb < ub)?GLP_DB:GLP_FX;
+
+	glp_set_col_bnds(lp, index, type, lb, ub);
 
 	refresh();
 }
@@ -353,6 +371,8 @@ void lp_impl::refresh(int index) {
 		make_dual_feas_basis();
 	}
 
+	glp_scale_prob(lp, GLP_SF_EQ);
+
 	int error_code = glp_simplex(lp, parm);
 
 	if (index!=0) {
@@ -385,11 +405,18 @@ double lp_impl::solve_for(int index, int direction) {
 	return glp_get_col_prim(lp, index);
 }
 
+bool lp_impl::is_fixed(int index) {
+
+	return glp_get_col_type(lp, index)==GLP_FX;
+}
+
 bool lp_impl::tighten_col_lb(int index, double& lb) {
 
-	const double inf = solve_for(index, GLP_MIN);
+	assert(!is_fixed(index));
 
 	bool improved = false;
+
+	const double inf = solve_for(index, GLP_MIN);
 
 	if (inf>lb) {
 		lb = inf;
@@ -401,9 +428,11 @@ bool lp_impl::tighten_col_lb(int index, double& lb) {
 
 bool lp_impl::tighten_col_ub(int index, double& ub) {
 
-	const double sup = solve_for(index, GLP_MAX);
+	assert(!is_fixed(index));
 
 	bool improved = false;
+
+	const double sup = solve_for(index, GLP_MAX);
 
 	if (sup<ub) {
 		ub = sup;
@@ -413,6 +442,7 @@ bool lp_impl::tighten_col_ub(int index, double& ub) {
 	return improved;
 }
 
+/*
 bool lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
 
 	const bool improved_lb = tighten_col_lb(index, lb);
@@ -423,6 +453,7 @@ bool lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
 
 	return improved_lb || improved_ub;
 }
+*/
 
 void lp_impl::dump(const char* file) const {
 

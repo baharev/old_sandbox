@@ -25,6 +25,7 @@
 // FIXME Remove and introduce logging
 #include <iostream>
 #include <assert.h>
+#include "constants.hpp"
 #include "envelope.hpp"
 #include "lp_pair.hpp"
 #include "exceptions.hpp"
@@ -169,7 +170,11 @@ bool var::tighten_bounds() {
 
 	check_consistency();
 
-	return lp->tighten_col(index, lb, ub);
+	bool improved = lp->tighten_col(index, lb, ub);
+
+	check_consistency();
+
+	return improved;
 }
 
 const var operator+(const var& x, const var& y) {
@@ -302,7 +307,7 @@ const var y_eq(const var& x) {
 	var::lp->add_lo_row(mU, x.index, y.index, mU*x.ub-y.ub);
 
 	double x_range = x.ub-x.lb;
-	double s = (x_range>1.0e-6)?(y.ub-y.lb)/x_range:y_derivative((x.lb+x.ub)/2);
+	double s = (x_range>TOL_RANGE)?(y.ub-y.lb)/x_range:y_derivative((x.lb+x.ub)/2);
 
 	// s*xU-yU >= s*x-y
 	var::lp->add_up_row(s, x.index, y.index, s*x.ub-y.ub);
@@ -336,7 +341,7 @@ const var H_Liq(const var& x) {
 	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.ub);
 
 	double x_range = x.ub-x.lb;
-	double s = (x_range>1.0e-6)?(z.ub-z.lb)/x_range:H_liq_derivative((x.lb+x.ub)/2);
+	double s = (x_range>TOL_RANGE)?(z.ub-z.lb)/x_range:H_liq_derivative((x.lb+x.ub)/2);
 
 	// s*xU-yU <= s*x-y
 	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.ub);
@@ -362,6 +367,9 @@ const var H_Vap(const var& x) {
 
 	var z(H_vap(x.ub), H_vap(x.lb));
 
+	z.check_consistency();
+	std::cout << "H_vap: " << z << std::endl;
+
 	// m*x0-y0>=m*x-y
 	double mL = H_vap_derivative(x.lb);
 	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.lb);
@@ -370,7 +378,7 @@ const var H_Vap(const var& x) {
 	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.ub);
 
 	double x_range = x.ub-x.lb;
-	double s = (x_range>1.0e-6)?(z.ub-z.lb)/x_range:H_vap_derivative((x.lb+x.ub)/2);
+	double s = (x_range>TOL_RANGE)?(z.ub-z.lb)/x_range:H_vap_derivative((x.lb+x.ub)/2);
 
 	// s*xU-yU <= s*x-y
 	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.ub);
