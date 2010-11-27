@@ -93,3 +93,25 @@ u1 : [ 0.787092, 2.41488]
 u2 : [ 0.277934, 1.7672]
 u3 : [ 6.17202e-06, 1.04231]
 
+================================================================================
+
+Jacobsen
+
+
+Scaling...
+ A: min|aij| =  1.000e-04  max|aij| =  4.500e+00  ratio =  4.500e+04
+EQ: min|aij| =  1.000e-04  max|aij| =  1.000e+00  ratio =  1.000e+04
+GLPK Simplex Optimizer, v4.44
+250 rows, 125 columns, 668 non-zeros
+*  1498: obj =   0.000000000e+00  infeas =  5.551e-16 (0)
+OPTIMAL SOLUTION FOUND
+Scaling...
+ A: min|aij| =  1.000e-04  max|aij| =  4.500e+00  ratio =  4.500e+04
+EQ: min|aij| =  1.000e-04  max|aij| =  1.000e+00  ratio =  1.000e+04
+GLPK Simplex Optimizer, v4.44
+250 rows, 125 columns, 668 non-zeros
+*  1297: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+OPTIMAL SOLUTION FOUND
+
+V5: [ 2.49021, 4]
+x5: [ 0.0394455, 0.779418]
