@@ -24,6 +24,7 @@
 #define ENVELOPE_HPP_
 
 #include <iosfwd>
+#include "interval.hpp"
 
 namespace lp_solver {
 
@@ -38,9 +39,13 @@ public:
 
 	var(double lb, double ub);
 
+	var(const interval& range);
+
 	void fix_at(double val);
 
 	bool tighten_bounds();
+
+	const interval compute_bounds() const;
 
 	friend const var operator+(const var& x, const var& y);
 
@@ -84,11 +89,10 @@ public:
 
 private:
 
-	static void add_mult_envelope(const var& x, const var& y, const var& z, bool reset=false);
+	const interval lp_tighten_col(bool& improved) const;
 
 	int index;
-	double lb;
-	double ub;
+	interval range;
 
 	static lp_solver::lp_pair* lp;
 };

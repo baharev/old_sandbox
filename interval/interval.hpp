@@ -33,11 +33,35 @@ public:
 
 	interval();
 
+	explicit interval(double value);
+
 	interval(double lower_bound, double upper_bound);
+
+	bool contains(double value) const;
+
+	bool intersect(const double l, const double u);
+
+	bool intersect(const interval& other);
 
 	friend const interval operator+(const interval& x, const interval& y);
 
+	friend const interval operator+(const interval& x, double y);
+
+	friend const interval operator-(const interval& x, const interval& y);
+
+	friend const interval operator-(double x, const interval& y);
+
+	friend const interval operator*(const interval& x, const interval& y);
+
+	friend const interval operator*(double x, const interval& y);
+
+	friend const interval operator/(const interval& x, const interval& y);
+
+	friend const interval sqr(const interval& x);
+
 	double midpoint() const;
+
+	double diameter() const;
 
 	double radius() const;
 

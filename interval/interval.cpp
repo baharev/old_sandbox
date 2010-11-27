@@ -20,44 +20,179 @@
 //
 //==============================================================================
 
-#include <iostream>
+#include <ostream>
+#include <cmath>
+#include <algorithm>
 #include <assert.h>
+#include "exceptions.hpp"
 #include "interval.hpp"
 
 using namespace std;
 
+namespace {
+
+void sort_bounds(double& lb, double& ub) {
+
+	if (lb > ub) {
+		double temp = lb;
+		lb = ub;
+		ub = temp;
+	}
+}
+
+}
+
 namespace asol {
+
+
 
 interval::interval() : lb(100), ub(-100) { }
 
+interval::interval(double value) : lb(value), ub(value) { }
+
 interval::interval(double lo, double up) : lb(lo), ub(up) {
 
-	assert (lb <= ub);
+	assert(lb <= ub);
 }
 
 const interval operator+(const interval& x, const interval& y) {
+
 	assert(x.lb <= x.ub && y.lb <= y.ub);
 
-	return interval(x.lb + y.lb, x.ub + y.ub);
+	return interval(x.lb+y.lb, x.ub+y.ub);
+}
+
+const interval operator+(const interval& x, double y) {
+
+	assert(x.lb <= x.ub);
+
+	return interval(x.lb+y, x.ub+y);
+}
+
+const interval operator-(const interval& x, const interval& y) {
+
+	assert(x.lb <= x.ub && y.lb <= y.ub);
+
+	return interval(x.lb-y.ub, x.ub-y.lb);
+}
+
+const interval operator-(double x, const interval& y) {
+
+	assert(y.lb <= y.ub);
+
+	return interval(x-y.ub, x-y.lb);
+}
+
+const interval operator*(const interval& x, const interval& y) {
+
+	assert(x.lb <= x.ub && y.lb <= y.ub);
+
+	double z[] = { x.lb*y.lb, x.lb*y.ub, x.ub*y.lb, x.ub*y.ub };
+
+	double zL = *min_element(z, z+4);
+
+	double zU = *max_element(z, z+4);
+
+	return interval(zL, zU);
+}
+
+const interval operator*(double x, const interval& y) {
+
+	assert(y.lb <= y.ub);
+
+	double lb(x*y.lb), ub(x*y.ub);
+
+	sort_bounds(lb, ub);
+
+	return interval(lb, ub);
+}
+
+const interval operator/(const interval& x, const interval& y) {
+
+	assert(x.lb <= x.ub && y.lb <= y.ub);
+
+	if (y.contains(0)) {
+
+		throw assertion_error();
+	}
+
+	double z[] = { x.lb/y.lb, x.lb/y.ub, x.ub/y.lb, x.ub/y.ub };
+
+	double zL = *min_element(z, z+4);
+
+	double zU = *max_element(z, z+4);
+
+	return interval(zL, zU);
+}
+
+const interval sqr(const interval& x) {
+
+	assert(x.lb <= x.ub);
+
+	double lb(std::pow(x.lb, 2)), ub(std::pow(x.ub, 2));
+
+	sort_bounds(lb, ub);
+
+	return (lb<=0 && 0<=ub) ? interval(0, ub) : interval(lb, ub);
+}
+
+bool interval::contains(double value) const {
+
+	assert(lb <= ub);
+
+	return lb<=value && value<=ub;
+}
+
+bool interval::intersect(const interval& other) {
+
+	return intersect(other.inf(), other.sup());
+}
+
+bool interval::intersect(const double l, const double u) {
+
+	bool improved = false;
+
+	if (l>lb) {
+		lb = l;
+		improved = true;
+	}
+
+	if (u<ub) {
+		ub = u;
+		improved = true;
+	}
+
+	if (lb>ub) {
+		throw infeasible_problem();
+	}
+
+	return improved;
 }
 
 double interval::midpoint() const {
 
-	assert (lb <= ub);
+	assert(lb <= ub);
 
 	return (lb+ub)/2.0;
 }
 
+double interval::diameter() const {
+
+	assert(lb <= ub);
+
+	return ub-lb;
+}
+
 double interval::radius() const {
 
-	assert (lb <= ub);
+	assert(lb <= ub);
 
 	return (ub-lb)/2.0;
 }
 
 double interval::inf() const {
 
-	assert (lb <= ub);
+	assert(lb <= ub);
 
 	return lb;
 }

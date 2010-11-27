@@ -115,3 +115,158 @@ OPTIMAL SOLUTION FOUND
 
 V5: [ 2.49021, 4]
 x5: [ 0.0394455, 0.779418]
+
+################################################################################
+################################################################################
+
+Jacobsen
+
+Scaling...
+ A: min|aij| =  1.000e-04  max|aij| =  4.498e+00  ratio =  4.498e+04
+EQ: min|aij| =  1.000e-04  max|aij| =  1.000e+00  ratio =  1.000e+04
+GLPK Simplex Optimizer, v4.44
+250 rows, 125 columns, 668 non-zeros
+*  3581: obj =   0.000000000e+00  infeas =  9.406e-15 (0)
+OPTIMAL SOLUTION FOUND
+Scaling...
+ A: min|aij| =  1.000e-04  max|aij| =  4.498e+00  ratio =  4.498e+04
+EQ: min|aij| =  1.000e-04  max|aij| =  1.000e+00  ratio =  1.000e+04
+GLPK Simplex Optimizer, v4.44
+250 rows, 125 columns, 668 non-zeros
+*  3670: obj =   0.000000000e+00  infeas =  8.668e-09 (0)
+OPTIMAL SOLUTION FOUND
+V5: [ 2.72047, 3.60414]
+x5: [ 0.0822911, 0.476727]
+
+================================================================================
+
+Example Hansen
+(5x-4y^2+14xy)/(x^2+y+xy)
+
+Scaling...
+ A: min|aij| =  1.000e+00  max|aij| =  2.100e+02  ratio =  2.100e+02
+EQ: min|aij| =  1.429e-02  max|aij| =  1.000e+00  ratio =  7.000e+01
+GLPK Simplex Optimizer, v4.44
+21 rows, 13 columns, 54 non-zeros
+*    16: obj =   0.000000000e+00  infeas =  3.553e-15 (1)
+OPTIMAL SOLUTION FOUND
+Scaling...
+ A: min|aij| =  1.000e+00  max|aij| =  2.100e+02  ratio =  2.100e+02
+EQ: min|aij| =  1.429e-02  max|aij| =  1.000e+00  ratio =  7.000e+01
+GLPK Simplex Optimizer, v4.44
+21 rows, 13 columns, 54 non-zeros
+*    34: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+OPTIMAL SOLUTION FOUND
+
+z: [ -12.143, 10.5227], pass: 181
+
+================================================================================
+
+(x-1)/(x^2+2)
+
+Scaling...
+ A: min|aij| =  1.667e-01  max|aij| =  1.800e+01  ratio =  1.080e+02
+EQ: min|aij| =  1.250e-01  max|aij| =  1.000e+00  ratio =  8.000e+00
+GLPK Simplex Optimizer, v4.44
+9 rows, 5 columns, 22 non-zeros
+*     6: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+OPTIMAL SOLUTION FOUND
+Scaling...
+ A: min|aij| =  1.667e-01  max|aij| =  1.800e+01  ratio =  1.080e+02
+EQ: min|aij| =  1.250e-01  max|aij| =  1.000e+00  ratio =  8.000e+00
+GLPK Simplex Optimizer, v4.44
+9 rows, 5 columns, 22 non-zeros
+*     9: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+OPTIMAL SOLUTION FOUND
+
+z: [ 0.166667, 0.2], pass: 34
+
+================================================================================
+
+(x^2+x)/(16*x-9)
+
+Scaling...
+ A: min|aij| =  2.333e-01  max|aij| =  2.300e+01  ratio =  9.857e+01
+EQ: min|aij| =  6.250e-02  max|aij| =  1.000e+00  ratio =  1.600e+01
+GLPK Simplex Optimizer, v4.44
+10 rows, 6 columns, 25 non-zeros
+*     7: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+OPTIMAL SOLUTION FOUND
+Scaling...
+ A: min|aij| =  2.333e-01  max|aij| =  2.300e+01  ratio =  9.857e+01
+EQ: min|aij| =  6.250e-02  max|aij| =  1.000e+00  ratio =  1.600e+01
+GLPK Simplex Optimizer, v4.44
+10 rows, 6 columns, 25 non-zeros
+*     7: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+OPTIMAL SOLUTION FOUND
+
+z: [ 0.233333, 0.285714], pass: 19
+
+================================================================================
+
+Challege
+
+Scaling...
+ A: min|aij| =  1.000e-01  max|aij| =  9.000e+00  ratio =  9.000e+01
+Problem data seem to be well scaled
+EQ: min|aij| =  5.556e-02  max|aij| =  1.000e+00  ratio =  1.800e+01
+GLPK Simplex Optimizer, v4.44
+53 rows, 28 columns, 146 non-zeros
+*   143: obj =   0.000000000e+00  infeas =  6.939e-16 (0)
+OPTIMAL SOLUTION FOUND
+Scaling...
+ A: min|aij| =  1.000e-01  max|aij| =  9.000e+00  ratio =  9.000e+01
+Problem data seem to be well scaled
+EQ: min|aij| =  5.556e-02  max|aij| =  1.000e+00  ratio =  1.800e+01
+GLPK Simplex Optimizer, v4.44
+53 rows, 28 columns, 146 non-zeros
+*   110: obj =   0.000000000e+00  infeas =  2.040e-15 (0)
+OPTIMAL SOLUTION FOUND
+
+z: [ -3.12431, 8.24993], pass: 15
+
+================================================================================
+
+Digression
+
+Scaling...
+ A: min|aij| =  1.000e-01  max|aij| =  2.000e+00  ratio =  2.000e+01
+Problem data seem to be well scaled
+EQ: min|aij| =  1.667e-01  max|aij| =  1.000e+00  ratio =  6.000e+00
+GLPK Simplex Optimizer, v4.44
+29 rows, 16 columns, 74 non-zeros
+*    48: obj =   0.000000000e+00  infeas =  6.245e-17 (0)
+OPTIMAL SOLUTION FOUND
+Scaling...
+ A: min|aij| =  1.000e-01  max|aij| =  2.000e+00  ratio =  2.000e+01
+Problem data seem to be well scaled
+EQ: min|aij| =  1.667e-01  max|aij| =  1.000e+00  ratio =  6.000e+00
+GLPK Simplex Optimizer, v4.44
+29 rows, 16 columns, 74 non-zeros
+*    32: obj =   0.000000000e+00  infeas =  4.025e-16 (0)
+OPTIMAL SOLUTION FOUND
+
+z: [ -1.13636, -0.526316], pass: 20
+
+================================================================================
+
+Wilson
+
+Scaling...
+ A: min|aij| =  6.172e-06  max|aij| =  1.000e+00  ratio =  1.620e+05
+EQ: min|aij| =  6.172e-06  max|aij| =  1.000e+00  ratio =  1.620e+05
+GLPK Simplex Optimizer, v4.44
+74 rows, 38 columns, 192 non-zeros
+*    81: obj =   0.000000000e+00  infeas =  4.996e-16 (0)
+OPTIMAL SOLUTION FOUND
+Scaling...
+ A: min|aij| =  6.172e-06  max|aij| =  1.000e+00  ratio =  1.620e+05
+EQ: min|aij| =  6.172e-06  max|aij| =  1.000e+00  ratio =  1.620e+05
+GLPK Simplex Optimizer, v4.44
+74 rows, 38 columns, 192 non-zeros
+*   256: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+OPTIMAL SOLUTION FOUND
+u1 : [ 0.787092, 2.41488]
+u2 : [ 0.277934, 1.7672]
+u3 : [ 6.17202e-06, 1.04231]
+

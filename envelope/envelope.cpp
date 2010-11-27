@@ -32,109 +32,6 @@
 
 lp_solver::lp_pair* asol::var::lp(new lp_solver::lp_pair);
 
-namespace {
-
-// Based on the C-XSC source code
-void mult(const double xl, const double xu, const double yl, const double yu, double& zl, double& zu) {
-
-	assert(xl<=xu);
-	assert(yl<=yu);
-
-	if (xl >=0) {                          /*  0 <= [x]                 */
-
-		if (yl >=0)                        /*  0 <= [y]                 */
-			zl=xl*yl;
-		else                               /*  [y] <= 0  or  0 \in [y]  */
-			zl=xu*yl;
-
-		if (yu <=0)                        /*  [y] <= 0                 */
-			zu=xl*yu;
-		else                               /*  0 <= [y]  or  0 \in [y]  */
-			zu=xu*yu;
-
-	} else if (xu<=0) {                    /*  [x] <= 0                 */
-
-		if (yu<=0)                         /*  [y] <= 0                 */
-			zl=xu*yu;
-		else                               /*  0 <= [y]  or  0 \in [y]  */
-			zl=xl*yu;
-
-		if (yl>=0)                         /*  0 <= [y]                 */
-			zu=xu*yl;
-		else                               /*  [y] <= 0  or  0 \in [y]  */
-			zu=xl*yl;
-
-	} else {                               /*  0 \in [x]                */
-
-		if (yl>=0) {                       /*  0 <= [y]                 */
-			zl=xl*yu;
-			zu=xu*yu;
-		} else if (yu<=0) {                /*  [y] <= 0                 */
-			zl=xu*yl;
-			zu=xl*yl;
-		} else {                           /*  0 \in [x], 0 \in [y]     */
-			const double lu = xl*yu;
-			const double ul = xu*yl;
-			const double ll = xl*yl;
-			const double uu = xu*yu;
-			zl=(lu<ul)?lu:ul;
-			zu=(ll>uu)?ll:uu;
-		}
-
-	}
-
-	assert(zl<=zu);
-}
-
-// Based on the C-XSC source code
-void division(const double xl, const double xu, const double yl, const double yu, double& zl, double& zu) {
-
-	assert(xl<=xu);
-	assert(yl<=yu);
-
-	if (yl>0) {
-
-		if (xl>=0)
-			zl=xl/yu;
-		else
-			zl=xl/yl;
-
-		if (xu<=0)
-			zu=xu/yu;
-		else
-			zu=xu/yl;
-
-	}
-	else if (yu<0) {
-
-		if (xu<=0)
-			zl=xu/yl;
-		else
-			zl=xu/yu;
-
-		if (xl>=0)
-			zu=xl/yl;
-		else
-			zu=xl/yu;
-	}
-	else {
-		assert(false);
-	}
-
-	assert(zl<=zu);
-}
-
-void sort(double& lb, double& ub) {
-
-	if (lb > ub) {
-		double temp = lb;
-		lb = ub;
-		ub = temp;
-	}
-}
-
-}
-
 namespace asol {
 
 void dbg_consistency(const var& x, const var& y) {
@@ -147,7 +44,12 @@ void var::dump_lp(const char* file) {
 	lp->dump(file);
 }
 
-var::var(double lb, double ub) : index(-1), lb(lb), ub(ub) {
+var::var(const interval& bounds) : index(-1), range(bounds) {
+
+	index = lp->add_col_nonbasic(range.inf(), range.sup());
+}
+
+var::var(double lb, double ub) : index(-1), range(interval(lb, ub)) {
 
 	index = lp->add_col_nonbasic(lb, ub);
 }
@@ -156,32 +58,52 @@ void var::fix_at(double val) {
 
 	check_consistency();
 
-	if ((lb>val) || (val>ub)) {
+	if (!range.contains(val)) {
 
 		throw infeasible_problem();
 	}
 
-	lb = ub = val;
+	range = interval(val);
 
 	lp->fix_col(index, val);
 }
 
-bool var::tighten_bounds() {
+const interval var::lp_tighten_col(bool& improved) const {
 
 	check_consistency();
 
-	bool improved = lp->tighten_col(index, lb, ub);
+	double lb = range.inf();
+
+	double ub = range.sup();
+
+	improved = lp->tighten_col(index, lb, ub);
+
+	return interval(lb, ub);
+}
+
+bool var::tighten_bounds() {
+
+	bool improved = false;
+
+	range = lp_tighten_col(improved);
 
 	check_consistency();
 
 	return improved;
 }
 
+const interval var::compute_bounds() const {
+
+	bool dummy = false;
+
+	return lp_tighten_col(dummy);
+}
+
 const var operator+(const var& x, const var& y) {
 
 	dbg_consistency(x, y);
 
-	var z(x.lb+y.lb, x.ub+y.ub);
+	var z(x.compute_bounds() + y.compute_bounds());
 
 	// x + y - z = 0
 	var::lp->add_add_row(x.index, y.index, z.index);
@@ -195,7 +117,7 @@ const var operator+(const var& x, double y) {
 
 	x.check_consistency();
 
-	var z(x.lb+y, x.ub+y);
+	var z(x.compute_bounds() + y);
 
 	// x - z = -y
 	var::lp->add_shift_row(x.index, z.index, y);
@@ -219,7 +141,7 @@ const var operator-(const var& x, const var& y) {
 
 	dbg_consistency(x, y);
 
-	var z(x.lb-y.ub, x.ub-y.lb);
+	var z(x.compute_bounds() - y.compute_bounds());
 
 	// x - y - z = 0
 	var::lp->add_sub_row(x.index, y.index, z.index);
@@ -233,7 +155,7 @@ const var operator-(double x, const var& y) {
 
 	y.check_consistency();
 
-	var z(x-y.ub, x-y.lb);
+	var z(x-y.compute_bounds());
 
 	// z = x - y -> y + z = x
 	var::lp->add_sum_row(y.index, z.index, x);
@@ -247,32 +169,28 @@ bool var::contains_zero() const {
 
 	check_consistency();
 
-	return (lb<=0)&&(0<=ub);
+	return range.contains(0.0);
 }
 
 const var sqr(const var& x) {
 
 	x.check_consistency();
 
-	double lb(x.lb*x.lb), ub(x.ub*x.ub);
+	const interval x_range = x.compute_bounds();
 
-	sort(lb, ub);
+	var z(sqr(x_range));
 
-	if (x.contains_zero()) {
-
-		lb = 0.0;
-	}
-
-	var z(lb, ub);
+	const double xL = x_range.inf();
+	const double xU = x_range.sup();
 
 	// xL*xU <= (xL+xU)*x - z
-	var::lp->add_lo_row(x.lb+x.ub, x.index, z.index, x.lb*x.ub);
+	var::lp->add_lo_row(xL+xU, x.index, z.index, xL*xU);
 
 	// 2*xL*x - z <= xL*xL
-	var::lp->add_up_row(2*x.lb, x.index, z.index, x.lb*x.lb);
+	var::lp->add_up_row(2*xL, x.index, z.index, xL*xL);
 
 	// 2*xU*x - z <= xU*xU
-	var::lp->add_up_row(2*x.ub, x.index, z.index, x.ub*x.ub);
+	var::lp->add_up_row(2*xU, x.index, z.index, xU*xU);
 
 	z.tighten_bounds();
 
@@ -297,20 +215,28 @@ const var y_eq(const var& x) {
 
 	x.check_consistency();
 
-	var y(y_eq(x.lb), y_eq(x.ub));
+	const interval x_range = x.compute_bounds();
+
+	const double xL = x_range.inf();
+	const double xU = x_range.sup();
+
+	const double yL = y_eq(xL);
+	const double yU = y_eq(xU);
+
+	var y(yL, yU);
 
 	// m*x0-y0<=m*x-y
-	double mL = y_derivative(x.lb);
-	var::lp->add_lo_row(mL, x.index, y.index, mL*x.lb-y.lb);
+	double mL = y_derivative(xL);
+	var::lp->add_lo_row(mL, x.index, y.index, mL*xL-yL);
 
-	double mU = y_derivative(x.ub);
-	var::lp->add_lo_row(mU, x.index, y.index, mU*x.ub-y.ub);
+	double mU = y_derivative(xU);
+	var::lp->add_lo_row(mU, x.index, y.index, mU*xU-yU);
 
-	double x_range = x.ub-x.lb;
-	double s = (x_range>TOL_RANGE)?(y.ub-y.lb)/x_range:y_derivative((x.lb+x.ub)/2);
+	double x_diam = x_range.diameter();
+	double s = (x_diam>TOL_RANGE)?(yU-yL)/x_diam:y_derivative(x_range.midpoint());
 
 	// s*xU-yU >= s*x-y
-	var::lp->add_up_row(s, x.index, y.index, s*x.ub-y.ub);
+	var::lp->add_up_row(s, x.index, y.index, s*xU-yU);
 
 	y.tighten_bounds();
 
@@ -331,20 +257,28 @@ const var H_Liq(const var& x) {
 
 	x.check_consistency();
 
-	var z(H_liq(x.ub), H_liq(x.lb));
+	const interval x_range = x.compute_bounds();
+
+	const double xL = x_range.inf();
+	const double xU = x_range.sup();
+
+	const double zL = H_liq(xU);
+	const double zU = H_liq(xL);
+
+	var z(zL, zU);
 
 	// m*x0-y0>=m*x-y
-	double mL = H_liq_derivative(x.lb);
-	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.ub);
+	double mL = H_liq_derivative(xL);
+	var::lp->add_up_row(mL, x.index, z.index, mL*xL-zU);
 
-	double mU = H_liq_derivative(x.ub);
-	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.lb);
+	double mU = H_liq_derivative(xU);
+	var::lp->add_up_row(mU, x.index, z.index, mU*xU-zL);
 
-	double x_range = x.ub-x.lb;
-	double s = (x_range>TOL_RANGE)?(z.lb-z.ub)/x_range:H_liq_derivative((x.lb+x.ub)/2);
+	double x_diam = x_range.diameter();
+	double s = (x_diam>TOL_RANGE)?(zL-zU)/x_diam:H_liq_derivative(x_range.midpoint());
 
 	// s*xU-yU <= s*x-y
-	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.lb);
+	var::lp->add_lo_row(s, x.index, z.index, s*xU-zL);
 
 	z.tighten_bounds();
 
@@ -365,32 +299,32 @@ const var H_Vap(const var& x) {
 
 	x.check_consistency();
 
-	var z(H_vap(x.ub), H_vap(x.lb));
+	const interval x_range = x.compute_bounds();
 
-	z.check_consistency();
-	std::cout << "H_vap: " << z << std::endl;
+	const double xL = x_range.inf();
+	const double xU = x_range.sup();
+
+	const double zL = H_vap(xU);
+	const double zU = H_vap(xL);
+
+	var z(zL, zU);
 
 	// m*x0-y0>=m*x-y
-	double mL = H_vap_derivative(x.lb);
-	var::lp->add_up_row(mL, x.index, z.index, mL*x.lb-z.ub);
+	double mL = H_vap_derivative(xL);
+	var::lp->add_up_row(mL, x.index, z.index, mL*xL-zU);
 
-	double mU = H_vap_derivative(x.ub);
-	var::lp->add_up_row(mU, x.index, z.index, mU*x.ub-z.lb);
+	double mU = H_vap_derivative(xU);
+	var::lp->add_up_row(mU, x.index, z.index, mU*xU-zL);
 
-	double x_range = x.ub-x.lb;
-	double s = (x_range>TOL_RANGE)?(z.lb-z.ub)/x_range:H_vap_derivative((x.lb+x.ub)/2);
+	double x_diam = x_range.diameter();
+	double s = (x_diam>TOL_RANGE)?(zL-zU)/x_diam:H_vap_derivative(x_range.midpoint());
 
 	// s*xU-yU <= s*x-y
-	var::lp->add_lo_row(s, x.index, z.index, s*x.ub-z.lb);
+	var::lp->add_lo_row(s, x.index, z.index, s*xU-zL);
 
 	z.tighten_bounds();
 
 	return z;
-}
-
-void var::add_mult_envelope(const var& x, const var& y, const var& z, bool reset) {
-
-	lp->add_mult_envelope(x.index, x.lb, x.ub, y.index, y.lb, y.ub, z.index, reset);
 }
 
 const var operator*(const var& x, const var& y) {
@@ -402,13 +336,19 @@ const var operator*(const var& x, const var& y) {
 		return sqr(x);
 	}
 
-	double lb(1.0), ub(-1.0);
+	const interval X = x.compute_bounds();
+	const interval Y = y.compute_bounds();
 
-	mult(x.lb, x.ub, y.lb, y.ub, lb, ub);
+	var z(X*Y);
 
-	var z(lb, ub);
+	const double xL = X.inf();
+	const double xU = X.sup();
 
-	var::add_mult_envelope(x, y, z);
+	const double yL = Y.inf();
+	const double yU = Y.sup();
+
+	// TODO Make reset = false in lp_pair
+	var::lp->add_mult_envelope(x.index, xL, xU, y.index, yL, yU, z.index, false);
 
 	z.tighten_bounds();
 
@@ -419,11 +359,9 @@ const var operator*(const double c, const var& x) {
 
 	x.check_consistency();
 
-	double lb(c*x.lb), ub(c*x.ub);
+	const interval X = x.compute_bounds();
 
-	sort(lb, ub);
-
-	var z(lb, ub);
+	var z(c*X);
 
 	var::lp->add_cx_row(c, x.index, z.index);
 
@@ -437,27 +375,18 @@ const var operator*(const var& x, const double c) {
 	return c*x;
 }
 
-void var::intersect(double l, double u) {
+void var::intersect(double lb, double ub) {
 
 	check_consistency();
 
-	bool improved = false;
+	tighten_bounds();
 
-	if (l>lb) {
-		lb = l;
-		improved = true;
+	bool improved = range.intersect(lb, ub);
+
+	if (improved) {
+
+		var::lp->set_bounds(index, range.inf(), range.sup());
 	}
-
-	if (u<ub) {
-		ub = u;
-		improved = true;
-	}
-
-	if (lb>ub)
-		throw infeasible_problem();
-
-	if (improved)
-		var::lp->set_bounds(index, lb, ub);
 }
 
 // z = x*y
@@ -467,23 +396,17 @@ void var::propagate(var& x, var& y) {
 	dbg_consistency(x, y);
 
 	if (!x.contains_zero()) { // y = z/x
-		double y_lb =  1.0;
-		double y_ub = -1.0;
-		division(lb, ub, x.lb, x.ub, y_lb, y_ub);
-		y.intersect(y_lb, y_ub);
+
+		y.range.intersect(range/x.range);
 	}
 
 	if (!y.contains_zero()) {  // x = z/y
-		double x_lb =  1.0;
-		double x_ub = -1.0;
-		division(lb, ub, y.lb, y.ub, x_lb, x_ub);
-		x.intersect(x_lb, x_ub);
+
+		x.range.intersect(range/y.range);
 	}
 
-	double z_lb =  1.0; // z = x*y
-	double z_ub = -1.0;
-	mult(x.lb, x.ub, y.lb, y.ub, z_lb, z_ub);
-	intersect(z_lb, z_ub);
+	// z = x*y
+	range.intersect(x.range * y.range);
 }
 
 const var operator/(var& x, var& y) {
@@ -497,12 +420,7 @@ const var operator/(var& x, var& y) {
 		return var(1,1);
 	}
 
-	double lb(1.0), ub(-1.0);
-
-	division(x.lb, x.ub, y.lb, y.ub, lb, ub);
-
-	var z(lb, ub);
-
+	var z(x.compute_bounds()/y.compute_bounds());
 	//z.intersect(lb, -12.0);
 	//z.intersect(5.189, ub);
 	//z.intersect(lb, -2.956);
@@ -514,9 +432,9 @@ const var operator/(var& x, var& y) {
 
 	do {
 
-		double diam_prev = z.ub-z.lb;
+		double diam_prev = z.range.diameter();
 
-		var::add_mult_envelope(y, z, x, improved);
+		var::lp->add_mult_envelope(y.index, y.range.inf(), y.range.sup(), z.index, z.range.inf(), z.range.sup(), x.index, improved);
 
 		improved =
 		// FIXME Should check if z.ub <= col_ub in LP
@@ -527,7 +445,7 @@ const var operator/(var& x, var& y) {
 
 		cout << endl << "z: " << z << ", pass: " << ++counter << endl;
 
-		if ((diam_prev-(z.ub-z.lb))<1.0e-6*diam_prev)
+		if (((diam_prev-z.range.diameter()))<1.0e-6*diam_prev)
 			break;
 
 		x.propagate(y, z);
@@ -539,14 +457,14 @@ const var operator/(var& x, var& y) {
 
 std::ostream& operator<<(std::ostream& os, const var& v) {
 
-	return os << "[ " << v.lb << ", " << v.ub << "]" << std::flush;
+	return os << v.range << std::flush;
 }
 
 
 void var::copy_bounds(double& lo, double& up) const {
 
-	lo = lb;
-	up = ub;
+	lo = range.inf();
+	up = range.sup();
 }
 
 void var::reset() {
@@ -562,7 +480,7 @@ void var::release_all() {
 }
 
 void var::check_consistency() const {
-	assert(lb <= ub);
+	assert(range.inf() <= range.sup());
 	assert(index >= 1);
 	assert(var::lp->col_type_db_or_fx(index));
 }
