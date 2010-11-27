@@ -101,8 +101,6 @@ const interval var::compute_bounds() const {
 
 const var operator+(const var& x, const var& y) {
 
-	dbg_consistency(x, y);
-
 	var z(x.compute_bounds() + y.compute_bounds());
 
 	// x + y - z = 0
@@ -114,8 +112,6 @@ const var operator+(const var& x, const var& y) {
 }
 
 const var operator+(const var& x, double y) {
-
-	x.check_consistency();
 
 	var z(x.compute_bounds() + y);
 
@@ -139,8 +135,6 @@ const var operator-(const var& x, double y) {
 
 const var operator-(const var& x, const var& y) {
 
-	dbg_consistency(x, y);
-
 	var z(x.compute_bounds() - y.compute_bounds());
 
 	// x - y - z = 0
@@ -152,8 +146,6 @@ const var operator-(const var& x, const var& y) {
 }
 
 const var operator-(double x, const var& y) {
-
-	y.check_consistency();
 
 	var z(x-y.compute_bounds());
 
@@ -173,8 +165,6 @@ bool var::contains_zero() const {
 }
 
 const var sqr(const var& x) {
-
-	x.check_consistency();
 
 	const interval x_range = x.compute_bounds();
 
@@ -212,8 +202,6 @@ double y_derivative(double x) {
 }
 
 const var y_eq(const var& x) {
-
-	x.check_consistency();
 
 	const interval x_range = x.compute_bounds();
 
@@ -255,8 +243,6 @@ double H_liq_derivative(double x) {
 
 const var H_Liq(const var& x) {
 
-	x.check_consistency();
-
 	const interval x_range = x.compute_bounds();
 
 	const double xL = x_range.inf();
@@ -296,8 +282,6 @@ double H_vap_derivative(double x) {
 }
 
 const var H_Vap(const var& x) {
-
-	x.check_consistency();
 
 	const interval x_range = x.compute_bounds();
 
@@ -348,6 +332,7 @@ const var operator*(const var& x, const var& y) {
 	const double yU = Y.sup();
 
 	// TODO Make reset = false in lp_pair
+	// TODO Use interval in lp_pair
 	var::lp->add_mult_envelope(x.index, xL, xU, y.index, yL, yU, z.index, false);
 
 	z.tighten_bounds();
@@ -356,8 +341,6 @@ const var operator*(const var& x, const var& y) {
 }
 
 const var operator*(const double c, const var& x) {
-
-	x.check_consistency();
 
 	const interval X = x.compute_bounds();
 
@@ -377,8 +360,6 @@ const var operator*(const var& x, const double c) {
 
 void var::intersect(double lb, double ub) {
 
-	check_consistency();
-
 	tighten_bounds();
 
 	bool improved = range.intersect(lb, ub);
@@ -393,7 +374,6 @@ void var::intersect(double lb, double ub) {
 void var::propagate(var& x, var& y) {
 
 	check_consistency();
-	dbg_consistency(x, y);
 
 	if (!x.contains_zero()) { // y = z/x
 
@@ -410,8 +390,6 @@ void var::propagate(var& x, var& y) {
 }
 
 const var operator/(var& x, var& y) {
-
-	dbg_consistency(x, y);
 
 	assert(!y.contains_zero());
 
@@ -462,6 +440,8 @@ std::ostream& operator<<(std::ostream& os, const var& v) {
 
 
 void var::copy_bounds(double& lo, double& up) const {
+
+	check_consistency();
 
 	lo = range.inf();
 	up = range.sup();
