@@ -26,32 +26,17 @@
 using namespace std;
 using namespace asol;
 
-void dummy_1() {
-
-	var::reset();
-
-	var x(1, 2);
-	var y(2, 4);
-	var u = x+y;
-	u.fix_at(6);
-	cout << "u: " << u << endl;
-	var v = x*y;
-	v.fix_at(8);
-	var w = u + v;
-	var::dump_lp("debug.txt");
-}
-
 void example() {
 
 	var::reset();
 
-	var x1(0.6, 0.7);
-	var x2(0.2, 0.3);
-	var x3(0.1, 0.2);
+	const var x1(0.6, 0.7);
+	const var x2(0.2, 0.3);
+	const var x3(0.1, 0.2);
 
-	var y1(0.1, 0.4);
-	var y2(0.2, 0.4);
-	var y3(0.3, 0.5);
+	const var y1(0.1, 0.4);
+	const var y2(0.2, 0.4);
+	const var y3(0.3, 0.5);
 
 	var sx = x1 + x2 + x3;
 	var sy = y1 + y2 + y3;
@@ -59,9 +44,9 @@ void example() {
 	sx.fix_at(1);
 	sy.fix_at(1);
 
-	var z = (x2-1)*(y3-1)-(x3-x2)*y2;
+	const var z = (x2-1)*(y3-1)-(x3-x2)*y2;
 
-	//var z = x1*y1 + x1*y2 + x2*y2 + x3*y1;
+	//const var z = x1*y1 + x1*y2 + x2*y2 + x3*y1;
 	// [0.23, 0.76] -> [0.386667, 0.60]
 
 	cout << "z: " << z << endl;
@@ -73,13 +58,13 @@ void example_Hansen() {
 
 	var::reset();
 
-	var x(1, 10);
-	var y(1, 10);
+	const var x(1, 10);
+	const var y(1, 10);
 
 	const var xy = x*y;
 
-	var numerator   = 5*x-4*sqr(y)+14*xy;
-	var denominator = sqr(x)+y+xy;
+	const var numerator   = 5*x-4*sqr(y)+14*xy;
+	const var denominator = sqr(x)+y+xy;
 
 	cout << endl << "xy" << endl << xy << endl;
 	cout << endl << "5x-4y^2+14xy" << endl << numerator << endl;
@@ -102,28 +87,24 @@ void example_challange() {
 
 	var::reset();
 
-	var w(-0.9, -0.6);
-	var x(-0.1,  0.2);
+	const var w(-0.9, -0.6);
+	const var x(-0.1,  0.2);
 
-	var u = sqr(w) + sqr(x);
+	const var u = sqr(w) + sqr(x);
 
-	var y( 0.3,  0.7);
-	var z(-0.2,  0.1);
+	const var y( 0.3,  0.7);
+	const var z(-0.2,  0.1);
 
-	var v = sqr(y) + sqr(z);
+	const var v = sqr(y) + sqr(z);
 
-	var b(-1, 1);
-	var c(-1, 1);
+	const var b(-1, 1);
+	const var c(-1, 1);
 
-	var d = b*(x*y - w*z) + c*(x*z + w*y);
+	const var d = b*(x*y - w*z) + c*(x*z + w*y);
 
-	var a(7.0, 9.0);
+	const var a(7.0, 9.0);
 
-	var num = a*(u-v)+2*d;
-
-	var den = u+v;
-
-	var f = num/den;
+	const var f = (a*(u-v)+2*d)/(u+v);
 
 	cout << "f: " << f << endl;
 }
@@ -195,13 +176,9 @@ void example_1() {
 
 	var::reset();
 
-	var x(2.0, 4.0);
+	const var x(2.0, 4.0);
 
-	var num = x-1;
-
-	var den = sqr(x)+2;
-
-	var y = num/den;
+	const var y = (x-1)/(sqr(x)+2);
 
 	cout << endl << "y = (x-1)/(x^2+2)" << endl << y << endl;
 
@@ -211,13 +188,9 @@ void example_2() {
 
 	var::reset();
 
-	var x(1.0, 2.0);
+	const var x(1.0, 2.0);
 
-	var num = sqr(x)+x;
-
-	var den = 16*x-9;
-
-	var y = num/den;
+	const var y = (sqr(x)+x)/(16*x-9);
 
 	cout << endl << "y = (x^2+x)/(16*x-9)" << endl << y << endl;
 }
@@ -226,32 +199,32 @@ void example_Wilson() {
 
 	var::reset();
 
-	var x1(0, 1);
-	var x2(0, 1);
-	var x3(0, 1);
+	const var x1(0, 1);
+	const var x2(0, 1);
+	const var x3(0, 1);
 
 	var sx = x1+x2+x3;
 
 	sx.fix_at(1);
 
-	var Lambda12(0.531930, 0.611472);
-	var Lambda13(0.169655, 0.183591);
-	var Lambda21(0.795033, 0.819308);
-	var Lambda23(6.17202e-06, 2.42304e-05);
-	var Lambda31(0.787092, 0.947967);
-	var Lambda32(0.277934, 0.406111);
+	const var Lambda12(0.531930, 0.611472);
+	const var Lambda13(0.169655, 0.183591);
+	const var Lambda21(0.795033, 0.819308);
+	const var Lambda23(6.17202e-06, 2.42304e-05);
+	const var Lambda31(0.787092, 0.947967);
+	const var Lambda32(0.277934, 0.406111);
 
-    var s1 =          x1 + Lambda12*x2 + Lambda13*x3;
-    var s2 = Lambda21*x1 +          x2 + Lambda23*x3;
-    var s3 = Lambda31*x1 + Lambda32*x2 +          x3;
+    const var s1 =          x1 + Lambda12*x2 + Lambda13*x3;
+    const var s2 = Lambda21*x1 +          x2 + Lambda23*x3;
+    const var s3 = Lambda31*x1 + Lambda32*x2 +          x3;
 
     cout << "s1 : " << s1 << endl;
     cout << "s2 : " << s2 << endl;
     cout << "s3 : " << s3 << endl;
 
-    var t1 = x1/s1;
-    var t2 = x2/s2;
-    var t3 = x3/s3;
+    const var t1 = x1/s1;
+    const var t2 = x2/s2;
+    const var t3 = x3/s3;
 
     cout << "t1 : " << t1 << endl;
     cout << "t2 : " << t2 << endl;
@@ -261,9 +234,9 @@ void example_Wilson() {
     //t2.intersect(0, 1);
     //t3.intersect(0, 1);
 
-    var u1 =          t1 + Lambda21*t2 + Lambda31*t3;
-    var u2 = Lambda12*t1 +          t2 + Lambda32*t3;
-    var u3 = Lambda13*t1 + Lambda23*t2 +          t3;
+    const var u1 =          t1 + Lambda21*t2 + Lambda31*t3;
+    const var u2 = Lambda12*t1 +          t2 + Lambda32*t3;
+    const var u3 = Lambda13*t1 + Lambda23*t2 +          t3;
 
     cout << "u1 : " << u1 << endl;
     cout << "u2 : " << u2 << endl;
@@ -296,11 +269,11 @@ void example_Jacobsen() {
 	//var x1(1.0e-4, 1.0);
 	var x1(0.93, 0.94);
 
-	var y1 = y_eq(x1);
+	const var y1 = y_eq(x1);
 
 	//cout << "y1: " << y1 << endl;
 
-	//var D(0.0, 1.12);
+	//const var D(0.0, 1.12);
 	var D(0.50, 0.51);
 
 	var d = D*y1;
@@ -318,12 +291,12 @@ void example_Jacobsen() {
 
 	//--------------------------------------------------------------------------
 
-	var HV1 = H_Vap(x1);
+	const var HV1 = H_Vap(x1);
 
 	//cout << "HV1: " << HV1 << endl;
 	//cout << "Should be: 0.408258" << endl;
 
-	var HL0 = H_Liq(y1);
+	const var HL0 = H_Liq(y1);
 
 	//cout << "HL0: " << HL0 << endl;
 
@@ -333,7 +306,7 @@ void example_Jacobsen() {
 	//==========================================================================
 
 	var x8(1.0e-4, 1.0);
-	//var x8(1.0e-4, 0.01);
+	//const var x8(1.0e-4, 0.01);
 
 	var M8 = (1.0-D)*x8 + d;
 
@@ -342,9 +315,9 @@ void example_Jacobsen() {
 	//==========================================================================
 
 	var x7(1.0e-4, 1.0);
-	//var x7(0.02, 0.03);
+	//const var x7(0.02, 0.03);
 
-	var L7 = 4.0-D;
+	const var L7 = 4.0-D;
 
 	var y8 = y_eq(x8);
 
@@ -358,11 +331,11 @@ void example_Jacobsen() {
 
 	//cout << "x[8] " << x8 << endl;
 
-	var HV8 = H_Vap(x8);
+	const var HV8 = H_Vap(x8);
 
 	//cout << "HV8: " << HV8 << endl;
 
-	var HL7 = H_Liq(x7);
+	const var HL7 = H_Liq(x7);
 
 	var H7 = 3*HV8 -L7*HL7 - Q;
 
@@ -374,7 +347,7 @@ void example_Jacobsen() {
 
 	var x2(1.0e-4, 1.0);
 
-	var y2 = y_eq(x2);
+	const var y2 = y_eq(x2);
 
 	var M1 = V2* y2 - (    V2 - D)* x1 - d;
 
@@ -382,9 +355,9 @@ void example_Jacobsen() {
 
 	//--------------------------------------------------------------------------
 
-	var HV2 = H_Vap(x2);
+	const var HV2 = H_Vap(x2);
 
-	var HL1 = H_Liq(x1);
+	const var HL1 = H_Liq(x1);
 
 	var H1 = V2*HV2 - (    V2 - D)*HL1 - Q;
 
@@ -396,7 +369,7 @@ void example_Jacobsen() {
 
 	var x6(1.0e-4, 1.0);
 
-	var y7 = y_eq(x7);
+	const var y7 = y_eq(x7);
 
 	var M6 = V7* y7 - (1 + V7 - D)* x6 - d;
 
@@ -404,9 +377,9 @@ void example_Jacobsen() {
 
 	//--------------------------------------------------------------------------
 
-	var HV7 = H_Vap(x7);
+	const var HV7 = H_Vap(x7);
 
-	var HL6 = H_Liq(x6);
+	const var HL6 = H_Liq(x6);
 
 	var H6 = V7*HV7 - (1 + V7 - D)*HL6 - Q;
 
@@ -418,7 +391,7 @@ void example_Jacobsen() {
 
 	var x3(1.0e-4, 1.0);
 
-	var y3 = y_eq(x3);
+	const var y3 = y_eq(x3);
 
 	var M2 = V3* y3 - (    V3 - D)* x2 - d;
 
@@ -426,9 +399,9 @@ void example_Jacobsen() {
 
 	//--------------------------------------------------------------------------
 
-	var HV3 = H_Vap(x3);
+	const var HV3 = H_Vap(x3);
 
-	var HL2 = H_Liq(x2);
+	const var HL2 = H_Liq(x2);
 
 	var H2 = V3*HV3 - (    V3 - D)*HL2 - Q;
 
@@ -440,7 +413,7 @@ void example_Jacobsen() {
 
 	var x5(1.0e-4, 1.0);
 
-	var y6 = y_eq(x6);
+	const var y6 = y_eq(x6);
 
 	var M5 = V6* y6 - (1 + V6 - D)* x5 - d;
 
@@ -448,9 +421,9 @@ void example_Jacobsen() {
 
 	//--------------------------------------------------------------------------
 
-	var HV6 = H_Vap(x6);
+	const var HV6 = H_Vap(x6);
 
-	var HL5 = H_Liq(x5);
+	const var HL5 = H_Liq(x5);
 
 	var H5 = V6*HV6 - (1 + V6 - D)*HL5 - Q;
 
@@ -462,7 +435,7 @@ void example_Jacobsen() {
 
 	var x4(1.0e-4, 1.0);
 
-	var y4 = y_eq(x4);
+	const var y4 = y_eq(x4);
 
 	var M3 = V4* y4 - (    V4 - D)* x3 - d;
 
@@ -470,9 +443,9 @@ void example_Jacobsen() {
 
 	//--------------------------------------------------------------------------
 
-	var HV4 = H_Vap(x4);
+	const var HV4 = H_Vap(x4);
 
-	var HL3 = H_Liq(x3);
+	const var HL3 = H_Liq(x3);
 
 	var H3 = V4*HV4 - (    V4 - D)*HL3 - Q;
 
@@ -482,7 +455,7 @@ void example_Jacobsen() {
 
 	var V5(2.0, 4.0);
 
-	var y5 = y_eq(x5);
+	const var y5 = y_eq(x5);
 
 	var M4 = V5* y5 - (    V5 - D)* x4 - d;
 
@@ -490,9 +463,9 @@ void example_Jacobsen() {
 
 	//--------------------------------------------------------------------------
 
-	var HV5 = H_Vap(x5);
+	const var HV5 = H_Vap(x5);
 
-	var HL4 = H_Liq(x4);
+	const var HL4 = H_Liq(x4);
 
 	var H4 = V5*HV5 - (    V5 - D)*HL4 - Q;
 
