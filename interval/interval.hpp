@@ -37,11 +37,11 @@ public:
 
 	interval(double lower_bound, double upper_bound);
 
-	bool contains(double value) const;
-
 	bool intersect(const double l, const double u);
 
 	bool intersect(const interval& other);
+
+	friend void propagate_mult(interval& z, interval& x, interval& y);
 
 	friend const interval operator+(const interval& x, const interval& y);
 
@@ -58,6 +58,8 @@ public:
 	friend const interval operator/(const interval& x, const interval& y);
 
 	friend const interval sqr(const interval& x);
+
+	bool contains(double value) const;
 
 	double midpoint() const;
 

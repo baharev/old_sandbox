@@ -370,26 +370,7 @@ void var::intersect(double lb, double ub) {
 	}
 }
 
-// z = x*y
-void var::propagate(var& x, var& y) {
-
-	check_consistency();
-
-	if (!x.contains_zero()) { // y = z/x
-
-		y.range.intersect(range/x.range);
-	}
-
-	if (!y.contains_zero()) {  // x = z/y
-
-		x.range.intersect(range/y.range);
-	}
-
-	// z = x*y
-	range.intersect(x.range * y.range);
-}
-
-const var operator/(var& x, var& y) {
+const var operator/(const var& x, const var& y) {
 
 	assert(!y.contains_zero());
 
@@ -398,7 +379,11 @@ const var operator/(var& x, var& y) {
 		return var(1,1);
 	}
 
-	var z(x.compute_bounds()/y.compute_bounds());
+	interval Y = y.compute_bounds();
+	interval X = x.compute_bounds();
+
+	var z(X/Y);
+
 	//z.intersect(lb, -12.0);
 	//z.intersect(5.189, ub);
 	//z.intersect(lb, -2.956);
@@ -408,11 +393,13 @@ const var operator/(var& x, var& y) {
 
 	int counter = 0;
 
+	interval Z = z.range;
+
 	do {
 
-		double diam_prev = z.range.diameter();
+		double diam_prev = Z.diameter();
 
-		var::lp->add_mult_envelope(y.index, y.range.inf(), y.range.sup(), z.index, z.range.inf(), z.range.sup(), x.index, improved);
+		var::lp->add_mult_envelope(y.index, Y.inf(), Y.sup(), z.index, Z.inf(), Z.sup(), x.index, improved);
 
 		improved =
 		// FIXME Should check if z.ub <= col_ub in LP
@@ -423,10 +410,15 @@ const var operator/(var& x, var& y) {
 
 		cout << endl << "z: " << z << ", pass: " << ++counter << endl;
 
-		if (((diam_prev-z.range.diameter()))<1.0e-6*diam_prev)
+		Z = z.range;
+
+		if (((diam_prev-Z.diameter()))<1.0e-6*diam_prev)
 			break;
 
-		x.propagate(y, z);
+		propagate_mult(X, Y, Z);
+		// TODO Write back to lp
+		//var::lp->set_bounds(x.index, X.inf(), X.sup());
+		//var::lp->set_bounds(y.index, Y.inf(), Y.sup());
 
 	} while (improved);
 

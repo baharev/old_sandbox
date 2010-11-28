@@ -39,13 +39,17 @@ public:
 
 	var(double lb, double ub);
 
-	var(const interval& range);
-
 	void fix_at(double val);
 
 	bool tighten_bounds();
 
-	const interval compute_bounds() const;
+	void intersect(double lb, double ub);
+
+	bool contains_zero() const;
+
+	void check_consistency() const;
+
+	void copy_bounds(double& lb, double& ub) const;
 
 	friend const var operator+(const var& x, const var& y);
 
@@ -59,7 +63,7 @@ public:
 
 	friend const var operator*(const double c, const var& x);
 
-	friend const var operator/(var& x, var& y);
+	friend const var operator/(const var& x, const var& y);
 
 	friend const var sqr(const var& x);
 
@@ -69,17 +73,7 @@ public:
 
 	friend const var H_Vap(const var& x);
 
-	bool contains_zero() const;
-
-	void intersect(double lb, double ub);
-
-	void propagate(var& x, var& y);
-
 	friend std::ostream& operator<<(std::ostream& , const var& );
-
-	void check_consistency() const;
-
-	void copy_bounds(double& lb, double& ub) const;
 
 	static void dump_lp(const char* file);
 
@@ -89,9 +83,14 @@ public:
 
 private:
 
+	var(const interval& range);
+
+	const interval compute_bounds() const;
+
 	const interval lp_tighten_col(bool& improved) const;
 
 	int index;
+
 	interval range;
 
 	static lp_solver::lp_pair* lp;

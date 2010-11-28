@@ -150,6 +150,9 @@ bool interval::intersect(const interval& other) {
 
 bool interval::intersect(const double l, const double u) {
 
+	assert(l<=u);
+	assert(lb<=ub);
+
 	bool improved = false;
 
 	if (l>lb) {
@@ -167,6 +170,23 @@ bool interval::intersect(const double l, const double u) {
 	}
 
 	return improved;
+}
+
+// z = x*y
+void propagate_mult(interval& z, interval& x, interval& y) {
+
+	if (!x.contains(0)) { // y = z/x
+
+		y.intersect(z/x);
+	}
+
+	if (!y.contains(0)) {  // x = z/y
+
+		x.intersect(z/y);
+	}
+
+	// z = x*y
+	z.intersect(x*y);
 }
 
 double interval::midpoint() const {
