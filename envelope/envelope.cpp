@@ -44,6 +44,8 @@ void var::dump_lp(const char* file) {
 	lp->dump(file);
 }
 
+var::var() : index(-1) { }
+
 var::var(const interval& bounds) : index(-1), range(bounds) {
 
 	index = lp->add_col_nonbasic(range.inf(), range.sup());

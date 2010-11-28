@@ -266,24 +266,44 @@ void example_Jacobsen() {
 
 	var::reset();
 
-	//var x1(1.0e-4, 1.0);
-	var x1(0.93, 0.94);
+	enum {
+		X1, X2, X3, X4, X5, X6, X7, X8,
+		v1, v2, v3, v4, v5, v6, v7, C, SIZE
+	};
+
+	var v[SIZE];
+
+	v[X1] = var(0.93, 0.94);
+	for (int i=X2; i<=X8; ++i) {
+		v[i] = var(1.0e-4, 1.0);
+	}
+
+	for (int i=v1; i<=v7; ++i) {
+		v[i] = var(2.0, 4.0);
+	}
+	//var D(0.50, 0.51); var(0.0, 1.12);
+	v[C] = var(0.50, 0.51);
+
+	var& x1 = v[X1];
+	var& x2 = v[X2];
+	var& x3 = v[X3];
+	var& x4 = v[X4];
+	var& x5 = v[X5];
+	var& x6 = v[X6];
+	var& x7 = v[X7];
+	var& x8 = v[X8];
+	var& V1 = v[v1];
+	var& V2 = v[v2];
+	var& V3 = v[v3];
+	var& V4 = v[v4];
+	var& V5 = v[v5];
+	var& V6 = v[v6];
+	var& V7 = v[v7];
+	var& D = v[C];
 
 	const var y1 = y_eq(x1);
 
-	//cout << "y1: " << y1 << endl;
-
-	//const var D(0.0, 1.12);
-	var D(0.50, 0.51);
-
 	var d = D*y1;
-
-	//cout << "d: " << d << endl;
-
-	var V1(2.0, 4.0);
-	//var V1(3.4, 3.5);
-
-	//cout << "V1: " << V1 << endl;
 
 	var Lw = (V1 - D)*(0.6010 - 0.2806*y1);
 
@@ -293,20 +313,11 @@ void example_Jacobsen() {
 
 	const var HV1 = H_Vap(x1);
 
-	//cout << "HV1: " << HV1 << endl;
-	//cout << "Should be: 0.408258" << endl;
-
 	const var HL0 = H_Liq(y1);
-
-	//cout << "HL0: " << HL0 << endl;
 
 	var Q = V1*(HV1 - HL0) + D*HL0;
 
-	//cout << "Q: " << Q << endl;
 	//==========================================================================
-
-	var x8(1.0e-4, 1.0);
-	//const var x8(1.0e-4, 0.01);
 
 	var M8 = (1.0-D)*x8 + d;
 
@@ -314,14 +325,9 @@ void example_Jacobsen() {
 
 	//==========================================================================
 
-	var x7(1.0e-4, 1.0);
-	//const var x7(0.02, 0.03);
-
 	const var L7 = 4.0-D;
 
 	var y8 = y_eq(x8);
-
-	//cout << "y8: " << y8 << endl;
 
 	var M7 = 3.0*y8-L7*x7-d;
 
@@ -329,11 +335,7 @@ void example_Jacobsen() {
 
 	//--------------------------------------------------------------------------
 
-	//cout << "x[8] " << x8 << endl;
-
 	const var HV8 = H_Vap(x8);
-
-	//cout << "HV8: " << HV8 << endl;
 
 	const var HL7 = H_Liq(x7);
 
@@ -342,10 +344,6 @@ void example_Jacobsen() {
 	H7.fix_at(-0.0968047);
 
 	//==========================================================================
-
-	var V2(2.0, 4.0);
-
-	var x2(1.0e-4, 1.0);
 
 	const var y2 = y_eq(x2);
 
@@ -365,10 +363,6 @@ void example_Jacobsen() {
 
 	//==========================================================================
 
-	var V7(2.0, 4.0);
-
-	var x6(1.0e-4, 1.0);
-
 	const var y7 = y_eq(x7);
 
 	var M6 = V7* y7 - (1 + V7 - D)* x6 - d;
@@ -386,10 +380,6 @@ void example_Jacobsen() {
 	H6.fix_at(-0.0968047);
 
 	//==========================================================================
-
-	var V3(2.0, 4.0);
-
-	var x3(1.0e-4, 1.0);
 
 	const var y3 = y_eq(x3);
 
@@ -409,10 +399,6 @@ void example_Jacobsen() {
 
 	//==========================================================================
 
-	var V6(2.0, 4.0);
-
-	var x5(1.0e-4, 1.0);
-
 	const var y6 = y_eq(x6);
 
 	var M5 = V6* y6 - (1 + V6 - D)* x5 - d;
@@ -431,10 +417,6 @@ void example_Jacobsen() {
 
 	//==========================================================================
 
-	var V4(2.0, 4.0);
-
-	var x4(1.0e-4, 1.0);
-
 	const var y4 = y_eq(x4);
 
 	var M3 = V4* y4 - (    V4 - D)* x3 - d;
@@ -452,8 +434,6 @@ void example_Jacobsen() {
 	H3.fix_at(0.0);
 
 	//==========================================================================
-
-	var V5(2.0, 4.0);
 
 	const var y5 = y_eq(x5);
 

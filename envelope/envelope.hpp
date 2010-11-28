@@ -37,6 +37,8 @@ class var {
 
 public:
 
+	var();
+
 	var(double lb, double ub);
 
 	void fix_at(double val);
