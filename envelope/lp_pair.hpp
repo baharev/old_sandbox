@@ -59,7 +59,7 @@ public:
 	// ax + by - z <= c
 	int add_up_row(double a, int x, double b, int y, int z, double c);
 
-	void add_mult_envelope(int x, double xL, double xU, int y, double yL, double yU, int z, bool reset);
+	void add_mult_envelope(int x, double xL, double xU, int y, double yL, double yU, int z, bool reset = false);
 
 	// c*x - z = 0
 	void add_cx_row(double c, int x_index, int z_index);

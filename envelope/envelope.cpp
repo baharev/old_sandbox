@@ -331,9 +331,7 @@ const var operator*(const var& x, const var& y) {
 	const double yL = Y.inf();
 	const double yU = Y.sup();
 
-	// TODO Make reset = false in lp_pair
-	// TODO Use interval in lp_pair
-	var::lp->add_mult_envelope(x.index, xL, xU, y.index, yL, yU, z.index, false);
+	var::lp->add_mult_envelope(x.index, xL, xU, y.index, yL, yU, z.index);
 
 	z.tighten_bounds();
 
@@ -401,10 +399,7 @@ const var operator/(const var& x, const var& y) {
 
 		var::lp->add_mult_envelope(y.index, Y.inf(), Y.sup(), z.index, Z.inf(), Z.sup(), x.index, improved);
 
-		improved =
-		// FIXME Should check if z.ub <= col_ub in LP
-		//var::lp_max->tighten_col_ub(z.index, z.ub);
-		z.tighten_bounds();
+		improved = z.tighten_bounds();
 
 		using namespace std;
 
@@ -416,9 +411,6 @@ const var operator/(const var& x, const var& y) {
 			break;
 
 		propagate_mult(X, Y, Z);
-		// TODO Write back to lp
-		//var::lp->set_bounds(x.index, X.inf(), X.sup());
-		//var::lp->set_bounds(y.index, Y.inf(), Y.sup());
 
 	} while (improved);
 
