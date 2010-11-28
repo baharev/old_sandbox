@@ -157,7 +157,7 @@ class lp_impl {
 		glp_prob* lp;
 
 		glp_smcp* parm;
-
+		 // TODO Find a better name, in case of primal, it is misleading
 		bool dual_feasible;
 };
 

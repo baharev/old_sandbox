@@ -66,15 +66,18 @@ void lp_impl::free_environment() {
 
 void lp_impl::init() {
 
+	glp_set_obj_dir(lp, GLP_MIN);
+
 	parm->presolve = GLP_OFF;
+
+	parm->msg_lev = GLP_MSG_ON;
 
 	//parm->meth = GLP_DUAL;
 
-	//parm->msg_lev = GLP_OFF;
+	dual_feasible = true;
 
-	glp_set_obj_dir(lp, GLP_MIN);
-
-	dual_feasible = false;
+	assert((dual_feasible==true && parm->meth==GLP_PRIMAL)||
+		  ((dual_feasible==false&& parm->meth==GLP_DUAL)) );
 }
 
 void lp_impl::reset() {
@@ -401,7 +404,10 @@ double lp_impl::solve_for(int index, int direction) {
 
 	glp_set_obj_coef(lp, index, 1.0);
 
-	cout << (direction==GLP_MIN?"MIN":"MAX") << endl;
+	if (parm->msg_lev >= GLP_MSG_ON) {
+
+		cout << (direction==GLP_MIN?"MIN":"MAX") << endl;
+	}
 
 	refresh(index);
 
