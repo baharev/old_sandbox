@@ -42,6 +42,8 @@ public:
 	var(double lb, double ub);
 
 	void fix_at(double val);
+	// TODO Make it private
+	const interval compute_bounds() const;
 
 	bool tighten_bounds();
 
@@ -86,8 +88,6 @@ public:
 private:
 
 	var(const interval& range);
-
-	const interval compute_bounds() const;
 
 	const interval lp_tighten_col(bool& improved) const;
 

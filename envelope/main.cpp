@@ -21,7 +21,9 @@
 //==============================================================================
 
 #include <iostream>
+#include "algorithm.hpp"
 #include "envelope.hpp"
+#include "problem.hpp"
 
 using namespace std;
 using namespace asol;
@@ -262,44 +264,62 @@ void example_Wilson() {
 */
 }
 
-void example_Jacobsen() {
+class Jacobsen : public problem {
 
-	var::reset();
+	virtual int size() const;
+
+	virtual interval* initial_box() const;
+
+	virtual void evaluate(const var x[]) const;
 
 	enum {
 		X1, X2, X3, X4, X5, X6, X7, X8,
 		v1, v2, v3, v4, v5, v6, v7, C, SIZE
 	};
+};
 
-	var v[SIZE];
+int Jacobsen::size() const {
 
-	v[X1] = var(0.93, 0.94);
+	return SIZE;
+}
+
+interval* Jacobsen::initial_box() const {
+
+	interval* v = new interval[SIZE];
+
+	v[X1] = interval(0.93, 0.94);
+
 	for (int i=X2; i<=X8; ++i) {
-		v[i] = var(1.0e-4, 1.0);
+		v[i] = interval(1.0e-4, 1.0);
 	}
 
 	for (int i=v1; i<=v7; ++i) {
-		v[i] = var(2.0, 4.0);
+		v[i] = interval(2.0, 4.0);
 	}
 	//var D(0.50, 0.51); var(0.0, 1.12);
-	v[C] = var(0.50, 0.51);
+	v[C] = interval(0.50, 0.51);
 
-	var& x1 = v[X1];
-	var& x2 = v[X2];
-	var& x3 = v[X3];
-	var& x4 = v[X4];
-	var& x5 = v[X5];
-	var& x6 = v[X6];
-	var& x7 = v[X7];
-	var& x8 = v[X8];
-	var& V1 = v[v1];
-	var& V2 = v[v2];
-	var& V3 = v[v3];
-	var& V4 = v[v4];
-	var& V5 = v[v5];
-	var& V6 = v[v6];
-	var& V7 = v[v7];
-	var& D = v[C];
+	return v;
+}
+
+void Jacobsen::evaluate(const var v[]) const {
+
+	const var& x1 = v[X1];
+	const var& x2 = v[X2];
+	const var& x3 = v[X3];
+	const var& x4 = v[X4];
+	const var& x5 = v[X5];
+	const var& x6 = v[X6];
+	const var& x7 = v[X7];
+	const var& x8 = v[X8];
+	const var& V1 = v[v1];
+	const var& V2 = v[v2];
+	const var& V3 = v[v3];
+	const var& V4 = v[v4];
+	const var& V5 = v[v5];
+	const var& V6 = v[v6];
+	const var& V7 = v[v7];
+	const var& D = v[C];
 
 	const var y1 = y_eq(x1);
 
@@ -451,17 +471,17 @@ void example_Jacobsen() {
 
 	H4.fix_at(0.0);
 
-	V5.tighten_bounds();
+	cout << "V5: " << V5.compute_bounds() << endl;
+	cout << "x5: " << x5.compute_bounds() << endl;
 
-	x5.tighten_bounds();
-
-	cout << "V5: " << V5 << endl;
-	cout << "x5: " << x5 << endl;
+	return;
 }
 
-int main() {
+int Main() {
 
-	example_Jacobsen();
+	algorithm a(new Jacobsen);
+
+	a.run();
 
 	example_Hansen();
 
@@ -473,9 +493,14 @@ int main() {
 
 	example_digression();
 
-	example_Wilson();
+	//example_Wilson();
 
-	var::release_all();
+	return 0;
+}
+
+int main() {
+
+	Main();
 
 	return 0;
 }
