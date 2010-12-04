@@ -47,12 +47,16 @@ private:
 	algorithm(const algorithm& );
 	algorithm& operator=(const algorithm& );
 
+	void contracting_step();
+	void evaluate();
 	void get_topmost_box();
-
+	void increment_counters();
 	void init_vars();
-
-	void build_lp();
-
+	void iteration_step();
+	void lp_pruning();
+	void push_front();
+	void rollback();
+	void split();
 	bool sufficient_progress();
 
 	const int n;
@@ -68,6 +72,7 @@ private:
 	int depth;
 
 	int boxes_processed;
+
 };
 
 }

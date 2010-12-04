@@ -20,8 +20,10 @@
 //
 //==============================================================================
 
+#include <assert.h>
 #include "algorithm.hpp"
 #include "envelope.hpp"
+#include "exceptions.hpp"
 #include "problem.hpp"
 
 namespace asol {
@@ -45,17 +47,57 @@ algorithm::~algorithm() {
 
 void algorithm::run() {
 
-	get_topmost_box();
-
 	do {
 
-		init_vars();
+		iteration_step();
 
-		build_lp();
+	} while (!pending.empty());
+}
 
-		// TODO Achterberg's contraction
+void algorithm::iteration_step() {
 
-	} while (sufficient_progress());
+	try {
+
+		contracting_step();
+	}
+	catch (infeasible_problem& ) {
+
+		return;
+	}
+	catch (numerical_problems& ) {
+
+		rollback();
+	}
+
+	// TODO Check for convergence
+
+	if (sufficient_progress()) {
+
+		push_front();
+
+		return;
+	}
+
+	split();
+}
+
+void algorithm::contracting_step() {
+
+	increment_counters();
+
+	get_topmost_box();
+
+	init_vars();
+
+	evaluate();
+
+	lp_pruning();
+}
+
+void algorithm::increment_counters() {
+
+	// TODO Track and log depth info too
+	++boxes_processed;
 }
 
 void algorithm::get_topmost_box() {
@@ -67,6 +109,8 @@ void algorithm::get_topmost_box() {
 	for (int i=0; i<n; ++i) {
 		box_orig[i] = box_current[i];
 	}
+
+	delete[] box_current;
 }
 
 void algorithm::init_vars() {
@@ -78,20 +122,47 @@ void algorithm::init_vars() {
 	}
 }
 
-void algorithm::build_lp() {
+void algorithm::evaluate() {
 
 	prob->evaluate(box);
 }
 
-// TODO Replace this mock implementation
-bool algorithm::sufficient_progress() {
+// TODO Replace this mock implementation with Acterberg's heuristic
+void algorithm::lp_pruning() {
 
-	// TODO Implement convenience function to copy new bounds
+	// TODO It cannot become infeasible, if does then throw numerical error instead
+	for (int i=0; i<n; ++i) {
+
+		box[i].tighten_bounds();
+	}
+}
+
+void algorithm::rollback() {
+
+	assert(false);
+}
+
+void algorithm::push_front() {
+
+	interval* const box_contracted = new interval[n];
 
 	for (int i=0; i<n; ++i) {
 
-		box_orig[i] = box[i].compute_bounds();
+		box_contracted[i] = box_orig[i];
 	}
+
+	pending.push_front(box_contracted);
+}
+
+void algorithm::split() {
+
+	assert(false);
+}
+
+// TODO Replace mock implementation
+bool algorithm::sufficient_progress() {
+
+	copy_bounds(box, box_orig, n);
 
 	return true;
 }

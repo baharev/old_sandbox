@@ -55,6 +55,8 @@ public:
 
 	void copy_bounds(double& lb, double& ub) const;
 
+	friend void copy_bounds(const var arr[], interval bounds[], int size);
+
 	friend const var operator+(const var& x, const var& y);
 
 	friend const var operator+(const var& x, double y);

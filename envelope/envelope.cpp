@@ -433,6 +433,14 @@ void var::copy_bounds(double& lo, double& up) const {
 	up = range.sup();
 }
 
+void copy_bounds(const var arr[], interval bounds[], int size) {
+
+	for (int i=0; i<size; ++i) {
+
+		bounds[i] = arr[i].range;
+	}
+}
+
 void var::reset() {
 
 	lp->reset();
