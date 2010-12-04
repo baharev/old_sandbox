@@ -20,6 +20,7 @@
 //
 //==============================================================================
 
+#include <iostream>
 #include <assert.h>
 #include "algorithm.hpp"
 #include "envelope.hpp"
@@ -29,16 +30,16 @@
 namespace asol {
 
 algorithm::algorithm(const problem* const p)
-	: n(p->size()), prob(p), box_orig(new interval[n]), box(new var[n])
+	: n(p->size()), prob(p), box(new var[n]), box_orig(0)
 {
 	depth = boxes_processed = 0;
-
-	pending.push_back(p->initial_box());
 }
 
 algorithm::~algorithm() {
 
-	delete[] box_orig;
+	assert(pending.empty()); // TODO Find a better way
+
+	assert(!box_orig);
 
 	delete[] box;
 
@@ -47,11 +48,34 @@ algorithm::~algorithm() {
 
 void algorithm::run() {
 
+	add_initial_box();
+
 	do {
+
+		set_current_box();
 
 		iteration_step();
 
 	} while (!pending.empty());
+}
+
+void algorithm::add_initial_box() {
+
+	pending.push_back(prob->initial_box());
+}
+
+void algorithm::set_current_box() {
+
+	box_orig = pending.front();
+
+	pending.pop_front();
+
+	init_variables(box, box_orig, n);
+}
+
+void algorithm::prepare_to_repeat() {
+
+	pending.push_front(box_orig); // FIXME Assumes box -> box_orig copy
 }
 
 void algorithm::iteration_step() {
@@ -62,9 +86,15 @@ void algorithm::iteration_step() {
 	}
 	catch (infeasible_problem& ) {
 
+		std::cout << "Box discarded" << std::endl;
+
+		delete_box();
+
 		return;
 	}
 	catch (numerical_problems& ) {
+
+		std::cout << "Warning: numerical problems detected" << std::endl;
 
 		rollback();
 	}
@@ -73,7 +103,9 @@ void algorithm::iteration_step() {
 
 	if (sufficient_progress()) {
 
-		push_front();
+		std::cout << "Repeating pruning steps" << std::endl;
+
+		prepare_to_repeat();
 
 		return;
 	}
@@ -85,41 +117,28 @@ void algorithm::contracting_step() {
 
 	increment_counters();
 
-	get_topmost_box();
-
-	init_vars();
-
 	evaluate();
 
-	lp_pruning();
+	// FIXME Check for convergence here!
+
+	std::cout << "Running LP pruning" << std::endl;
+
+	try {
+
+		lp_pruning();
+	}
+	catch (infeasible_problem& ) {
+
+		std::cout << "Warning: numerical problems in LP pruning" << std::endl;
+
+		throw numerical_problems();
+	}
 }
 
 void algorithm::increment_counters() {
 
 	// TODO Track and log depth info too
 	++boxes_processed;
-}
-
-void algorithm::get_topmost_box() {
-
-	interval* const box_current = pending.front();
-
-	pending.pop_front();
-
-	for (int i=0; i<n; ++i) {
-		box_orig[i] = box_current[i];
-	}
-
-	delete[] box_current;
-}
-
-void algorithm::init_vars() {
-
-	var::reset();
-	// TODO Make convenience function
-	for (int i=0; i<n; ++i) {
-		box[i] = var(box_orig[i].inf(), box_orig[i].sup());
-	}
 }
 
 void algorithm::evaluate() {
@@ -130,28 +149,23 @@ void algorithm::evaluate() {
 // TODO Replace this mock implementation with Acterberg's heuristic
 void algorithm::lp_pruning() {
 
-	// TODO It cannot become infeasible, if does then throw numerical error instead
+	// FIXME Check for convergence before tightening a variable
 	for (int i=0; i<n; ++i) {
 
 		box[i].tighten_bounds();
 	}
 }
 
-void algorithm::rollback() {
+void algorithm::delete_box() {
 
-	assert(false);
+	delete[] box_orig;
+
+	box_orig = 0;
 }
 
-void algorithm::push_front() {
+void algorithm::rollback() {
 
-	interval* const box_contracted = new interval[n];
-
-	for (int i=0; i<n; ++i) {
-
-		box_contracted[i] = box_orig[i];
-	}
-
-	pending.push_front(box_contracted);
+	init_variables(box, box_orig, n);
 }
 
 void algorithm::split() {

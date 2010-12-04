@@ -22,6 +22,7 @@
 
 #include <string>
 #include <assert.h>
+#include "constants.hpp"
 #include "lp_pair.hpp"
 #include "lp_impl.hpp"
 
@@ -198,12 +199,13 @@ void lp_pair::set_bounds(int index, double lb, double ub) {
 	lp_max->set_bounds(index, lb, ub);
 }
 
-void lp_pair::fix_narrow_slight_infeas(int index, double& lb, double& ub) {
+bool lp_pair::too_narrow(double lb, double ub) {
 
-	if (col_should_be_fixed(lb, ub)) {
-		double mid = (lb+ub)/2;
-		lb = ub = mid;
-	}
+	assert(lb <= ub);
+
+	double range = ub-lb;
+
+	return (range <= TOL_MIN_REL_DIAM*AbsMax(lb,ub)) ? true : false;
 }
 
 bool lp_pair::tighten_col(int index, double& lb, double& ub) {
@@ -213,13 +215,16 @@ bool lp_pair::tighten_col(int index, double& lb, double& ub) {
 		return false;
 	}
 
+	if (too_narrow(lb, ub)) {
+		return false;
+	}
+
 	bool min_improved = lp_min->tighten_col_lb(index, lb);
 	bool max_improved = lp_max->tighten_col_ub(index, ub);
 
 	bool improved = min_improved || max_improved;
 
 	if (improved) {
-		fix_narrow_slight_infeas(index, lb, ub);
 		set_bounds(index, lb, ub);
 	}
 

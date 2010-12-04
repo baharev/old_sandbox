@@ -57,6 +57,8 @@ public:
 
 	friend void copy_bounds(const var arr[], interval bounds[], int size);
 
+	friend void init_variables(var x[], const interval var_bounds[], int size);
+
 	friend const var operator+(const var& x, const var& y);
 
 	friend const var operator+(const var& x, double y);
@@ -83,7 +85,7 @@ public:
 
 	static void dump_lp(const char* file);
 
-	static void reset();
+	static void reset(); // FIXME Make it private
 
 	static void release_all();
 

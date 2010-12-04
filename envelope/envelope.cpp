@@ -441,6 +441,16 @@ void copy_bounds(const var arr[], interval bounds[], int size) {
 	}
 }
 
+void init_variables(var x[], const interval var_bounds[], int size) {
+
+	var::reset();
+
+	for (int i=0; i<size; ++i) {
+
+		x[i] = var(var_bounds[i]);
+	}
+}
+
 void var::reset() {
 
 	lp->reset();

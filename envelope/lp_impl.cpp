@@ -143,14 +143,13 @@ void lp_impl::assert_col_type(int j, int line) {
 	}
 }
 
-bool col_should_be_fixed(double lb, double ub) {
+double AbsMax(double x, double y) {
 
-	double fl = fabs(lb);
-	double fu = fabs(ub);
-	double abs_max = (fl<fu)?fu:fl;
-	double delta = TOL_INFEAS*abs_max;
+	double X = fabs(x);
 
-	return (fabs(ub-lb)<delta);
+	double Y = fabs(y);
+
+	return (X<Y)?Y:X;
 }
 
 void lp_impl::assert_value_within_bnds(int j, double value, int line) {
@@ -334,10 +333,33 @@ void lp_impl::fix_col(int index, double value) {
 	refresh();
 }
 
+void lp_impl::bounds_to_be_set(int index, double& l, double& u) {
+
+	assert(l<=u);
+
+	const double lb = glp_get_col_lb(lp, index);
+	const double ub = glp_get_col_ub(lp, index);
+
+	assert(lb<=ub);
+
+	if (l < lb) {
+		l = lb;
+	}
+
+	if (ub < u) {
+		u = ub;
+	}
+
+	if (l>u) {
+		throw asol::infeasible_problem();
+	}
+}
+
 void lp_impl::set_bounds(int index, double lb, double ub) {
 
-	// FIXME Enable checking
-	//assert_feasible_bounds(index, lb, ub, __LINE__);
+	bounds_to_be_set(index, lb, ub);
+
+	assert_feasible_bounds(index, lb, ub, __LINE__);
 
 	int type = (lb < ub)?GLP_DB:GLP_FX;
 
@@ -368,6 +390,21 @@ void lp_impl::make_dual_feas_basis() {
 	dual_feasible = true;
 }
 
+void lp_impl::scale_prob() {
+
+	if (parm->msg_lev < GLP_MSG_ON) {
+
+		glp_term_out(GLP_OFF);
+	}
+
+	glp_scale_prob(lp, GLP_SF_EQ);
+
+	if (parm->msg_lev < GLP_MSG_ON) {
+
+		glp_term_out(GLP_ON);
+	}
+}
+
 void lp_impl::refresh(int index) {
 
 	if (!dual_feasible) {
@@ -375,7 +412,7 @@ void lp_impl::refresh(int index) {
 		make_dual_feas_basis();
 	}
 
-	glp_scale_prob(lp, GLP_SF_EQ);
+	scale_prob();
 
 	int error_code = glp_simplex(lp, parm);
 

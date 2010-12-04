@@ -25,7 +25,7 @@
 
 namespace lp_solver {
 
-	const double TOL_INFEAS = 1.0e-6;
+	const double TOL_MIN_REL_DIAM = 1.0e-4;
 }
 
 namespace asol {

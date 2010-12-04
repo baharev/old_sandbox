@@ -47,15 +47,16 @@ private:
 	algorithm(const algorithm& );
 	algorithm& operator=(const algorithm& );
 
+	void add_initial_box();
 	void contracting_step();
+	void delete_box();
 	void evaluate();
-	void get_topmost_box();
 	void increment_counters();
-	void init_vars();
 	void iteration_step();
 	void lp_pruning();
-	void push_front();
+	void prepare_to_repeat();
 	void rollback();
+	void set_current_box();
 	void split();
 	bool sufficient_progress();
 
@@ -63,9 +64,9 @@ private:
 
 	const std::auto_ptr<const problem> prob;
 
-	interval* const box_orig;
-
 	var* const box;
+
+	interval* box_orig;
 
 	std::deque<interval*> pending;
 

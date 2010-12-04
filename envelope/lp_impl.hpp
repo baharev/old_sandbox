@@ -92,25 +92,7 @@ class lp_impl {
 
 		void dump(const char* file) const;
 
-		//int warm_up() { return glp_warm_up(lp); }
-
-		double get_col_prim(int j) { return glp_get_col_prim(lp, j); }
-
-		double get_obj_val()       { return glp_get_obj_val(lp); }
-
-		int    get_it_cnt()        { return lpx_get_int_parm(lp, LPX_K_ITCNT); }
-
-		void scale_prob(int flag) { glp_scale_prob(lp, flag); }
-
-		void set_obj_coef(int j, double val) { glp_set_obj_coef(lp, j, val); }
-
-		void set_msg_lev(const int level)    { parm->msg_lev = level; }
-
 		void set_max_restart(const int);
-
-		void std_basis()                     { glp_std_basis(lp); }
-
-		int  term_out(int flag)              { return glp_term_out(flag); }
 
 		~lp_impl();
 
@@ -148,11 +130,13 @@ class lp_impl {
 
 		void make_dual_feas_basis();
 
+		void scale_prob();
+
 		void refresh(int index = 0);
 
 		void reset_obj(int index);
 
-		void write_back(int j, double inf, double sup, double& lb, double& ub);
+		void bounds_to_be_set(int index, double& l, double& u);
 
 		glp_prob* lp;
 
@@ -161,7 +145,7 @@ class lp_impl {
 		bool dual_feasible;
 };
 
-bool col_should_be_fixed(double lb, double ub);
+double AbsMax(double x, double y);
 
 }
 

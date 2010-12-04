@@ -85,7 +85,7 @@ private:
 	lp_pair(const lp_pair& );
 	lp_pair& operator=(const lp_pair& );
 
-	void fix_narrow_slight_infeas(int index, double& lb, double& ub);
+	bool too_narrow(double lb, double ub);
 	void save_row_status();
 	void remove_mult_envelope();
 	void restore_row_status();
