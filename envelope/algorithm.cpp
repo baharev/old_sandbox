@@ -21,6 +21,7 @@
 //==============================================================================
 
 #include <iostream>
+//#include <iomanip>
 #include <cmath> // FIXME
 #include <assert.h>
 #include "algorithm.hpp"
@@ -28,6 +29,9 @@
 #include "envelope.hpp"
 #include "exceptions.hpp"
 #include "problem.hpp"
+
+using std::cout;
+using std::endl;
 
 namespace asol {
 
@@ -54,13 +58,18 @@ void algorithm::run() {
 
 	do {
 
-		set_current_box();
+		set_topmost_box();
 
 		iteration_step();
 
-	} while (!pending.empty());
+	} while (has_more_boxes());
 
 	print_statistics();
+}
+
+bool algorithm::has_more_boxes() const {
+
+	return !pending.empty();
 }
 
 void algorithm::add_initial_box() {
@@ -68,34 +77,43 @@ void algorithm::add_initial_box() {
 	pending.push_back(prob->initial_box());
 }
 
-void algorithm::set_current_box() {
+void algorithm::set_topmost_box() {
+
+	cout << "=========================================================" << endl;
 
 	assert(box_orig==0);
 
 	box_orig = pending.front();
 
 	pending.pop_front();
-
-	init_variables(box, box_orig, n);
-}
-
-void algorithm::prepare_to_repeat() {
-
-	std::cout << "Repeating pruning steps" << std::endl;
-
-	pending.push_front(box_orig); // FIXME Assumes box -> box_orig copy
-
-	box_orig = 0;
 }
 
 void algorithm::iteration_step() {
+
+	bool deleted = false;
+
+	do {
+
+		deleted = one_pass();
+
+	} while ( !deleted && sufficient_progress() );
+
+	if(!deleted) {
+
+		split();
+	}
+}
+
+bool algorithm::one_pass() {
+
+	bool deleted = false;
 
 	try {
 		contracting_step();
 	}
 	catch (infeasible_problem& ) {
 		delete_box();
-		return;
+		deleted = true;
 	}
 	catch (numerical_problems& ) {
 		rollback();
@@ -103,20 +121,17 @@ void algorithm::iteration_step() {
 	catch (convergence_reached& ) {
 		print_box();
 		delete_box();
-		return;
+		deleted = true;
 	}
 
-	if (sufficient_progress()) {
-		prepare_to_repeat();
-	}
-	else {
-		split();
-	}
+	return deleted;
 }
 
 void algorithm::contracting_step() {
 
 	increment_counters();
+
+	initialize_variables();
 
 	evaluate();
 
@@ -126,7 +141,7 @@ void algorithm::contracting_step() {
 	}
 	catch (infeasible_problem& ) {
 
-		std::cout << "Warning: numerical problems in LP pruning" << std::endl;
+		cout << "Warning: numerical problems in LP pruning" << endl;
 
 		throw numerical_problems();
 	}
@@ -138,9 +153,14 @@ void algorithm::increment_counters() {
 	++boxes_processed;
 }
 
+void algorithm::initialize_variables() {
+
+	init_variables(box, box_orig, n);
+}
+
 void algorithm::evaluate() {
 
-	std::cout << "Evaluation" << std::endl;
+	cout << "Evaluation" << endl;
 
 	prob->evaluate(box);
 
@@ -150,7 +170,7 @@ void algorithm::evaluate() {
 // TODO Replace this mock implementation with Acterberg's heuristic
 void algorithm::lp_pruning() {
 
-	std::cout << "Running LP pruning" << std::endl;
+	cout << "Running LP pruning" << endl;
 	// FIXME Check for convergence before tightening a variable
 	for (int i=0; i<n; ++i) {
 
@@ -162,7 +182,7 @@ void algorithm::lp_pruning() {
 
 void algorithm::delete_box() {
 
-	std::cout << "Box discarded" << std::endl;
+	cout << "Box discarded" << endl;
 
 	delete[] box_orig;
 
@@ -171,7 +191,7 @@ void algorithm::delete_box() {
 
 void algorithm::rollback() {
 
-	std::cout << "Warning: numerical problems detected" << std::endl;
+	cout << "Warning: numerical problems detected" << endl;
 
 	init_variables(box, box_orig, n);
 }
@@ -180,7 +200,7 @@ void algorithm::print_box() const {
 
 	for (int i=0; i<n; ++i) {
 
-		std::cout << box[i] << std::endl;
+		cout << box[i] << endl;
 	}
 }
 
@@ -190,27 +210,57 @@ void algorithm::check_convergence() {
 
 	if (box[index].width() <= TOL_SOLVED) {
 
-		std::cout << "Found a solution!" << std::endl;
+		cout << "Found a solution!" << endl;
 
 		++solutions_found;
 
 		throw convergence_reached();
 	}
 }
+/*
+void algorithm::dbg_box_width() const {
 
+	using namespace std;
+
+	bool to_dump = false;
+
+	for (int i=0; i<n; ++i) {
+		double width1 = box[i].width();
+		double width2 = box_orig[i].diameter();
+		if (width1!=width2) {
+			width1 = width2 = 0;
+			to_dump = true;
+			break;
+		}
+	}
+
+	if (to_dump) {
+		cout << "###" << endl;
+		for (int i=0; i<n; ++i) {
+			cout << setprecision(16) << scientific << box[i] << endl;
+			cout << setprecision(16) << scientific << box_orig[i] << endl;
+			cout << i << ": " << (box[i].width()==box_orig[i].diameter()) << endl;
+			bool lb_equals = box[i].range.lb == box_orig[i].lb;
+			bool ub_equals = box[i].range.ub == box_orig[i].ub;
+			cout << lb_equals << "  " << ub_equals << endl;
+		}
+	}
+}
+*/
 int algorithm::select_index_to_split() const {
 
-	double x1 = box[0].width();
-	double D  = box[15].width();
+	//double x1 = box[0].width();
+	//double D  = box[15].width();
 
-	int index = (x1 > D)? 0 : 15;
+	//int index = (x1 > D)? 0 : 15;
 
-	//int index = find_max_width(box, n);
+	int index = find_max_width(box, n);
 
-	std::cout << "Splitting " << index << ", " << box_orig[index] << std::endl;
-	std::cout << "var[index] = " << box[index] << std::endl;
+	cout << "Splitting " << index << ", " << box_orig[index] << endl;
+	cout << "var[index] = " << box[index] << endl;
 
-	assert ( std::fabs(box[index].width()- box_orig[index].diameter()) < 1.0e-6); // FIXME
+	// FIXME They may not equal exactly due to inlining?
+	assert ( std::fabs(box[index].width()- box_orig[index].diameter()) < 1.0e-6);
 	assert ( box[index].width() > TOL_SOLVED);
 
 	return index;
@@ -238,47 +288,62 @@ void algorithm::split() {
 	box_orig = 0;
 }
 
-// TODO Replace mock implementation
-bool algorithm::sufficient_progress() {
+double algorithm::compute_max_progress(const interval box_contracted[]) const {
 
-	std::cout << "Computing progress" << std::endl;
-
-	interval box_contracted[n];
-
-	copy_bounds(box, box_contracted, n);
-
-	bool sufficient = false;
-
-	double max_reduction = 10;
+	double best_reduction = 10;
 
 	for (int i=0; i<n; ++i) {
 
 		if (box_orig[i].diameter() == 0) {
+			cout << "Warning: index " << i << "has zero width" << endl;
 			continue;
 		}
 
 		double reduction = box_contracted[i].diameter() / box_orig[i].diameter();
 
-		if (reduction<0.75) {
-			sufficient = true;
-		}
-
-		if (reduction<max_reduction) {
-			max_reduction = reduction;
+		if (reduction<best_reduction) {
+			best_reduction = reduction;
 		}
 	}
 
-	std::cout << "Max progress: " << 1.0-max_reduction << std::endl;
+	cout << "Best reduction: " << best_reduction << endl;
+
+	return best_reduction;
+}
+
+bool algorithm::sufficient_progress() {
+
+	cout << "Computing progress" << endl;
+
+	interval box_contracted[n];
+
+	copy_bounds(box, box_contracted, n);
+
+	double best_reduction = compute_max_progress(box_contracted);
+
+	bool sufficient = false;
+
+	if (best_reduction < 0.95) {
+
+		sufficient = true;
+
+		cout << "Sufficient progress made" << endl;
+		cout << "-----------------------------------------------------" << endl;
+	}
 
 	copy_bounds(box, box_orig, n);
+
+	//dbg_box_width();
 
 	return sufficient;
 }
 
 void algorithm::print_statistics() const {
 
-	std::cout << "Number of splits: " << splits << ", solutions: ";
-	std::cout << solutions_found << std::endl;
+	cout << endl;
+	cout << "=========================================================" << endl;
+	cout << "Number of splits: " << splits << ", solutions: ";
+	cout << solutions_found << endl;
 }
 
 }

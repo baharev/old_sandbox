@@ -49,18 +49,22 @@ private:
 
 	void add_initial_box();
 	void check_convergence();
+	double compute_max_progress(const interval box_contracted[]) const;
 	void contracting_step();
+	//void dbg_box_width() const; FIXME Drop it
 	void delete_box();
 	void evaluate();
+	bool has_more_boxes() const;
 	void increment_counters();
+	void initialize_variables();
 	void iteration_step();
 	void lp_pruning();
-	void prepare_to_repeat();
+	bool one_pass();
 	void print_box() const;
 	void print_statistics() const;
 	void rollback();
 	int  select_index_to_split() const;
-	void set_current_box();
+	void set_topmost_box();
 	void split();
 	bool sufficient_progress();
 
