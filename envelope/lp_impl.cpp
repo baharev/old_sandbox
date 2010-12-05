@@ -70,7 +70,7 @@ void lp_impl::init() {
 
 	parm->presolve = GLP_OFF;
 
-	parm->msg_lev = GLP_MSG_ON;
+	parm->msg_lev = GLP_MSG_OFF;
 
 	//parm->meth = GLP_DUAL;
 

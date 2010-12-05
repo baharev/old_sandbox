@@ -48,6 +48,7 @@ private:
 	algorithm& operator=(const algorithm& );
 
 	void add_initial_box();
+	void check_convergence();
 	void contracting_step();
 	void delete_box();
 	void evaluate();
@@ -55,7 +56,10 @@ private:
 	void iteration_step();
 	void lp_pruning();
 	void prepare_to_repeat();
+	void print_box() const;
+	void print_statistics() const;
 	void rollback();
+	int  select_index_to_split() const;
 	void set_current_box();
 	void split();
 	bool sufficient_progress();
@@ -74,6 +78,9 @@ private:
 
 	int boxes_processed;
 
+	int solutions_found;
+
+	int splits;
 };
 
 }

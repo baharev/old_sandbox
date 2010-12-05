@@ -25,6 +25,10 @@
 
 namespace asol {
 
+class convergence_reached {
+
+};
+
 class infeasible_problem {
 
 };

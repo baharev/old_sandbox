@@ -451,6 +451,34 @@ void init_variables(var x[], const interval var_bounds[], int size) {
 	}
 }
 
+double var::width() const {
+
+	check_consistency();
+
+	return range.diameter();
+}
+
+int find_max_width(const var x[], int size) {
+
+	assert(size>0);
+
+	double max_width = x[0].width();
+
+	int index = 0;
+
+	for (int i=1; i<size; ++i) {
+
+		const double width = x[i].width();
+
+		if (width > max_width) {
+			max_width = width;
+			index = i;
+		}
+	}
+
+	return index;
+}
+
 void var::reset() {
 
 	lp->reset();

@@ -25,10 +25,12 @@
 
 namespace lp_solver {
 
-	const double TOL_MIN_REL_DIAM = 1.0e-4;
+	const double TOL_MIN_REL_DIAM = 1.0e-4; // TODO abs/rel width
 }
 
 namespace asol {
+
+	const double TOL_SOLVED = 10*lp_solver::TOL_MIN_REL_DIAM;
 
 	const double TOL_RANGE  = 1.0e-6;
 }

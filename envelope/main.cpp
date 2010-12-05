@@ -287,7 +287,8 @@ interval* Jacobsen::initial_box() const {
 
 	interval* v = new interval[SIZE];
 
-	v[X1] = interval(0.93, 0.94);
+	//      interval(0.93, 0.94);
+	v[X1] = interval(1.0e-4, 1.0);
 
 	for (int i=X2; i<=X8; ++i) {
 		v[i] = interval(1.0e-4, 1.0);
@@ -297,7 +298,7 @@ interval* Jacobsen::initial_box() const {
 		v[i] = interval(2.0, 4.0);
 	}
 	//var D(0.50, 0.51); var(0.0, 1.12);
-	v[C] = interval(0.50, 0.51);
+	v[C] = interval(0.0, 1.12);
 
 	return v;
 }
@@ -471,8 +472,8 @@ void Jacobsen::evaluate(const var v[]) const {
 
 	H4.fix_at(0.0);
 
-	cout << "V5: " << V5.compute_bounds() << endl;
-	cout << "x5: " << x5.compute_bounds() << endl;
+	//cout << "V5: " << V5.compute_bounds() << endl;
+	//cout << "x5: " << x5.compute_bounds() << endl;
 
 	return;
 }
@@ -482,6 +483,8 @@ int Main() {
 	algorithm a(new Jacobsen);
 
 	a.run();
+
+	return 0;
 
 	example_Hansen();
 
@@ -493,7 +496,7 @@ int Main() {
 
 	example_digression();
 
-	//example_Wilson();
+	example_Wilson();
 
 	return 0;
 }

@@ -49,6 +49,8 @@ public:
 
 	void intersect(double lb, double ub);
 
+	double width() const;
+
 	bool contains_zero() const;
 
 	void check_consistency() const;
@@ -58,6 +60,8 @@ public:
 	friend void copy_bounds(const var arr[], interval bounds[], int size);
 
 	friend void init_variables(var x[], const interval var_bounds[], int size);
+
+	friend int find_max_width(const var x[], int size); // TODO abs/rel width
 
 	friend const var operator+(const var& x, const var& y);
 

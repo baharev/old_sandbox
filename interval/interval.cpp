@@ -189,6 +189,15 @@ void propagate_mult(interval& z, interval& x, interval& y) {
 	z.intersect(x*y);
 }
 
+
+void copy_array(const interval src[], interval dstn[], int size) {
+
+	for (int i=0; i<size; ++i) {
+
+		dstn[i] = src[i];
+	}
+}
+
 double interval::midpoint() const {
 
 	assert(lb <= ub);
