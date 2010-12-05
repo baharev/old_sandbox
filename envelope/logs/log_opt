@@ -1,0 +1,152 @@
+
+Jacobsen
+
+Scaling...
+ A: min|aij| =  1.000e-04  max|aij| =  4.498e+00  ratio =  4.498e+04
+EQ: min|aij| =  1.000e-04  max|aij| =  1.000e+00  ratio =  1.000e+04
+   3472: obj =   0.000000000e+00  infeas =  4.996e-01 (1)
+*  3489: obj =   0.000000000e+00  infeas =  2.082e-16 (0)
+Scaling...
+ A: min|aij| =  1.000e-04  max|aij| =  4.498e+00  ratio =  4.498e+04
+EQ: min|aij| =  1.000e-04  max|aij| =  1.000e+00  ratio =  1.000e+04
+   3567: obj =   0.000000000e+00  infeas =  4.611e-01 (1)
+*  3582: obj =   0.000000000e+00  infeas =  5.551e-17 (0)
+
+
+Scaling...
+ A: min|aij| =  1.000e-04  max|aij| =  4.498e+00  ratio =  4.498e+04
+EQ: min|aij| =  1.000e-04  max|aij| =  1.000e+00  ratio =  1.000e+04
+*  3705: obj =   0.000000000e+00  infeas =  3.331e-16 (0)
+Scaling...
+ A: min|aij| =  1.000e-04  max|aij| =  4.498e+00  ratio =  4.498e+04
+EQ: min|aij| =  1.000e-04  max|aij| =  1.000e+00  ratio =  1.000e+04
+*  3988: obj =   0.000000000e+00  infeas =  2.248e-15 (0)
+
+---
+
+MaxWidth 0.95
+
+Number of splits: 20, solutions: 5
+
+real    3m25.547s
+
+---
+
+MaxWidth 0.75
+
+Number of splits: 348, solutions: 5
+
+real    12m42.693s
+
+---
+
+x1, D 0.75
+
+Number of splits: 9, solutions: 5
+
+real    0m48.958s
+
+---
+
+x1, D 0.95
+
+Number of splits: 4, solutions: 5
+
+real    1m26.369s
+
+--------------------------------------------------------------------------------
+
+Hansen
+
+Scaling...
+ A: min|aij| =  1.000e+00  max|aij| =  2.100e+02  ratio =  2.100e+02
+EQ: min|aij| =  1.429e-02  max|aij| =  1.000e+00  ratio =  7.000e+01
+*    16: obj =   0.000000000e+00  infeas =  3.553e-15 (1)
+Scaling...
+ A: min|aij| =  1.000e+00  max|aij| =  2.100e+02  ratio =  2.100e+02
+EQ: min|aij| =  1.429e-02  max|aij| =  1.000e+00  ratio =  7.000e+01
+*    34: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+
+z: [ -12.143, 10.5227], pass: 181
+
+--------------------------------------------------------------------------------
+
+Scaling...
+ A: min|aij| =  1.667e-01  max|aij| =  1.800e+01  ratio =  1.080e+02
+EQ: min|aij| =  1.250e-01  max|aij| =  1.000e+00  ratio =  8.000e+00
+*     6: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+Scaling...
+ A: min|aij| =  1.667e-01  max|aij| =  1.800e+01  ratio =  1.080e+02
+EQ: min|aij| =  1.250e-01  max|aij| =  1.000e+00  ratio =  8.000e+00
+*     9: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+
+z: [ 0.166667, 0.2], pass: 34
+
+y = (x-1)/(x^2+2)
+
+--------------------------------------------------------------------------------
+
+Scaling...
+ A: min|aij| =  2.333e-01  max|aij| =  2.300e+01  ratio =  9.857e+01
+EQ: min|aij| =  6.250e-02  max|aij| =  1.000e+00  ratio =  1.600e+01
+*     7: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+Scaling...
+ A: min|aij| =  2.333e-01  max|aij| =  2.300e+01  ratio =  9.857e+01
+EQ: min|aij| =  6.250e-02  max|aij| =  1.000e+00  ratio =  1.600e+01
+*     7: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+
+z: [ 0.233333, 0.285714], pass: 19
+
+y = (x^2+x)/(16*x-9)
+
+--------------------------------------------------------------------------------
+
+Challenge
+
+Scaling...
+ A: min|aij| =  1.000e-01  max|aij| =  9.000e+00  ratio =  9.000e+01
+Problem data seem to be well scaled
+EQ: min|aij| =  5.556e-02  max|aij| =  1.000e+00  ratio =  1.800e+01
+*   165: obj =   0.000000000e+00  infeas =  6.939e-16 (0)
+Scaling...
+ A: min|aij| =  1.000e-01  max|aij| =  9.000e+00  ratio =  9.000e+01
+Problem data seem to be well scaled
+EQ: min|aij| =  5.556e-02  max|aij| =  1.000e+00  ratio =  1.800e+01
+*   112: obj =   0.000000000e+00  infeas =  2.637e-16 (0)
+
+z: [ -3.12431, 8.24993], pass: 15
+
+--------------------------------------------------------------------------------
+
+Digression
+
+Scaling...
+ A: min|aij| =  1.000e-01  max|aij| =  2.000e+00  ratio =  2.000e+01
+Problem data seem to be well scaled
+EQ: min|aij| =  1.667e-01  max|aij| =  1.000e+00  ratio =  6.000e+00
+*    48: obj =   0.000000000e+00  infeas =  6.245e-17 (0)
+Scaling...
+ A: min|aij| =  1.000e-01  max|aij| =  2.000e+00  ratio =  2.000e+01
+Problem data seem to be well scaled
+EQ: min|aij| =  1.667e-01  max|aij| =  1.000e+00  ratio =  6.000e+00
+*    32: obj =   0.000000000e+00  infeas =  4.025e-16 (0)
+
+z: [ -1.13636, -0.526316], pass: 20
+
+--------------------------------------------------------------------------------
+
+Wilson
+
+ A: min|aij| =  6.172e-06  max|aij| =  1.000e+00  ratio =  1.620e+05
+EQ: min|aij| =  6.172e-06  max|aij| =  1.000e+00  ratio =  1.620e+05
+*    81: obj =   0.000000000e+00  infeas =  5.551e-16 (0)
+Scaling...
+ A: min|aij| =  6.172e-06  max|aij| =  1.000e+00  ratio =  1.620e+05
+EQ: min|aij| =  6.172e-06  max|aij| =  1.000e+00  ratio =  1.620e+05
+*   249: obj =   0.000000000e+00  infeas =  0.000e+00 (0)
+u1 : [ 0.787092, 2.41488]
+u2 : [ 0.277934, 1.7672]
+u3 : [ 6.17202e-06, 1.04231]
+
+--------------------------------------------------------------------------------
+
