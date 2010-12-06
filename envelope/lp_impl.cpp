@@ -30,7 +30,7 @@
 using std::clog;
 using std::cout;
 using std::endl;
-using std::fabs;
+using std::fabs; // TODO Remove to utility
 
 //#define HACKED_GLPK
 #ifdef HACKED_GLPK

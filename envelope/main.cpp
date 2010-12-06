@@ -297,7 +297,7 @@ interval* Jacobsen::initial_box() const {
 	for (int i=v1; i<=v7; ++i) {
 		v[i] = interval(2.0, 4.0);
 	}
-	//var D(0.50, 0.51); var(0.0, 1.12);
+	//     interval(0.50, 0.51);
 	v[C] = interval(0.0, 1.12);
 
 	return v;
