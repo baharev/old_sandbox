@@ -21,6 +21,7 @@
 //==============================================================================
 
 #include <string>
+#include <algorithm>
 #include <assert.h>
 #include "constants.hpp"
 #include "lp_pair.hpp"
@@ -208,6 +209,25 @@ bool lp_pair::too_narrow(double lb, double ub) {
 	return (range <= TOL_MIN_REL_DIAM*AbsMax(lb,ub)) ? true : false;
 }
 
+void lp_pair::swap_lp_pair_if_appealing(int index, double lb, double ub) {
+
+	using namespace std;
+
+	lp_min->refresh_basis();
+	lp_max->refresh_basis();
+
+	double val_min = lp_min->get_col_val(index);
+	double val_max = lp_max->get_col_val(index);
+
+	double err_1 = max(val_min-lb, ub-val_max);
+	double err_2 = max(val_max-lb, ub-val_min);
+
+	if (err_2 < err_1) {
+
+		swap(lp_min, lp_max);
+	}
+}
+
 bool lp_pair::tighten_col(int index, double& lb, double& ub) {
 
 	if (lp_min->is_fixed(index)) {
@@ -218,6 +238,8 @@ bool lp_pair::tighten_col(int index, double& lb, double& ub) {
 	if (too_narrow(lb, ub)) {
 		return false;
 	}
+
+	swap_lp_pair_if_appealing(index, lb, ub);
 
 	bool min_improved = lp_min->tighten_col_lb(index, lb);
 	bool max_improved = lp_max->tighten_col_ub(index, ub);

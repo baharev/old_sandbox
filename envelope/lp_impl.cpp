@@ -451,6 +451,16 @@ double lp_impl::solve_for(int index, int direction) {
 	return glp_get_col_prim(lp, index);
 }
 
+void lp_impl::refresh_basis() {
+
+	refresh();
+}
+
+double lp_impl::get_col_val(int index) {
+
+	return glp_get_col_prim(lp, index);
+}
+
 bool lp_impl::is_fixed(int index) {
 
 	return glp_get_col_type(lp, index)==GLP_FX;
@@ -487,19 +497,6 @@ bool lp_impl::tighten_col_ub(int index, double& ub) {
 
 	return improved;
 }
-
-/*
-bool lp_impl::tighten_col_bnds(int index, double& lb, double& ub) {
-
-	const bool improved_lb = tighten_col_lb(index, lb);
-
-	const bool improved_ub = tighten_col_ub(index, ub);
-
-	throw_if_inconsistent_bnds(lb, ub, __LINE__);
-
-	return improved_lb || improved_ub;
-}
-*/
 
 void lp_impl::dump(const char* file) const {
 

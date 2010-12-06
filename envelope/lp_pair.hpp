@@ -89,9 +89,10 @@ private:
 	void save_row_status();
 	void remove_mult_envelope();
 	void restore_row_status();
+	void swap_lp_pair_if_appealing(int index, double lb, double ub);
 
-	lp_solver::lp_impl* const lp_min;
-	lp_solver::lp_impl* const lp_max;
+	lp_solver::lp_impl* lp_min;
+	lp_solver::lp_impl* lp_max;
 
 	int rows[5];
 	int stat_min[5];

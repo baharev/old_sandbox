@@ -82,7 +82,9 @@ class lp_impl {
 
 		void set_bounds(int index, double lb, double ub);
 
-		bool tighten_col_bnds(int i, double& lb, double& ub);
+		void refresh_basis();
+
+		double get_col_val(int index);
 
 		bool tighten_col_lb(int i, double& lb);
 
