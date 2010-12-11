@@ -200,15 +200,6 @@ void lp_pair::set_bounds(int index, double lb, double ub) {
 	lp_max->set_bounds(index, lb, ub);
 }
 
-bool lp_pair::too_narrow(double lb, double ub) {
-
-	assert(lb <= ub);
-
-	double range = ub-lb;
-
-	return (range <= TOL_MIN_REL_DIAM*AbsMax(lb,ub)) ? true : false;
-}
-
 void lp_pair::swap_lp_pair_if_appealing(int index, double lb, double ub) {
 
 	using namespace std;
@@ -251,6 +242,11 @@ bool lp_pair::tighten_col(int index, double& lb, double& ub) {
 	}
 
 	return improved;
+}
+
+void lp_pair::prune_all() {
+
+	// TODO Finish implementation
 }
 
 bool lp_pair::col_type_db_or_fx(int index) const {

@@ -70,6 +70,8 @@ public:
 
 	bool tighten_col(int index, double& lb, double& ub);
 
+	void prune_all();
+
 	bool col_type_db_or_fx(int index) const;
 
 	void reset();
@@ -85,7 +87,6 @@ private:
 	lp_pair(const lp_pair& );
 	lp_pair& operator=(const lp_pair& );
 
-	bool too_narrow(double lb, double ub);
 	void save_row_status();
 	void remove_mult_envelope();
 	void restore_row_status();

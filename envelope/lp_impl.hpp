@@ -90,6 +90,12 @@ class lp_impl {
 
 		bool tighten_col_ub(int i, double& ub);
 
+		int n_cols();
+
+		double col_lb(int i);
+
+		double col_ub(int i);
+
 		bool col_type_db_or_fx(int index) const;
 
 		void dump(const char* file) const;
@@ -147,7 +153,7 @@ class lp_impl {
 		bool dual_feasible;
 };
 
-double AbsMax(double x, double y);
+bool too_narrow(double lb, double ub);
 
 }
 

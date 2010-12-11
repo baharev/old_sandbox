@@ -152,6 +152,15 @@ double AbsMax(double x, double y) {
 	return (X<Y)?Y:X;
 }
 
+bool too_narrow(double lb, double ub) {
+
+	assert(lb <= ub);
+
+	double range = ub-lb;
+
+	return (range <= TOL_MIN_REL_DIAM*AbsMax(lb,ub)) ? true : false;
+}
+
 void lp_impl::assert_value_within_bnds(int j, double value, int line) {
 
 	assert_col_type(j, line);
@@ -496,6 +505,21 @@ bool lp_impl::tighten_col_ub(int index, double& ub) {
 	}
 
 	return improved;
+}
+
+int lp_impl::n_cols() {
+
+	return glp_get_num_cols(lp);
+}
+
+double lp_impl::col_lb(int i) {
+
+	return glp_get_col_lb(lp, i);
+}
+
+double lp_impl::col_ub(int i) {
+
+	return glp_get_col_ub(lp, i);
 }
 
 void lp_impl::dump(const char* file) const {
