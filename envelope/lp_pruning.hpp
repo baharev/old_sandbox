@@ -50,6 +50,7 @@ private:
 	lp_pruning& operator=(const lp_pruning& );
 
 	void init();
+	void prune();
 	void mark_narrow_solved();
 	void count_solved() const;
 	void examine_col(int i);
@@ -71,6 +72,8 @@ private:
 	double closest_max;
 	int index_min;
 	int index_max;
+
+	int skipped;
 
 	enum decision { NO_CANDIDATE, LOWER_BND, UPPER_BND };
 };

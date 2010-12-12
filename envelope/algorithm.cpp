@@ -167,7 +167,6 @@ void algorithm::evaluate() {
 	check_convergence();
 }
 
-// TODO Replace this mock implementation with Acterberg's heuristic
 void algorithm::lp_pruning() {
 
 	cout << "Running LP pruning" << endl;

@@ -25,8 +25,9 @@
 #include <algorithm>
 #include <assert.h>
 #include "lp_pruning.hpp"
-#include "constants.hpp"
 #include "lp_impl.hpp"
+#include "exceptions.hpp"
+#include "constants.hpp"
 
 namespace lp_solver {
 
@@ -40,6 +41,7 @@ lp_pruning::lp_pruning(lp_impl* lpmin, lp_impl* lpmax, int to_index)
 	assert(n<=lpmax->n_cols());
 	lp_min = lpmin;
 	lp_max = lpmax;
+	skipped = 0;
 }
 
 lp_pruning::~lp_pruning() {
@@ -105,12 +107,14 @@ void lp_pruning::examine_col(int i) {
 
 	examine_ub(i, offcenter_ub, threshold);
 }
-// TODO Count skipped subproblems
+
 void lp_pruning::examine_lb(int i, double offcenter_lb, double threshold) {
 
-	if (offcenter_lb < threshold) {
+	if (!min_solved[i] && (offcenter_lb < threshold)) {
 
 		min_solved[i] = true;
+
+		++skipped;
 	}
 
 	if (!min_solved[i] && offcenter_lb < closest_min) {
@@ -123,9 +127,11 @@ void lp_pruning::examine_lb(int i, double offcenter_lb, double threshold) {
 
 void lp_pruning::examine_ub(int i, double offcenter_ub, double threshold) {
 
-	if (offcenter_ub < threshold) {
+	if (!max_solved[i] && (offcenter_ub < threshold)) {
 
 		max_solved[i] = true;
+
+		++skipped;
 	}
 
 	if (!max_solved[i] && offcenter_ub < closest_max) {
@@ -185,7 +191,8 @@ void lp_pruning::count_solved() const {
 		}
 	}
 
-	std::cout << "Solved: " << solved << "/" << 2*n << std::endl;
+	std::cout << "Solved: " << solved << "/" << 2*n << ", ";
+	std::cout << "skipped: " << skipped << std::endl;
 }
 
 void lp_pruning::solve_for_lb() {
@@ -212,13 +219,7 @@ void lp_pruning::solve_for_ub() {
 	lp->tighten_col_ub(index_max, up[index_max]);
 }
 
-void lp_pruning::prune_all() {
-
-	init();
-	// TODO Should not become infeasible after this point
-	count_solved();
-
-	mark_narrow_solved();
+void lp_pruning::prune() {
 
 	count_solved();
 
@@ -236,6 +237,23 @@ void lp_pruning::prune_all() {
 
 			solve_for_ub();
 		}
+	}
+}
+
+void lp_pruning::prune_all() {
+
+	init();
+
+	mark_narrow_solved();
+
+	try {
+
+		prune();
+	}
+	catch (asol::infeasible_problem& ) {
+		std::cout << "Warning: numerical problems " << __FILE__ << " ";
+		std::cout << __LINE__ << std::endl;
+		throw asol::numerical_problems();
 	}
 
 	count_solved();

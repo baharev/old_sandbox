@@ -456,10 +456,15 @@ void prune_all(var x[], int size) {
 	interval bnds[size];
 
 	prune_all(var::lp, size, bnds);
-	// TODO Should not throw infeasible problem from here
-	for (int i=0; i<size; ++i) {
 
-		x[i].range.intersect(bnds[i]);
+	try {
+		for (int i=0; i<size; ++i)
+			x[i].range.intersect(bnds[i]);
+	}
+	catch (infeasible_problem& ) {
+		std::cout << "Warning: numerical problems " << __FILE__ << " ";
+		std::cout << __LINE__ << std::endl;
+		throw numerical_problems();
 	}
 }
 
