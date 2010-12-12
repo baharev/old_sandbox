@@ -29,15 +29,17 @@ class interval;
 
 class lp_impl;
 
+class lp_pair;
+
 class lp_pruning {
 
 public:
 
-	lp_pruning(lp_impl* lpmin, lp_impl* lpmax, int to_index);
+	lp_pruning(lp_pair* lp, int up_to_index);
 
 	void prune_all();
 
-	friend void copy_bounds(const lp_pruning& lp, asol::interval* bounds);
+	void copy_bounds(interval* bounds);
 
 	~lp_pruning();
 

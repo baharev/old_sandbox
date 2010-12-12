@@ -23,11 +23,7 @@
 #ifndef LP_IMPL_HPP_
 #define LP_IMPL_HPP_
 
-
 #include "glpk.h"
-
-// See the excellent documentation of GLPK for further details on the
-// individual glp_ functions below
 
 namespace asol {
 

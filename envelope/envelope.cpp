@@ -462,23 +462,6 @@ void init_variables(var x[], const interval var_bounds[], int size) {
 	}
 }
 
-void prune_all(var x[], int size) {
-
-	interval bnds[size];
-
-	prune_all(var::lp, size, bnds);
-
-	try {
-		for (int i=0; i<size; ++i)
-			var::ia_dag->intersect(x[i].index, bnds[i]);
-	}
-	catch (infeasible_problem& ) {
-		std::cout << "Warning: numerical problems " << __FILE__ << " ";
-		std::cout << __LINE__ << std::endl;
-		throw numerical_problems();
-	}
-}
-
 double var::width() const {
 
 	check_consistency();
@@ -529,22 +512,30 @@ void var::check_consistency() const {
 	assert(var::lp->col_type_db_or_fx(index));
 }
 
-// FIXME Clean up this mess!!!
-void prune_all(lp_pair* pair, int up_to_index, asol::interval* bnds) {
+void var::tighten_up_to(int size) {
 
-	lp_pruning lp(pair->lp_min, pair->lp_max, up_to_index);
+	lp_pruning lp(var::lp, size);
 
 	lp.prune_all();
 
-	copy_bounds(lp, bnds);
+	interval bnds[size];
+
+	lp.copy_bounds(bnds);
+
+	try {
+		for (int i=0; i<size; ++i)
+			var::ia_dag->intersect(i+1, bnds[i]);
+	}
+	catch (infeasible_problem& ) {
+		std::cout << "Warning: numerical problems " << __FILE__ << " ";
+		std::cout << __LINE__ << std::endl;
+		throw numerical_problems();
+	}
 }
 
-void copy_bounds(const lp_pruning& lp, asol::interval* bnds) {
+void var::tighten_all() {
 
-	for (int i=1; i<=lp.n; ++i) {
-
-		bnds[i-1] = asol::interval(lp.lo[i], lp.up[i]);
-	}
+	var::tighten_up_to(var::lp->n_cols());
 }
 
 }

@@ -249,6 +249,20 @@ bool lp_pair::col_type_db_or_fx(int index) const {
 	return lp_min->col_type_db_or_fx(index) && lp_max->col_type_db_or_fx(index);
 }
 
+int lp_pair::n_cols() const {
+
+	assert(lp_min->n_cols() == lp_max->n_cols());
+
+	return lp_min->n_cols();
+}
+
+void lp_pair::copy_pointer_to_implementation(lp_impl*& lpmin, lp_impl*& lpmax) const {
+
+	lpmin = lp_min;
+
+	lpmax = lp_max;
+}
+
 void lp_pair::reset() {
 
 	lp_min->reset();

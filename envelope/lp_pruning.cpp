@@ -25,22 +25,24 @@
 #include <algorithm>
 #include <assert.h>
 #include "lp_pruning.hpp"
+#include "lp_pair.hpp"
 #include "lp_impl.hpp"
+#include "interval.hpp"
 #include "exceptions.hpp"
 #include "constants.hpp"
 
 namespace asol {
 
-lp_pruning::lp_pruning(lp_impl* lpmin, lp_impl* lpmax, int to_index)
+lp_pruning::lp_pruning(lp_pair* lp, int to_index)
 : n(to_index),
   min_solved(new bool[1+n]),
   max_solved(new bool[1+n]),
   lo(new double[1+n]),
   up(new double[1+n])
 {
-	assert(n<=lpmax->n_cols());
-	lp_min = lpmin;
-	lp_max = lpmax;
+	assert (n <= lp->n_cols());
+	// FIXME What happens with pImpl here should go into lp_pair
+	lp->copy_pointer_to_implementation(lp_min, lp_max);
 	skipped = 0;
 }
 
@@ -250,10 +252,10 @@ void lp_pruning::prune_all() {
 
 		prune();
 	}
-	catch (asol::infeasible_problem& ) {
+	catch (infeasible_problem& ) {
 		std::cout << "Warning: numerical problems " << __FILE__ << " ";
 		std::cout << __LINE__ << std::endl;
-		throw asol::numerical_problems();
+		throw numerical_problems();
 	}
 
 	count_solved();
@@ -261,6 +263,14 @@ void lp_pruning::prune_all() {
 	// TODO Check consistency
 	// TODO Check if progress is sufficient
 
+}
+
+void lp_pruning::copy_bounds(interval* bnds) {
+
+	for (int i=1; i<=n; ++i) {
+
+		bnds[i-1] = interval(lo[i], up[i]);
+	}
 }
 
 }

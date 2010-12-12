@@ -40,11 +40,9 @@ public:
 	var(double lb, double ub);
 
 	void fix_at(double val);
-	// TODO Make it private
-	const interval compute_bounds() const;
-
+	// FIXME Make it private - Only digression uses it
 	bool tighten_bounds();
-
+	// FIXME Make it private - Only digression uses it
 	void intersect(double lb, double ub);
 
 	double width() const;
@@ -52,14 +50,12 @@ public:
 	bool contains_zero() const;
 
 	void check_consistency() const;
-
+	// FIXME Remove it - Only digression uses it
 	void copy_bounds(double& lb, double& ub) const;
 
 	friend void copy_bounds(const var arr[], interval bounds[], int size);
 
 	friend void init_variables(var x[], const interval var_bounds[], int size);
-
-	friend void prune_all(var x[], int size);
 
 	friend int find_max_width(const var x[], int size); // TODO abs/rel width
 
@@ -87,6 +83,10 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& , const var& );
 
+	static void tighten_all();
+
+	static void tighten_up_to(int index);
+
 	static void dump_lp(const char* file);
 
 	static void reset(); // FIXME Make it private
@@ -97,6 +97,7 @@ private:
 
 	var(const interval& range);
 
+	const interval compute_bounds() const;
 	const interval lp_tighten_col(bool& improved) const;
 
 	int index;

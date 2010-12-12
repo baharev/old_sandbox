@@ -25,8 +25,6 @@
 
 namespace asol {
 
-class interval; // Try to eliminate this
-
 class lp_impl;
 
 class lp_pair {
@@ -72,14 +70,15 @@ public:
 
 	bool tighten_col(int index, double& lb, double& ub);
 
-	// FIXME Can lp_pair be interval unaware?
-	friend void prune_all(lp_pair* lp, int up_to_index, asol::interval* bnds);
-
 	bool col_type_db_or_fx(int index) const;
 
 	void reset();
 
 	void dump(const char* filename);
+
+	int n_cols() const;
+	// TODO Find a better way than leaking a pointer to the implementation
+	void copy_pointer_to_implementation(lp_impl*& lpmin, lp_impl*& lpmax) const;
 
 	~lp_pair();
 

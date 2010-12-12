@@ -171,7 +171,7 @@ void algorithm::lp_pruning() {
 
 	cout << "Running LP pruning" << endl;
 
-	prune_all(box, n);
+	var::tighten_up_to(n);
 
 	check_convergence();
 }

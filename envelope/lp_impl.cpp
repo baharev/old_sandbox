@@ -94,7 +94,7 @@ void lp_impl::throw_if_numerical_problems(int error, int line) {
 		clog << "Numerical problems, code: " << error << "; ";
 		clog << __FILE__ ", line " << line << endl;
 
-		throw asol::numerical_problems();
+		throw numerical_problems();
 	}
 }
 
@@ -105,13 +105,13 @@ void lp_impl::throw_if_infeasible(int status, int line) {
 	}
 
 	if (status == GLP_NOFEAS) {
-		throw asol::infeasible_problem();
+		throw infeasible_problem();
 	}
 
 	clog << "Unexpected status: " << status << "; " __FILE__ ", ";
 	clog << "line " << line << endl;
 
-	throw asol::numerical_problems();
+	throw numerical_problems();
 }
 
 void lp_impl::throw_if_inconsistent_bnds(double lb, double ub, int line) {
@@ -121,7 +121,7 @@ void lp_impl::throw_if_inconsistent_bnds(double lb, double ub, int line) {
 		clog << "Inconsistent bounds, lb > ub: " << lb << " > " << ub << "; ";
 		clog << __FILE__ ", line " << line << endl;
 
-		throw asol::numerical_problems();
+		throw numerical_problems();
 	}
 }
 
@@ -139,7 +139,7 @@ void lp_impl::assert_col_type(int j, int line) {
 	if (!col_type_db_or_fx(j)) {
 		clog << "Error: col " << j << " is of type " << type << "; ";
 		clog << __FILE__ ", line " << line << endl;
-		throw asol::assertion_error();
+		throw assertion_error();
 	}
 }
 
@@ -172,7 +172,7 @@ void lp_impl::assert_value_within_bnds(int j, double value, int line) {
 		clog << "Error: " << value << " is not in range ";
 		clog << "[ " << lb << ", " << ub << "]" << endl;
 		// This should have been checked in envelope.cpp
-		throw asol::assertion_error();
+		throw assertion_error();
 	}
 }
 
@@ -185,7 +185,7 @@ void lp_impl::assert_feasible_bounds(int j, double l, double u, int line) {
 
 	if (lb > l || ub < u) {
 
-		throw asol::assertion_error();
+		throw assertion_error();
 	}
 }
 
@@ -360,7 +360,7 @@ void lp_impl::bounds_to_be_set(int index, double& l, double& u) {
 	}
 
 	if (l>u) {
-		throw asol::infeasible_problem();
+		throw infeasible_problem();
 	}
 }
 
