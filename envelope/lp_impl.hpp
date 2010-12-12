@@ -29,7 +29,7 @@
 // See the excellent documentation of GLPK for further details on the
 // individual glp_ functions below
 
-namespace lp_solver {
+namespace asol {
 
 class lp_impl {
 

@@ -27,12 +27,17 @@
 #include <assert.h>
 #include "constants.hpp"
 #include "envelope.hpp"
+#include "dag.hpp"
 #include "lp_pair.hpp"
 #include "exceptions.hpp"
 
-lp_solver::lp_pair* asol::var::lp(new lp_solver::lp_pair);
+// FIXME Clean up this mess!!!
+#include "lp_pruning.hpp"
 
 namespace asol {
+
+lp_pair* var::lp(new lp_pair);
+dag* var::ia_dag(new dag);
 
 void dbg_consistency(const var& x, const var& y) {
 	x.check_consistency();
@@ -46,26 +51,25 @@ void var::dump_lp(const char* file) {
 
 var::var() : index(-1) { }
 
-var::var(const interval& bounds) : index(-1), range(bounds) {
+var::var(const interval& bounds) : index(-1) {
 
-	index = lp->add_col_nonbasic(range.inf(), range.sup());
+	index = lp->add_col_nonbasic(bounds.inf(), bounds.sup());
+
+	ia_dag->add(index, bounds);
 }
 
-var::var(double lb, double ub) : index(-1), range(interval(lb, ub)) {
+var::var(double lb, double ub) : index(-1) {
 
 	index = lp->add_col_nonbasic(lb, ub);
+
+	ia_dag->add(index, lb, ub);
 }
 
 void var::fix_at(double val) {
 
 	check_consistency();
 
-	if (!range.contains(val)) {
-
-		throw infeasible_problem();
-	}
-
-	range = interval(val);
+	ia_dag->intersect(index, interval(val));
 
 	lp->fix_col(index, val);
 }
@@ -73,6 +77,8 @@ void var::fix_at(double val) {
 const interval var::lp_tighten_col(bool& improved) const {
 
 	check_consistency();
+
+	interval range = ia_dag->bounds(index);
 
 	double lb = range.inf();
 
@@ -87,7 +93,9 @@ bool var::tighten_bounds() {
 
 	bool improved = false;
 
-	range = lp_tighten_col(improved);
+	interval range = lp_tighten_col(improved);
+
+	ia_dag->intersect(index, range); // TODO Could return improved too
 
 	check_consistency();
 
@@ -163,7 +171,7 @@ bool var::contains_zero() const {
 
 	check_consistency();
 
-	return range.contains(0.0);
+	return ia_dag->bounds(index).contains(0.0);
 }
 
 const var sqr(const var& x) {
@@ -362,7 +370,9 @@ void var::intersect(double lb, double ub) {
 
 	tighten_bounds();
 
-	bool improved = range.intersect(lb, ub);
+	interval range(lb, ub);
+
+	bool improved = ia_dag->intersect(index, range);
 
 	if (improved) {
 
@@ -393,7 +403,7 @@ const var operator/(const var& x, const var& y) {
 
 	int counter = 0;
 
-	interval Z = z.range;
+	interval Z = var::ia_dag->bounds(z.index);
 
 	do {
 
@@ -407,7 +417,7 @@ const var operator/(const var& x, const var& y) {
 
 		cout << endl << "z: " << z << ", pass: " << ++counter << endl;
 
-		Z = z.range;
+		Z = var::ia_dag->bounds(z.index);
 
 		if (((diam_prev-Z.diameter()))<1.0e-6*diam_prev)
 			break;
@@ -421,14 +431,15 @@ const var operator/(const var& x, const var& y) {
 
 std::ostream& operator<<(std::ostream& os, const var& v) {
 
-	return os << v.range << std::flush;
+	return os << var::ia_dag->bounds(v.index) << std::flush;
 }
 
-
+// FIXME Eliminate this function and the example using it
 void var::copy_bounds(double& lo, double& up) const {
 
 	check_consistency();
 
+	interval range = ia_dag->bounds(index);
 	lo = range.inf();
 	up = range.sup();
 }
@@ -437,7 +448,7 @@ void copy_bounds(const var arr[], interval bounds[], int size) {
 
 	for (int i=0; i<size; ++i) {
 
-		bounds[i] = arr[i].range;
+		bounds[i] = var::ia_dag->bounds(arr[i].index);
 	}
 }
 
@@ -459,7 +470,7 @@ void prune_all(var x[], int size) {
 
 	try {
 		for (int i=0; i<size; ++i)
-			x[i].range.intersect(bnds[i]);
+			var::ia_dag->intersect(x[i].index, bnds[i]);
 	}
 	catch (infeasible_problem& ) {
 		std::cout << "Warning: numerical problems " << __FILE__ << " ";
@@ -472,7 +483,7 @@ double var::width() const {
 
 	check_consistency();
 
-	return range.diameter();
+	return ia_dag->bounds(index).diameter();
 }
 
 int find_max_width(const var x[], int size) {
@@ -499,28 +510,26 @@ int find_max_width(const var x[], int size) {
 void var::reset() {
 
 	lp->reset();
+	ia_dag->reset();
 }
 
 void var::release_all() {
 
 	delete lp;
 	lp = 0;
-	lp_solver::lp_pair::free_environment();
+	lp_pair::free_environment();
+	delete ia_dag;
+	ia_dag = 0;
 }
 
 void var::check_consistency() const {
+	const interval range = ia_dag->bounds(index);
 	assert(range.inf() <= range.sup());
 	assert(index >= 1);
 	assert(var::lp->col_type_db_or_fx(index));
 }
 
-}
-
 // FIXME Clean up this mess!!!
-#include "lp_pruning.hpp"
-
-namespace lp_solver {
-
 void prune_all(lp_pair* pair, int up_to_index, asol::interval* bnds) {
 
 	lp_pruning lp(pair->lp_min, pair->lp_max, up_to_index);

@@ -20,61 +20,41 @@
 //
 //==============================================================================
 
-#ifndef LP_PRUNING_HPP_
-#define LP_PRUNING_HPP_
+#ifndef DAG_HPP_
+#define DAG_HPP_
+
+#include <vector>
 
 namespace asol {
 
 class interval;
 
-class lp_impl;
-
-class lp_pruning {
+class dag {
 
 public:
 
-	lp_pruning(lp_impl* lpmin, lp_impl* lpmax, int to_index);
+	dag();
 
-	void prune_all();
+	void add(int index, const interval& bounds);
 
-	friend void copy_bounds(const lp_pruning& lp, asol::interval* bounds);
+	void add(int index, double lb, double ub);
 
-	~lp_pruning();
+	const interval bounds(int index) const;
+
+	bool intersect(int index, const interval& other);
+
+	void reset();
 
 private:
 
-	lp_pruning(const lp_pruning& );
-	lp_pruning& operator=(const lp_pruning& );
+	dag(const dag& );
+	dag& operator=(const dag& );
 
 	void init();
-	void prune();
-	void mark_narrow_solved();
-	void count_solved() const;
-	void examine_col(int i);
-	void examine_lb(int i, double offcenter_lb, double threshold);
-	void examine_ub(int i, double offcenter_ub, double threshold);
-	int  select_candidate();
-	void solve_for_lb();
-	void solve_for_ub();
 
-	const int n;
-	bool* const min_solved;
-	bool* const max_solved;
-	double* const lo;
-	double* const up;
-	lp_impl* lp_min;
-	lp_impl* lp_max;
-
-	double closest_min;
-	double closest_max;
-	int index_min;
-	int index_max;
-
-	int skipped;
-
-	enum decision { NO_CANDIDATE, LOWER_BND, UPPER_BND };
+	std::vector<interval> variables;
 };
 
 }
 
-#endif /* LP_PRUNING_HPP_ */
+#endif /* DAG_HPP_ */

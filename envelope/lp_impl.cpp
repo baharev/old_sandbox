@@ -39,7 +39,7 @@ extern "C" void set_restart_limit(const int limit);
 static void set_restart_limit(const int limit) { }
 #endif
 
-namespace lp_solver {
+namespace asol {
 
 lp_impl::lp_impl() {
 

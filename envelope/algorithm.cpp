@@ -245,12 +245,12 @@ void algorithm::dbg_box_width() const {
 */
 int algorithm::select_index_to_split() const {
 
-	//double x1 = box[0].width();
-	//double D  = box[15].width();
+	double x1 = box[0].width();
+	double D  = box[15].width();
 
-	//int index = (x1 > D)? 0 : 15;
+	int index = (x1 > D)? 0 : 15;
 
-	int index = find_max_width(box, n);
+	//int index = find_max_width(box, n);
 
 	cout << "Splitting " << index << ", " << box_orig[index] << endl;
 	cout << "var[index] = " << box[index] << endl;
@@ -319,7 +319,7 @@ bool algorithm::sufficient_progress() {
 
 	bool sufficient = false;
 
-	if (best_reduction < 0.95) {
+	if (best_reduction < 0.75) {
 
 		sufficient = true;
 

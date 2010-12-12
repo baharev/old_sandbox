@@ -29,7 +29,7 @@
 #include "exceptions.hpp"
 #include "constants.hpp"
 
-namespace lp_solver {
+namespace asol {
 
 lp_pruning::lp_pruning(lp_impl* lpmin, lp_impl* lpmax, int to_index)
 : n(to_index),
@@ -153,8 +153,8 @@ int lp_pruning::select_candidate() {
 		examine_col(i);
 	}
 
-	std::cout << "min: " << index_min << ", val: " << closest_min << std::endl;
-	std::cout << "max: " << index_max << ", val: " << closest_max << std::endl;
+	//std::cout << "min: " << index_min << ", val: " << closest_min << std::endl;
+	//std::cout << "max: " << index_max << ", val: " << closest_max << std::endl;
 
 	decision ret_val;
 
@@ -191,8 +191,8 @@ void lp_pruning::count_solved() const {
 		}
 	}
 
-	std::cout << "Solved: " << solved << "/" << 2*n << ", ";
-	std::cout << "skipped: " << skipped << std::endl;
+	//std::cout << "Solved: " << solved << "/" << 2*n << ", ";
+	//std::cout << "skipped: " << skipped << std::endl;
 }
 
 void lp_pruning::solve_for_lb() {

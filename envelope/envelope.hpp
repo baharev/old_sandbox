@@ -26,12 +26,10 @@
 #include <iosfwd>
 #include "interval.hpp"
 
-namespace lp_solver {
-
-	class lp_pair;
-}
-
 namespace asol {
+
+class lp_pair;
+class dag;
 
 class var {
 
@@ -103,9 +101,8 @@ private:
 
 	int index;
 
-	interval range;
-
-	static lp_solver::lp_pair* lp;
+	static lp_pair* lp;
+	static dag* ia_dag;
 };
 
 const var operator+(double x, const var& y);

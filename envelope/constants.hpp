@@ -23,16 +23,13 @@
 #ifndef CONSTANTS_HPP_
 #define CONSTANTS_HPP_
 
-namespace lp_solver {
+namespace asol {
 
 	const double TOL_MIN_REL_DIAM = 1.0e-4; // TODO abs/rel width
 
-	const double TOL_PRUNING_SOLVED = 0.02;
-}
+	const double TOL_PRUNING_SOLVED = -1;
 
-namespace asol {
-
-	const double TOL_SOLVED = 10*lp_solver::TOL_MIN_REL_DIAM;
+	const double TOL_SOLVED = 10*TOL_MIN_REL_DIAM;
 
 	const double TOL_RANGE  = 1.0e-6;
 }

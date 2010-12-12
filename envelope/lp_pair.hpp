@@ -25,10 +25,7 @@
 
 namespace asol {
 
-	class interval; // Try to eliminate this
-}
-
-namespace lp_solver {
+class interval; // Try to eliminate this
 
 class lp_impl;
 
@@ -98,8 +95,8 @@ private:
 	void restore_row_status();
 	void swap_lp_pair_if_appealing(int index, double lb, double ub);
 
-	lp_solver::lp_impl* lp_min;
-	lp_solver::lp_impl* lp_max;
+	lp_impl* lp_min;
+	lp_impl* lp_max;
 
 	int rows[5];
 	int stat_min[5];

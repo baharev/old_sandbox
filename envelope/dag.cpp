@@ -20,61 +20,51 @@
 //
 //==============================================================================
 
-#ifndef LP_PRUNING_HPP_
-#define LP_PRUNING_HPP_
+#include <assert.h>
+#include "dag.hpp"
+#include "interval.hpp"
 
 namespace asol {
 
-class interval;
+dag::dag() {
 
-class lp_impl;
-
-class lp_pruning {
-
-public:
-
-	lp_pruning(lp_impl* lpmin, lp_impl* lpmax, int to_index);
-
-	void prune_all();
-
-	friend void copy_bounds(const lp_pruning& lp, asol::interval* bounds);
-
-	~lp_pruning();
-
-private:
-
-	lp_pruning(const lp_pruning& );
-	lp_pruning& operator=(const lp_pruning& );
-
-	void init();
-	void prune();
-	void mark_narrow_solved();
-	void count_solved() const;
-	void examine_col(int i);
-	void examine_lb(int i, double offcenter_lb, double threshold);
-	void examine_ub(int i, double offcenter_ub, double threshold);
-	int  select_candidate();
-	void solve_for_lb();
-	void solve_for_ub();
-
-	const int n;
-	bool* const min_solved;
-	bool* const max_solved;
-	double* const lo;
-	double* const up;
-	lp_impl* lp_min;
-	lp_impl* lp_max;
-
-	double closest_min;
-	double closest_max;
-	int index_min;
-	int index_max;
-
-	int skipped;
-
-	enum decision { NO_CANDIDATE, LOWER_BND, UPPER_BND };
-};
-
+	init();
 }
 
-#endif /* LP_PRUNING_HPP_ */
+void dag::init() {
+
+	interval dummy;
+
+	variables.push_back(dummy);
+}
+
+void dag::add(int index, const interval& bounds) {
+
+	assert(index == static_cast<int> (variables.size()));
+
+	variables.push_back(bounds);
+}
+
+void dag::add(int index, double lb, double ub) {
+
+	add(index, interval(lb, ub));
+}
+
+const interval dag::bounds(int index) const {
+
+	return variables.at(index);
+}
+
+bool dag::intersect(int index, const interval& other) {
+
+	return variables.at(index).intersect(other);
+}
+
+void dag::reset() {
+
+	variables.clear();
+
+	init();
+}
+
+}

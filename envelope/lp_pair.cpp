@@ -27,7 +27,7 @@
 #include "lp_pair.hpp"
 #include "lp_impl.hpp"
 
-namespace lp_solver {
+namespace asol {
 
 lp_pair::lp_pair() : lp_min(new lp_impl), lp_max(new lp_impl) {
 
