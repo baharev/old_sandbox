@@ -171,11 +171,8 @@ void algorithm::evaluate() {
 void algorithm::lp_pruning() {
 
 	cout << "Running LP pruning" << endl;
-	// FIXME Check for convergence before tightening a variable
-	for (int i=0; i<n; ++i) {
 
-		box[i].tighten_bounds();
-	}
+	prune_all(box, n);
 
 	check_convergence();
 }

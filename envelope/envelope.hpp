@@ -61,6 +61,8 @@ public:
 
 	friend void init_variables(var x[], const interval var_bounds[], int size);
 
+	friend void prune_all(var x[], int size);
+
 	friend int find_max_width(const var x[], int size); // TODO abs/rel width
 
 	friend const var operator+(const var& x, const var& y);

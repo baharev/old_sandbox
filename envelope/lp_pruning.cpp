@@ -20,22 +20,26 @@
 //
 //==============================================================================
 
+#include <iostream>
+#include <limits>
+#include <algorithm>
 #include <assert.h>
 #include "lp_pruning.hpp"
+#include "constants.hpp"
 #include "lp_impl.hpp"
 
 namespace lp_solver {
 
-lp_pruning::lp_pruning(lp_impl* lp_min, lp_impl* lp_max)
-: n(lp_min->n_cols()),
+lp_pruning::lp_pruning(lp_impl* lpmin, lp_impl* lpmax, int to_index)
+: n(to_index),
   min_solved(new bool[1+n]),
   max_solved(new bool[1+n]),
   lo(new double[1+n]),
   up(new double[1+n])
 {
-	assert(n==lp_max->n_cols());
-	this->lp_min = lp_min;
-	this->lp_max = lp_max;
+	assert(n<=lpmax->n_cols());
+	lp_min = lpmin;
+	lp_max = lpmax;
 }
 
 lp_pruning::~lp_pruning() {
@@ -60,6 +64,7 @@ void lp_pruning::init() {
 
 		assert(lb==lp_max->col_lb(i));
 		assert(ub==lp_max->col_ub(i));
+		assert(lb <= ub);
 
 		lo[i] = lb;
 		up[i] = ub;
@@ -77,11 +82,167 @@ void lp_pruning::mark_narrow_solved() {
 	}
 }
 
+void lp_pruning::examine_col(int i) {
+
+	double diam = up[i]-lo[i];
+
+	if (diam==0 || (min_solved[i] && max_solved[i])) {
+
+		return;
+	}
+
+	double val_min = lp_min->get_col_val(i);
+
+	double val_max = lp_max->get_col_val(i);
+
+	double threshold = TOL_PRUNING_SOLVED*diam;
+
+	double offcenter_lb = std::min(val_min-lo[i], val_max-lo[i])/diam;
+
+	examine_lb(i, offcenter_lb, threshold);
+
+	double offcenter_ub = std::min(up[i]-val_min, up[i]-val_max)/diam;
+
+	examine_ub(i, offcenter_ub, threshold);
+}
+// TODO Count skipped subproblems
+void lp_pruning::examine_lb(int i, double offcenter_lb, double threshold) {
+
+	if (offcenter_lb < threshold) {
+
+		min_solved[i] = true;
+	}
+
+	if (!min_solved[i] && offcenter_lb < closest_min) {
+
+		closest_min = offcenter_lb;
+
+		index_min = i;
+	}
+}
+
+void lp_pruning::examine_ub(int i, double offcenter_ub, double threshold) {
+
+	if (offcenter_ub < threshold) {
+
+		max_solved[i] = true;
+	}
+
+	if (!max_solved[i] && offcenter_ub < closest_max) {
+
+		closest_max = offcenter_ub;
+
+		index_max = i;
+	}
+}
+
+int lp_pruning::select_candidate() {
+
+	closest_min = closest_max = std::numeric_limits<double>::max();
+
+	index_min = index_max = -1;
+
+	for (int i=1; i<=n; ++i) {
+
+		examine_col(i);
+	}
+
+	std::cout << "min: " << index_min << ", val: " << closest_min << std::endl;
+	std::cout << "max: " << index_max << ", val: " << closest_max << std::endl;
+
+	decision ret_val;
+
+	if (closest_min < closest_max) {
+
+		ret_val = LOWER_BND;
+	}
+	else if (index_max!=-1){
+
+		ret_val = UPPER_BND;
+	}
+	else {
+
+		ret_val = NO_CANDIDATE;
+	}
+
+	return ret_val;
+}
+
+void lp_pruning::count_solved() const {
+
+	int solved = 0;
+
+	for (int i=1; i<=n; ++i) {
+
+		if (min_solved[i]) {
+
+			++solved;
+		}
+
+		if (max_solved[i]) {
+
+			++solved;
+		}
+	}
+
+	std::cout << "Solved: " << solved << "/" << 2*n << std::endl;
+}
+
+void lp_pruning::solve_for_lb() {
+
+	min_solved[index_min] = true;
+
+	double value_in_min = lp_min->get_col_val(index_min);
+	double value_in_max = lp_max->get_col_val(index_min);
+
+	lp_impl* const lp = (value_in_min < value_in_max)? lp_min : lp_max;
+
+	lp->tighten_col_lb(index_min, lo[index_min]);
+}
+
+void lp_pruning::solve_for_ub() {
+
+	max_solved[index_max] = true;
+
+	double value_in_min = lp_min->get_col_val(index_max);
+	double value_in_max = lp_max->get_col_val(index_max);
+
+	lp_impl* const lp = (value_in_min < value_in_max)? lp_max : lp_min;
+
+	lp->tighten_col_ub(index_max, up[index_max]);
+}
+
 void lp_pruning::prune_all() {
 
 	init();
+	// TODO Should not become infeasible after this point
+	count_solved();
 
 	mark_narrow_solved();
+
+	count_solved();
+
+	int candidate;
+
+	while ( (candidate=select_candidate()) != NO_CANDIDATE ) {
+
+		count_solved();
+
+		if (candidate == LOWER_BND) {
+
+			solve_for_lb();
+		}
+		else {
+
+			solve_for_ub();
+		}
+	}
+
+	count_solved();
+
+	// TODO Check consistency
+	// TODO Check if progress is sufficient
+
 }
 
 }

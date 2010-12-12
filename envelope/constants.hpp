@@ -26,6 +26,8 @@
 namespace lp_solver {
 
 	const double TOL_MIN_REL_DIAM = 1.0e-4; // TODO abs/rel width
+
+	const double TOL_PRUNING_SOLVED = 0.02;
 }
 
 namespace asol {

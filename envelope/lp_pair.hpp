@@ -23,6 +23,11 @@
 #ifndef LP_PAIR_HPP_
 #define LP_PAIR_HPP_
 
+namespace asol {
+
+	class interval; // Try to eliminate this
+}
+
 namespace lp_solver {
 
 class lp_impl;
@@ -70,7 +75,8 @@ public:
 
 	bool tighten_col(int index, double& lb, double& ub);
 
-	void prune_all();
+	// FIXME Can lp_pair be interval unaware?
+	friend void prune_all(lp_pair* lp, int up_to_index, asol::interval* bnds);
 
 	bool col_type_db_or_fx(int index) const;
 

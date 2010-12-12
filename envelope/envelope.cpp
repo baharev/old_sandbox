@@ -451,6 +451,18 @@ void init_variables(var x[], const interval var_bounds[], int size) {
 	}
 }
 
+void prune_all(var x[], int size) {
+
+	interval bnds[size];
+
+	prune_all(var::lp, size, bnds);
+	// TODO Should not throw infeasible problem from here
+	for (int i=0; i<size; ++i) {
+
+		x[i].range.intersect(bnds[i]);
+	}
+}
+
 double var::width() const {
 
 	check_consistency();
@@ -495,6 +507,30 @@ void var::check_consistency() const {
 	assert(range.inf() <= range.sup());
 	assert(index >= 1);
 	assert(var::lp->col_type_db_or_fx(index));
+}
+
+}
+
+// FIXME Clean up this mess!!!
+#include "lp_pruning.hpp"
+
+namespace lp_solver {
+
+void prune_all(lp_pair* pair, int up_to_index, asol::interval* bnds) {
+
+	lp_pruning lp(pair->lp_min, pair->lp_max, up_to_index);
+
+	lp.prune_all();
+
+	copy_bounds(lp, bnds);
+}
+
+void copy_bounds(const lp_pruning& lp, asol::interval* bnds) {
+
+	for (int i=1; i<=lp.n; ++i) {
+
+		bnds[i-1] = asol::interval(lp.lo[i], lp.up[i]);
+	}
 }
 
 }

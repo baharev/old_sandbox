@@ -23,6 +23,11 @@
 #ifndef LP_PRUNING_HPP_
 #define LP_PRUNING_HPP_
 
+namespace asol {
+
+	class interval;
+}
+
 namespace lp_solver {
 
 class lp_impl;
@@ -31,9 +36,11 @@ class lp_pruning {
 
 public:
 
-	lp_pruning(lp_impl* lp_min, lp_impl* lp_max);
+	lp_pruning(lp_impl* lpmin, lp_impl* lpmax, int to_index);
 
 	void prune_all();
+
+	friend void copy_bounds(const lp_pruning& lp, asol::interval* bounds);
 
 	~lp_pruning();
 
@@ -44,6 +51,13 @@ private:
 
 	void init();
 	void mark_narrow_solved();
+	void count_solved() const;
+	void examine_col(int i);
+	void examine_lb(int i, double offcenter_lb, double threshold);
+	void examine_ub(int i, double offcenter_ub, double threshold);
+	int  select_candidate();
+	void solve_for_lb();
+	void solve_for_ub();
 
 	const int n;
 	bool* const min_solved;
@@ -52,6 +66,13 @@ private:
 	double* const up;
 	lp_impl* lp_min;
 	lp_impl* lp_max;
+
+	double closest_min;
+	double closest_max;
+	int index_min;
+	int index_max;
+
+	enum decision { NO_CANDIDATE, LOWER_BND, UPPER_BND };
 };
 
 }

@@ -244,11 +244,6 @@ bool lp_pair::tighten_col(int index, double& lb, double& ub) {
 	return improved;
 }
 
-void lp_pair::prune_all() {
-
-	// TODO Finish implementation
-}
-
 bool lp_pair::col_type_db_or_fx(int index) const {
 
 	return lp_min->col_type_db_or_fx(index) && lp_max->col_type_db_or_fx(index);
