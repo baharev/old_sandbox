@@ -65,11 +65,21 @@ var::var(double lb, double ub) : index(-1) {
 	ia_dag->add(index, lb, ub);
 }
 
+bool var::intersect_in_dag(const interval& range) {
+
+	return ia_dag->intersect(index, range);
+}
+
+const interval var::bounds() const {
+
+	return ia_dag->bounds(index);
+}
+
 void var::fix_at(double val) {
 
 	check_consistency();
 
-	ia_dag->intersect(index, interval(val));
+	intersect_in_dag(interval(val));
 
 	lp->fix_col(index, val);
 }
@@ -78,7 +88,7 @@ const interval var::lp_tighten_col(bool& improved) const {
 
 	check_consistency();
 
-	interval range = ia_dag->bounds(index);
+	interval range = bounds();
 
 	double lb = range.inf();
 
@@ -95,7 +105,7 @@ bool var::tighten_bounds() {
 
 	interval range = lp_tighten_col(improved);
 
-	ia_dag->intersect(index, range); // TODO Could return improved too
+	intersect_in_dag(range); // TODO Could return improved too
 
 	check_consistency();
 
@@ -171,7 +181,7 @@ bool var::contains_zero() const {
 
 	check_consistency();
 
-	return ia_dag->bounds(index).contains(0.0);
+	return bounds().contains(0.0);
 }
 
 const var sqr(const var& x) {
@@ -372,7 +382,7 @@ void var::intersect(double lb, double ub) {
 
 	interval range(lb, ub);
 
-	bool improved = ia_dag->intersect(index, range);
+	bool improved = intersect_in_dag(range);
 
 	if (improved) {
 
@@ -403,7 +413,7 @@ const var operator/(const var& x, const var& y) {
 
 	int counter = 0;
 
-	interval Z = var::ia_dag->bounds(z.index);
+	interval Z = z.bounds();
 
 	do {
 
@@ -417,7 +427,7 @@ const var operator/(const var& x, const var& y) {
 
 		cout << endl << "z: " << z << ", pass: " << ++counter << endl;
 
-		Z = var::ia_dag->bounds(z.index);
+		Z = z.bounds();
 
 		if (((diam_prev-Z.diameter()))<1.0e-6*diam_prev)
 			break;
@@ -431,7 +441,7 @@ const var operator/(const var& x, const var& y) {
 
 std::ostream& operator<<(std::ostream& os, const var& v) {
 
-	return os << var::ia_dag->bounds(v.index) << std::flush;
+	return os << v.bounds() << std::flush;
 }
 
 // FIXME Eliminate this function and the example using it
@@ -439,7 +449,7 @@ void var::copy_bounds(double& lo, double& up) const {
 
 	check_consistency();
 
-	interval range = ia_dag->bounds(index);
+	interval range = bounds();
 	lo = range.inf();
 	up = range.sup();
 }
@@ -448,7 +458,7 @@ void copy_bounds(const var arr[], interval bounds[], int size) {
 
 	for (int i=0; i<size; ++i) {
 
-		bounds[i] = var::ia_dag->bounds(arr[i].index);
+		bounds[i] = arr[i].bounds();
 	}
 }
 
@@ -466,7 +476,7 @@ double var::width() const {
 
 	check_consistency();
 
-	return ia_dag->bounds(index).diameter();
+	return bounds().diameter();
 }
 
 int find_max_width(const var x[], int size) {
@@ -506,7 +516,7 @@ void var::release_all() {
 }
 
 void var::check_consistency() const {
-	const interval range = ia_dag->bounds(index);
+	const interval range = bounds();
 	assert(range.inf() <= range.sup());
 	assert(index >= 1);
 	assert(var::lp->col_type_db_or_fx(index));

@@ -97,6 +97,8 @@ private:
 
 	var(const interval& range);
 
+	bool intersect_in_dag(const interval& range);
+	const interval bounds() const;
 	const interval compute_bounds() const;
 	const interval lp_tighten_col(bool& improved) const;
 
