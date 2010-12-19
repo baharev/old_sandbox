@@ -66,6 +66,9 @@ class lp_impl {
 		// ax + by - z <= c
 		int add_up_row(double a, int x, double b, int y, int z, double c);
 
+		// sum c*x = 0
+		void add_lin_con(double val, const double c[], const int x[], int size);
+
 		void remove_envelope(int index[5]);
 
 		void get_row_status(const int rows[5], int stat[5]) const;

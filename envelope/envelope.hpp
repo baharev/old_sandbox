@@ -73,6 +73,11 @@ public:
 
 	friend const var operator/(const var& x, const var& y);
 
+	friend const var lin_comb_n(const double c[], const var x[], int length);
+
+	// TODO Implement!
+	friend void lin_con_n(double val, const double c[], const var x[], int n);
+
 	friend const var sqr(const var& x);
 
 	friend const var y_eq(const var& x);
@@ -101,6 +106,7 @@ private:
 	const interval bounds() const;
 	const interval compute_bounds() const;
 	const interval lp_tighten_col(bool& improved) const;
+	friend const interval sum(const double c[], const var x[], int n);
 
 	int index;
 
@@ -114,7 +120,17 @@ const var operator-(const var& x, double y);
 
 const var operator*(const var& x, const double c);
 
-void dbg_consistency(const var& x, const var& y);
+// sum c*x = value
+template <int n>
+void linear_constraint(const double (&c)[n], const var (&x)[n], double value) {
+	return lin_con_n(value, c, x, n);
+}
+
+// z = sum c*x
+template <int n>
+const var linear_combination(const double (&c)[n], const var (&x)[n]) {
+	return lin_comb_n(c, x, n);
+}
 
 }
 

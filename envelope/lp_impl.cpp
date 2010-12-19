@@ -70,7 +70,7 @@ void lp_impl::init() {
 
 	parm->presolve = GLP_OFF;
 
-	parm->msg_lev = GLP_MSG_OFF;
+	parm->msg_lev = GLP_MSG_ON;
 
 	//parm->meth = GLP_DUAL;
 
@@ -275,6 +275,22 @@ void lp_impl::add_add_row(int x, int y, int z) {
 void lp_impl::add_sub_row(int x, int y, int z) {
 
 	add_lu_row(1.0, x, -1.0, y, z, 0.0, GLP_FX);
+}
+
+// sum c*x = 0
+void lp_impl::add_lin_con(double val, const double c[], const int x[], int n) {
+
+	int i = add_new_row(GLP_FX, val);
+
+	int    index[1+n];
+	double coeff[1+n];
+
+	for (int i=1; i<=n; ++i) {
+		coeff[i] = c[i-1];
+		index[i] = x[i-1];
+	}
+
+	glp_set_mat_row(lp, i, n, index, coeff);
 }
 
 void lp_impl::remove_envelope(int index[5]) {

@@ -119,6 +119,57 @@ const interval var::compute_bounds() const {
 	return lp_tighten_col(dummy);
 }
 
+void dbg_consistency(const var x[], int n) {
+
+	assert (n > 0);
+	for (int i=0; i<n; ++i) {
+		x[i].check_consistency();
+	}
+}
+
+const interval sum(const double c[], const var x[], int n) {
+
+	assert(n>0);
+
+	interval z = c[0]*x[0].bounds();
+
+	for (int i=1; i<n; ++i) {
+		z += c[i]*x[i].bounds();
+	}
+
+	return z;
+}
+
+const var lin_comb_n(const double c[], const var x[], int length) {
+
+	dbg_consistency(x, length);
+
+	var z(sum(c, x, length));
+
+	if (z.bounds().degenerate()) {
+
+		return z;
+	}
+
+	double coeff[length+1]; // TODO Maybe this can go to its own function when
+	int    index[length+1]; // linear_constraint is ready
+
+	for (int i=0; i<length; ++i) {
+		coeff[i] = c[i];
+		index[i] = x[i].index;
+	}
+
+	coeff[length] = -1.0;
+	index[length] =  z.index;
+
+	// 0.0 = sum coeff[i]*x[i] - 1.0*z
+	var::lp->add_lin_con(0.0, coeff, index, length+1);
+
+	z.tighten_bounds();
+
+	return z;
+}
+
 const var operator+(const var& x, const var& y) {
 
 	var z(x.compute_bounds() + y.compute_bounds());

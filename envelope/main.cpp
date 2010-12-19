@@ -85,6 +85,86 @@ void example_Hansen() {
 	//cout << endl << "y" << endl << y << endl;
 }
 
+void example_Hansen_lc() {
+
+	var::reset();
+
+	const var x(1, 10);
+	const var y(1, 10);
+
+	const var xy = x*y;
+	const var x2 = sqr(x);
+	const var y2 = sqr(y);
+
+	const double c_num[] = { 5, -4, 14 };
+	const var vars_num[] = { x, y2, xy };
+
+	const var num = linear_combination(c_num, vars_num);
+
+	const double c_den[] = {  1,  1,  1 }; // TODO Convenience function?
+	const var vars_den[] = { x2,  y, xy };
+
+	const var den = linear_combination(c_den, vars_den);
+
+	const var z = num/den;
+
+	cout << endl << "z = (5x-4y^2+14xy)/(x^2+y+xy)" << endl << z << endl;
+}
+
+void example_challange_lc() {
+
+	var::reset();
+
+	const var w(-0.9, -0.6);
+	const var x(-0.1,  0.2);
+
+	const var w2 = sqr(w);
+	const var x2 = sqr(x);
+
+	//const var u = sqr(w) + sqr(x);
+
+	const var y( 0.3,  0.7);
+	const var z(-0.2,  0.1);
+
+	const var y2 = sqr(y);
+	const var z2 = sqr(z);
+
+	//const var v = sqr(y) + sqr(z);
+
+	const var b(-1, 1);
+	const var c(-1, 1);
+
+	const double c1[] = {   1, -1 };
+	const var    v1[] = { x*y, w*z };
+
+	const var xy_sub_wz = linear_combination(c1, v1);
+
+	const double c2[] = {   1,   1 };
+	const var    v2[] = { x*z, w*y };
+
+	const var xz_add_wy = linear_combination(c2, v2);
+
+	const double c3[] = {  1,  1, -1, -1 };
+	const var    v3[] = { w2, x2, y2, z2 };
+
+	const var u_sub_v = linear_combination(c3, v3);
+
+	const double c4[] = {  1,  1,  1,  1 };
+	// TODO u+v = (u-v)+2*v
+	const var u_add_v = linear_combination(c4, v3);
+
+	const var a(7.0, 9.0);
+
+	const double c5[] = {         1,           2,           2 };
+	const var    v5[] = { a*u_sub_v, b*xy_sub_wz, c*xz_add_wy };
+
+	const var denom = linear_combination(c5, v5);
+
+	const var f = denom/u_add_v;
+
+	cout << "f: " << f << endl;
+}
+
 void example_challange() {
 
 	var::reset();
@@ -502,6 +582,14 @@ int Main() {
 }
 
 int main() {
+
+	example_Hansen();
+
+	example_Hansen_lc();
+
+	example_challange();
+
+	example_challange_lc();
 
 	Main();
 

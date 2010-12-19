@@ -64,6 +64,9 @@ public:
 	// c*x - z = 0
 	void add_cx_row(double c, int x_index, int z_index);
 
+	// sum c*x = val
+	void add_lin_con(double val, const double c[], const int x[], int length);
+
 	void fix_col(int index, double value);
 
 	void set_bounds(int index, double lb, double ub);

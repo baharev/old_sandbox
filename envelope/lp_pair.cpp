@@ -194,6 +194,13 @@ void lp_pair::add_cx_row(double c, int x_index, int z_index) {
 	lp_max->add_cx_row(c, x_index, z_index);
 }
 
+// sum c*x = value
+void lp_pair::add_lin_con(double val, const double c[], const int x[], int n) {
+
+	lp_min->add_lin_con(val, c, x, n);
+	lp_max->add_lin_con(val, c, x, n);
+}
+
 void lp_pair::set_bounds(int index, double lb, double ub) {
 
 	lp_min->set_bounds(index, lb, ub);
