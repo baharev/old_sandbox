@@ -45,6 +45,8 @@ public:
 
 	friend void propagate_mult(interval& z, interval& x, interval& y);
 
+	interval& operator+=(const interval& x);
+
 	friend const interval operator+(const interval& x, const interval& y);
 
 	friend const interval operator+(const interval& x, double y);
@@ -60,6 +62,8 @@ public:
 	friend const interval operator/(const interval& x, const interval& y);
 
 	friend const interval sqr(const interval& x);
+
+	bool degenerate() const;
 
 	bool contains(double value) const;
 

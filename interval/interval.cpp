@@ -44,8 +44,6 @@ void sort_bounds(double& lb, double& ub) {
 
 namespace asol {
 
-
-
 interval::interval() : lb(100), ub(-100) { }
 
 interval::interval(double value) : lb(value), ub(value) { }
@@ -53,6 +51,14 @@ interval::interval(double value) : lb(value), ub(value) { }
 interval::interval(double lo, double up) : lb(lo), ub(up) {
 
 	assert(lb <= ub);
+}
+
+interval& interval::operator+=(const interval& x) {
+
+	assert( (lb<=ub) && (x.lb<=x.ub) );
+	lb += x.lb;
+	ub += x.ub;
+	return *this;
 }
 
 const interval operator+(const interval& x, const interval& y) {
@@ -134,6 +140,13 @@ const interval sqr(const interval& x) {
 	sort_bounds(lb, ub);
 
 	return (lb<=0 && 0<=ub) ? interval(0, ub) : interval(lb, ub);
+}
+
+bool interval::degenerate() const {
+
+	assert(lb <= ub);
+
+	return lb==ub;
 }
 
 bool interval::contains(double value) const {
