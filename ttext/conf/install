@@ -1,0 +1,5 @@
+make -i install
+
+Linker settings:
+libraries: only log4cxx
+-Wl,-rpath -Wl,/usr/local/lib 
