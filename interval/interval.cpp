@@ -166,6 +166,11 @@ void interval::assign(const interval& other) {
 	intersect(other);
 }
 
+void interval::equals(double value) {
+
+	intersect(value, value);
+}
+
 bool interval::intersect(const double l, const double u) {
 
 	assert(l<=u);

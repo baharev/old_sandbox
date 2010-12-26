@@ -59,7 +59,11 @@ void f(const T v[]) {
 
 	T xy = x*y;
 
+	xy.mark_as_common_subexpression();
+
 	T z = (5*x-4*sqr(y)+14*xy)/(sqr(x)+y+xy);
+
+	z.equals(10);
 }
 
 void build() {
@@ -87,7 +91,8 @@ void Main() {
 
 	expression_graph<interval> dag( builder::number_of_variables(),
 									builder::get_primitives(),
-									builder::numeric_constants());
+									builder::get_numeric_constants(),
+									builder::get_rhs_of_constraints());
 
 	builder::reset();
 

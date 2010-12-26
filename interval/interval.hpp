@@ -41,7 +41,9 @@ public:
 
 	bool intersect(const interval& other);
 
-	void assign(const interval& other); // Used by the expression graph
+	// Used by the expression graph
+	void assign(const interval& other);
+	void equals(double value);
 
 	friend void copy_array(const interval src[], interval dstn[], int size);
 

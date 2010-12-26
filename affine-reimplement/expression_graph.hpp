@@ -39,7 +39,8 @@ public:
 
 	expression_graph(int number_of_variables,
 			const PrimVector& primitives,
-			const PairVector& numeric_constants);
+			const PairVector& numeric_constants,
+			const DVector& constraint_rhs);
 
 	void set_variables(const T box[], const int length);
 
@@ -68,17 +69,23 @@ private:
 	virtual void multiplication(int z, int x, int y);
 	virtual void division(int z, int x, int y);
 	virtual void square(int z, int x);
+	virtual void equality_constraint(int body, int rhs);
 
 	std::vector<T> v;
 	PrimVector primitives;
 	const PairVector constants;
+	const DVector rhs_constraints;
 };
 
 template <typename T>
 expression_graph<T>::expression_graph(int number_of_variables,
 									  const PrimVector& p,
-									  const PairVector& numeric_const)
-: v(number_of_variables), primitives(p), constants(numeric_const)
+									  const PairVector& numeric_const,
+									  const DVector& constraint_rhs)
+: v(number_of_variables),
+  primitives(p),
+  constants(numeric_const),
+  rhs_constraints(constraint_rhs)
 {
 
 }
@@ -180,6 +187,12 @@ template <typename T>
 void expression_graph<T>::square(int z, int x) {
 
 	v.at(z).assign( sqr(v.at(x)) );
+}
+
+template <typename T>
+void expression_graph<T>::equality_constraint(int body, int rhs) {
+
+	v.at(body).equals(rhs_constraints.at(rhs));
 }
 
 };

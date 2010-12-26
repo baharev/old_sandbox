@@ -39,6 +39,8 @@ public:
 
 	virtual void square(int z, int x) = 0;
 
+	virtual void equality_constraint(int body, int rhs) = 0;
+
 	virtual ~operations() { }
 };
 

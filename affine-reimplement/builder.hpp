@@ -56,15 +56,20 @@ public:
 
 	friend const builder sqr(const builder& x);
 
-	//void mark_as_common_subexpression() const;
+	void mark_as_common_subexpression() const;
 
-	//void equals(double value) const;
+	void equals(double value) const;
 
 	static int number_of_variables();
 
 	static const PrimVector& get_primitives();
 
-	static const PairVector& numeric_constants();
+	static const PairVector& get_numeric_constants();
+
+	// TODOFigure out how to use this info?
+	static const IntVector& get_common_subexpressions();
+
+	static const DVector& get_rhs_of_constraints();
 
 	static void reset();
 
@@ -72,15 +77,17 @@ public:
 
 private:
 
+	static int last_constraint_offset();
+
 	static int unused_index;
 
 	static PrimVector primitives;
 
-	static PairVector constants;
+	static PairVector numeric_constants;
 
-	//static IntVector common_subexpressions;
+	static IntVector common_subexpressions;
 
-	//static IntVector constraints;
+	static DVector constraints_rhs;
 
 	int index;
 };

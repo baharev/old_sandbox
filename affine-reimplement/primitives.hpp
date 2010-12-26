@@ -126,6 +126,23 @@ private:
 	const int x;
 };
 
+class equality_constraint : public primitive {
+
+public:
+
+	equality_constraint(int body, int rhs)
+	: primitive(body), x(rhs) { }
+
+private:
+
+	virtual void evaluate(operations* op) const {
+
+		op->equality_constraint(z, x);
+	}
+
+	const int x;
+};
+
 }
 
 #endif // PRIMITIVES_HPP_

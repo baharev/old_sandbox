@@ -30,7 +30,11 @@ int builder::unused_index = 0;
 
 PrimVector builder::primitives = PrimVector();
 
-PairVector builder::constants = PairVector();
+PairVector builder::numeric_constants = PairVector();
+
+IntVector builder::common_subexpressions = IntVector();
+
+DVector builder::constraints_rhs = DVector();
 
 int builder::number_of_variables() {
 
@@ -42,9 +46,19 @@ const PrimVector& builder::get_primitives() {
 	return primitives;
 }
 
-const PairVector& builder::numeric_constants() {
+const PairVector& builder::get_numeric_constants() {
 
-	return constants;
+	return numeric_constants;
+}
+
+const IntVector& builder::get_common_subexpressions() {
+
+	return common_subexpressions;
+}
+
+const DVector& builder::get_rhs_of_constraints() {
+
+	return constraints_rhs;
 }
 
 void builder::reset() {
@@ -52,6 +66,12 @@ void builder::reset() {
 	unused_index = 0;
 
 	primitives.clear();
+
+	numeric_constants.clear();
+
+	common_subexpressions.clear();
+
+	constraints_rhs.clear();
 }
 
 builder::builder() : index(-1) {
@@ -126,7 +146,7 @@ const builder operator+(const builder& x, double y) {
 
 	const builder Y = builder(y);
 
-	builder::constants.push_back(Pair(Y.index, y));
+	builder::numeric_constants.push_back(Pair(Y.index, y));
 
 	return x+Y;
 }
@@ -135,7 +155,7 @@ const builder operator-(double x, const builder& y) {
 
 	const builder X = builder(x);
 
-	builder::constants.push_back(Pair(X.index, x));
+	builder::numeric_constants.push_back(Pair(X.index, x));
 
 	return X-y;
 }
@@ -144,9 +164,33 @@ const builder operator*(double x, const builder& y) {
 
 	const builder X = builder(x);
 
-	builder::constants.push_back(Pair(X.index, x));
+	builder::numeric_constants.push_back(Pair(X.index, x));
 
 	return X*y;
+}
+
+// TODO Is there any benefit in saving this information?
+void builder::mark_as_common_subexpression() const {
+
+	dbg_consistency();
+
+	common_subexpressions.push_back(index);
+}
+
+int builder::last_constraint_offset() {
+
+	const int n = static_cast<int> ( constraints_rhs.size() );
+
+	return n - 1;
+}
+
+void builder::equals(double value) const {
+
+	dbg_consistency();
+
+	constraints_rhs.push_back(value);
+
+	primitives.push_back(new equality_constraint(index, last_constraint_offset()));
 }
 
 void builder::dbg_consistency() const {
