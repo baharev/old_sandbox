@@ -31,7 +31,7 @@ using namespace std;
 
 namespace {
 
-void sort_bounds(double& lb, double& ub) {
+void swap_if_necessary(double& lb, double& ub) {
 
 	if (lb > ub) {
 		double temp = lb;
@@ -108,7 +108,7 @@ const interval operator*(double x, const interval& y) {
 
 	double lb(x*y.lb), ub(x*y.ub);
 
-	sort_bounds(lb, ub);
+	swap_if_necessary(lb, ub);
 
 	return interval(lb, ub);
 }
@@ -137,9 +137,9 @@ const interval sqr(const interval& x) {
 
 	double lb(std::pow(x.lb, 2)), ub(std::pow(x.ub, 2));
 
-	sort_bounds(lb, ub);
+	swap_if_necessary(lb, ub);
 
-	return (lb<=0 && 0<=ub) ? interval(0, ub) : interval(lb, ub);
+	return (x.lb<=0 && 0<=x.ub) ? interval(0, ub) : interval(lb, ub);
 }
 
 bool interval::degenerate() const {
