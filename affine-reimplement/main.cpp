@@ -25,23 +25,56 @@
 
 using namespace asol;
 
-template <typename T>
-void f() {
+enum { X, Y, SIZE };
 
-	T x(2);
-	T y(3);
-	T z = x+y;
+int size() {
+
+	return SIZE;
 }
 
-int main() {
+template <typename T>
+T* initial_box() {
 
-	f<builder>();
+	T* box = new T[SIZE];
+
+	box[X] = T(2);
+	box[Y] = T(3);
+
+	return box;
+}
+
+template <typename T>
+void f(const T v[]) {
+
+	const T& x = v[X];
+	const T& y = v[Y];
+
+	T z = x + y;
+}
+
+void build() {
+
+	builder* box = initial_box<builder>();
+
+	f(box);
+
+	delete[] box;
+}
+
+void Main() {
+
+	build();
 
 	expression_graph<double> dag(builder::number_of_variables(), builder::get_primitives());
 
 	builder::reset();
 
 	dag.evaluate_primitive(0);
+}
+
+int main() {
+
+	Main();
 
 	return 0;
 }

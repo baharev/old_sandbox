@@ -34,10 +34,17 @@ class expression_graph : private operations {
 
 public:
 
-	expression_graph(int number_of_variables, const std::vector<primitive*>& p){
+	typedef std::vector<primitive*> Vector;
+
+	expression_graph(int number_of_variables, const Vector& p){
 
 		v.resize(number_of_variables);
-		primitives = std::vector<primitive*> (p);
+		primitives = Vector(p);
+	}
+
+	~expression_graph() {
+
+		clear_all();
 	}
 
 	void evaluate_primitive(int i) {
@@ -46,6 +53,23 @@ public:
 	}
 
 private:
+
+	expression_graph(const expression_graph& );
+	expression_graph& operator=(const expression_graph& );
+
+	void clear_all() {
+
+		v.clear();
+
+		typedef Vector::iterator itr;
+
+		for (itr i = primitives.begin(); i!=primitives.end(); ++i) {
+
+			delete *i;
+		}
+
+		primitives.clear();
+	}
 
 	virtual void addition(int z, int x, int y) {
 
