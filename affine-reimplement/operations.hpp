@@ -31,8 +31,11 @@ public:
 
 	virtual void addition(int z, int x, int y) = 0;
 
-	virtual ~operations() { }
+	virtual void substraction(int z, int x, int y) = 0;
 
+	virtual void multiplication(int z, int x, int y) = 0;
+
+	virtual ~operations() { }
 };
 
 }

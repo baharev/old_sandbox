@@ -41,11 +41,17 @@ public:
 
 	friend const builder operator+(const builder& x, const builder& y);
 
+	friend const builder operator-(const builder& x, const builder& y);
+
+	friend const builder operator*(const builder& x, const builder& y);
+
 	static int number_of_variables();
 
 	static const std::vector<primitive*>& get_primitives();
 
 	static void reset();
+
+	void dbg_consistency() const;
 
 private:
 
@@ -55,6 +61,8 @@ private:
 
 	int index;
 };
+
+void dbg_consistency(const builder& x, const builder& y);
 
 }
 

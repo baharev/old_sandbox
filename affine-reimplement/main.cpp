@@ -20,6 +20,7 @@
 //
 //==============================================================================
 
+#include <iostream>
 #include "builder.hpp"
 #include "expression_graph.hpp"
 
@@ -49,7 +50,9 @@ void f(const T v[]) {
 	const T& x = v[X];
 	const T& y = v[Y];
 
-	T z = x + y;
+	T a = x + y;
+	T s = a - y;
+	T m = a * s;
 }
 
 void build() {
@@ -70,6 +73,10 @@ void Main() {
 	builder::reset();
 
 	dag.evaluate_primitive(0);
+	dag.evaluate_primitive(1);
+	dag.evaluate_primitive(2);
+
+	std::cout << "Exiting..." << std::endl;
 }
 
 int main() {
