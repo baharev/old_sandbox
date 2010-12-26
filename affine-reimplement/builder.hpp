@@ -20,28 +20,42 @@
 //
 //==============================================================================
 
-#include "builder.hpp"
-#include "expression_graph.hpp"
+#ifndef BUILDER_HPP_
+#define BUILDER_HPP_
 
-using namespace asol;
+#include <vector>
 
-template <typename T>
-void f() {
+namespace asol {
 
-	T x(2);
-	T y(3);
-	T z = x+y;
+class primitive;
+
+class builder {
+
+public:
+
+	builder();
+
+	builder(double value);
+
+	builder(double lb, double ub);
+
+	friend const builder operator+(const builder& x, const builder& y);
+
+	static int number_of_variables();
+
+	static const std::vector<primitive*>& get_primitives();
+
+	static void reset();
+
+private:
+
+	static int unused_index;
+
+	static std::vector<primitive*> primitives;
+
+	int index;
+};
+
 }
 
-int main() {
-
-	f<builder>();
-
-	expression_graph<double> dag(builder::number_of_variables(), builder::get_primitives());
-
-	builder::reset();
-
-	dag.evaluate_primitive(0);
-
-	return 0;
-}
+#endif // BUILDER_HPP_

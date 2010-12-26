@@ -23,10 +23,38 @@
 #ifndef EXPRESSION_GRAPH_HPP_
 #define EXPRESSION_GRAPH_HPP_
 
+#include <vector>
+#include "operations.hpp"
+#include "primitives.hpp"
+
 namespace asol {
 
-class expression_graph {
+template <typename T>
+class expression_graph : private operations {
 
+public:
+
+	expression_graph(int number_of_variables, const std::vector<primitive*>& p){
+
+		v.resize(number_of_variables);
+		primitives = std::vector<primitive*> (p);
+	}
+
+	void evaluate_primitive(int i) {
+
+		primitives.at(i)->evaluate(this);
+	}
+
+private:
+
+	virtual void addition(int z, int x, int y) {
+
+		v.at(z) = v.at(x) + v.at(y);
+	}
+
+	std::vector<T> v;
+
+	std::vector<primitive*> primitives;
 };
 
 };

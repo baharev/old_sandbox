@@ -20,28 +20,45 @@
 //
 //==============================================================================
 
-#include "builder.hpp"
-#include "expression_graph.hpp"
+#ifndef PRIMITIVES_HPP_
+#define PRIMITIVES_HPP_
 
-using namespace asol;
+#include "operations.hpp"
 
-template <typename T>
-void f() {
+namespace asol {
 
-	T x(2);
-	T y(3);
-	T z = x+y;
+class primitive {
+
+public:
+
+	virtual void evaluate(operations* op) const = 0;
+
+	virtual ~primitive() { }
+
+protected:
+
+	explicit primitive(int value_offset) : z(value_offset) { }
+
+	const int z;
+};
+
+class addition : public primitive {
+
+public:
+
+	addition(int value, int arg1, int arg2)
+	: primitive(value), x(arg1), y(arg2) { }
+
+private:
+
+	virtual void evaluate(operations* op) const {
+		op->addition(z, x, y);
+	}
+
+	const int x;
+	const int y;
+};
+
 }
 
-int main() {
-
-	f<builder>();
-
-	expression_graph<double> dag(builder::number_of_variables(), builder::get_primitives());
-
-	builder::reset();
-
-	dag.evaluate_primitive(0);
-
-	return 0;
-}
+#endif // PRIMITIVES_HPP_

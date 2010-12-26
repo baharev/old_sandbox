@@ -20,4 +20,21 @@
 //
 //==============================================================================
 
-#include "expression_graph.hpp"
+#ifndef OPERATIONS_HPP_
+#define OPERATIONS_HPP_
+
+namespace asol {
+
+class operations {
+
+public:
+
+	virtual void addition(int z, int x, int y) = 0;
+
+	virtual ~operations() { }
+
+};
+
+}
+
+#endif // OPERATIONS_HPP_

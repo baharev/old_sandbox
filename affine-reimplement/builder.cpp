@@ -21,27 +21,50 @@
 //==============================================================================
 
 #include "builder.hpp"
-#include "expression_graph.hpp"
+#include "primitives.hpp"
 
-using namespace asol;
+namespace asol {
 
-template <typename T>
-void f() {
+int builder::unused_index = 0;
 
-	T x(2);
-	T y(3);
-	T z = x+y;
+std::vector<primitive*> builder::primitives = std::vector<primitive*> ();
+
+int builder::number_of_variables() {
+
+	return unused_index;
 }
 
-int main() {
+const std::vector<primitive*>& builder::get_primitives() {
 
-	f<builder>();
+	return primitives;
+}
 
-	expression_graph<double> dag(builder::number_of_variables(), builder::get_primitives());
+void builder::reset() {
 
-	builder::reset();
+	unused_index = 0;
 
-	dag.evaluate_primitive(0);
+	primitives.clear();
+}
 
-	return 0;
+builder::builder() : index(-1) {
+
+}
+
+builder::builder(double value) : index(unused_index++) {
+
+}
+
+builder::builder(double lb, double ub) : index(unused_index++) {
+
+}
+
+const builder operator+(const builder& x, const builder& y) {
+
+	builder z(0);
+
+	builder::primitives.push_back(new addition(z.index, x.index, y.index));
+
+	return z;
+}
+
 }
