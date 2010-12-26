@@ -65,6 +65,15 @@ void build() {
 	delete[] box;
 }
 
+void set_box(expression_graph<double>& dag) {
+
+	double* box = initial_box<double>();
+
+	dag.set_variables(box, size());
+
+	delete[] box;
+}
+
 void Main() {
 
 	build();
@@ -73,11 +82,11 @@ void Main() {
 
 	builder::reset();
 
-	dag.evaluate_primitive(0);
-	dag.evaluate_primitive(1);
-	dag.evaluate_primitive(2);
+	set_box(dag);
 
-	std::cout << "Exiting..." << std::endl;
+	dag.evaluate_all();
+
+	std::cout << "Last value: " << dag.last_value() << std::endl;
 }
 
 int main() {
