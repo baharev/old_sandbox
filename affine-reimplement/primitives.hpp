@@ -93,6 +93,23 @@ private:
 	const int y;
 };
 
+class division : public primitive {
+
+public:
+
+	division(int value, int arg1, int arg2)
+	: primitive(value), x(arg1), y(arg2) { }
+
+private:
+
+	virtual void evaluate(operations* op) const {
+		op->division(z, x, y);
+	}
+
+	const int x;
+	const int y;
+};
+
 }
 
 #endif // PRIMITIVES_HPP_

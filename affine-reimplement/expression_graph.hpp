@@ -86,6 +86,11 @@ private:
 		v.at(z) = v.at(x) * v.at(y);
 	}
 
+	virtual void division(int z, int x, int y) {
+
+		v.at(z) = v.at(x) / v.at(y);
+	}
+
 	std::vector<T> v;
 
 	Vector primitives;

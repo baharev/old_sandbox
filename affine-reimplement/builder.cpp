@@ -92,6 +92,17 @@ const builder operator*(const builder& x, const builder& y) {
 	return z;
 }
 
+const builder operator/(const builder& x, const builder& y) {
+
+	dbg_consistency(x, y);
+
+	builder z(0);
+
+	builder::primitives.push_back(new division(z.index, x.index, y.index));
+
+	return z;
+}
+
 void builder::dbg_consistency() const {
 
 	assert(0<=index && index<unused_index);

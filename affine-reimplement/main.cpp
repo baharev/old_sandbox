@@ -53,6 +53,7 @@ void f(const T v[]) {
 	T a = x + y;
 	T s = a - y;
 	T m = a * s;
+	T d = m / s;
 }
 
 void build() {

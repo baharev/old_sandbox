@@ -35,6 +35,8 @@ public:
 
 	virtual void multiplication(int z, int x, int y) = 0;
 
+	virtual void division(int z, int x, int y) = 0;
+
 	virtual ~operations() { }
 };
 
