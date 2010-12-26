@@ -23,6 +23,7 @@
 #include <iostream>
 #include "builder.hpp"
 #include "expression_graph.hpp"
+#include "interval.hpp"
 
 using namespace asol;
 
@@ -38,8 +39,8 @@ T* initial_box() {
 
 	T* box = new T[SIZE];
 
-	box[X] = T(2);
-	box[Y] = T(3);
+	box[X] = T(1.33073);
+	box[Y] = T(1);
 
 	return box;
 }
@@ -50,10 +51,9 @@ void f(const T v[]) {
 	const T& x = v[X];
 	const T& y = v[Y];
 
-	T a = x + y;
-	T s = a - y;
-	T m = a * s;
-	T d = m / s;
+	T xy = x*y;
+
+	T z = (5*x-4*sqr(y)+14*xy)/(sqr(x)+y+xy);
 }
 
 void build() {
@@ -65,9 +65,10 @@ void build() {
 	delete[] box;
 }
 
-void set_box(expression_graph<double>& dag) {
+template <typename T>
+void set_box(expression_graph<T>& dag) {
 
-	double* box = initial_box<double>();
+	T* box = initial_box<T>();
 
 	dag.set_variables(box, size());
 
@@ -78,7 +79,7 @@ void Main() {
 
 	build();
 
-	expression_graph<double> dag(builder::number_of_variables(), builder::get_primitives());
+	expression_graph<interval> dag(builder::number_of_variables(), builder::get_primitives());
 
 	builder::reset();
 

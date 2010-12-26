@@ -110,6 +110,22 @@ private:
 	const int y;
 };
 
+class square : public primitive {
+
+public:
+
+	square(int value, int arg)
+	: primitive(value), x(arg) { }
+
+private:
+
+	virtual void evaluate(operations* op) const {
+		op->square(z, x);
+	}
+
+	const int x;
+};
+
 }
 
 #endif // PRIMITIVES_HPP_

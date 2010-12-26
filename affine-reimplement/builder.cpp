@@ -63,7 +63,7 @@ const builder operator+(const builder& x, const builder& y) {
 
 	dbg_consistency(x, y);
 
-	builder z(0);
+	const builder z(0);
 
 	builder::primitives.push_back(new addition(z.index, x.index, y.index));
 
@@ -74,7 +74,7 @@ const builder operator-(const builder& x, const builder& y) {
 
 	dbg_consistency(x, y);
 
-	builder z(0);
+	const builder z(0);
 
 	builder::primitives.push_back(new substraction(z.index, x.index, y.index));
 
@@ -85,7 +85,7 @@ const builder operator*(const builder& x, const builder& y) {
 
 	dbg_consistency(x, y);
 
-	builder z(0);
+	const builder z(0);
 
 	builder::primitives.push_back(new multiplication(z.index, x.index, y.index));
 
@@ -96,9 +96,20 @@ const builder operator/(const builder& x, const builder& y) {
 
 	dbg_consistency(x, y);
 
-	builder z(0);
+	const builder z(0);
 
 	builder::primitives.push_back(new division(z.index, x.index, y.index));
+
+	return z;
+}
+
+const builder sqr(const builder& x) {
+
+	x.dbg_consistency();
+
+	const builder z(0);
+
+	builder::primitives.push_back(new square(z.index, x.index));
 
 	return z;
 }

@@ -23,6 +23,7 @@
 #ifndef EXPRESSION_GRAPH_HPP_
 #define EXPRESSION_GRAPH_HPP_
 
+#include <limits>
 #include <vector>
 #include "operations.hpp"
 #include "primitives.hpp"
@@ -56,11 +57,13 @@ private:
 	expression_graph& operator=(const expression_graph& );
 
 	void clear_all();
+	int v_size() const { return static_cast<int> (v.size()); }
 
-	virtual void addition(int z, int x, int y)      { v.at(z)=v.at(x)+v.at(y); }
-	virtual void substraction(int z, int x, int y)  { v.at(z)=v.at(x)-v.at(y); }
-	virtual void multiplication(int z, int x, int y){ v.at(z)=v.at(x)*v.at(y); }
-	virtual void division(int z, int x, int y)      { v.at(z)=v.at(x)/v.at(y); }
+	virtual void addition(int z, int x, int y);
+	virtual void substraction(int z, int x, int y);
+	virtual void multiplication(int z, int x, int y);
+	virtual void division(int z, int x, int y);
+	virtual void square(int z, int x);
 
 	std::vector<T> v;
 	Vector primitives;
@@ -100,6 +103,14 @@ void expression_graph<T>::set_variables(const T box[], const int length) {
 
 		v.at(i) = box[i];
 	}
+
+	const double DMAX =  std::numeric_limits<double>::max();
+	const double DMIN = -DMAX;
+
+	for (int i=length; i<v_size(); ++i) {
+
+		v.at(i) = T(DMIN, DMAX);
+	}
 }
 
 template <typename T>
@@ -121,6 +132,36 @@ template <typename T>
 void expression_graph<T>::evaluate_primitive(int i) {
 
 	primitives.at(i)->evaluate(this);
+}
+
+template <typename T>
+void expression_graph<T>::addition(int z, int x, int y) {
+
+	v.at(z).assign( v.at(x)+v.at(y) );
+}
+
+template <typename T>
+void expression_graph<T>::substraction(int z, int x, int y) {
+
+	v.at(z).assign( v.at(x)-v.at(y) );
+}
+
+template <typename T>
+void expression_graph<T>::multiplication(int z, int x, int y) {
+
+	v.at(z).assign( v.at(x)*v.at(y) );
+}
+
+template <typename T>
+void expression_graph<T>::division(int z, int x, int y) {
+
+	v.at(z).assign( v.at(x)/v.at(y) );
+}
+
+template <typename T>
+void expression_graph<T>::square(int z, int x) {
+
+	v.at(z).assign( sqr(v.at(x)) );
 }
 
 };

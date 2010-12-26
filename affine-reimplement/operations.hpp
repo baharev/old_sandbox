@@ -37,6 +37,8 @@ public:
 
 	virtual void division(int z, int x, int y) = 0;
 
+	virtual void square(int z, int x) = 0;
+
 	virtual ~operations() { }
 };
 

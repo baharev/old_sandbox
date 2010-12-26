@@ -47,6 +47,8 @@ public:
 
 	friend const builder operator/(const builder& x, const builder& y);
 
+	friend const builder sqr(const builder& x);
+
 	static int number_of_variables();
 
 	static const std::vector<primitive*>& get_primitives();

@@ -161,6 +161,11 @@ bool interval::intersect(const interval& other) {
 	return intersect(other.inf(), other.sup());
 }
 
+void interval::assign(const interval& other) {
+
+	intersect(other);
+}
+
 bool interval::intersect(const double l, const double u) {
 
 	assert(l<=u);
