@@ -25,8 +25,10 @@
 
 #include <limits>
 #include <vector>
+#include <assert.h>
 #include "operations.hpp"
 #include "primitives.hpp"
+#include "typedefs.hpp"
 
 namespace asol {
 
@@ -35,9 +37,9 @@ class expression_graph : private operations {
 
 public:
 
-	typedef std::vector<primitive*> Vector;
-
-	expression_graph(int number_of_variables, const Vector& p);
+	expression_graph(int number_of_variables,
+			const PrimVector& primitives,
+			const PairVector& numeric_constants);
 
 	void set_variables(const T box[], const int length);
 
@@ -51,13 +53,15 @@ public:
 
 private:
 
-	typedef Vector::iterator itr;
+	typedef PrimVector::iterator itr;
 
 	expression_graph(const expression_graph& );
 	expression_graph& operator=(const expression_graph& );
 
-	void clear_all();
 	int v_size() const { return static_cast<int> (v.size()); }
+	int constants_size() const { return static_cast<int> (constants.size()); }
+	void set_non_variables(const int length);
+	void set_numeric_consts(const int length);
 
 	virtual void addition(int z, int x, int y);
 	virtual void substraction(int z, int x, int y);
@@ -66,34 +70,26 @@ private:
 	virtual void square(int z, int x);
 
 	std::vector<T> v;
-	Vector primitives;
+	PrimVector primitives;
+	const PairVector constants;
 };
 
 template <typename T>
-expression_graph<T>::expression_graph(int number_of_variables, const Vector& p){
+expression_graph<T>::expression_graph(int number_of_variables,
+									  const PrimVector& p,
+									  const PairVector& numeric_const)
+: v(number_of_variables), primitives(p), constants(numeric_const)
+{
 
-	v.resize(number_of_variables);
-
-	primitives = Vector(p);
 }
 
 template <typename T>
 expression_graph<T>::~expression_graph() {
 
-	clear_all();
-}
-
-template <typename T>
-void expression_graph<T>::clear_all() {
-
-	v.clear();
-
 	for (itr i = primitives.begin(); i!=primitives.end(); ++i) {
 
 		delete *i;
 	}
-
-	primitives.clear();
 }
 
 template <typename T>
@@ -104,12 +100,34 @@ void expression_graph<T>::set_variables(const T box[], const int length) {
 		v.at(i) = box[i];
 	}
 
+	set_non_variables(length);
+
+	set_numeric_consts(length);
+}
+
+template <typename T>
+void expression_graph<T>::set_non_variables(const int length) {
+
 	const double DMAX =  std::numeric_limits<double>::max();
 	const double DMIN = -DMAX;
 
 	for (int i=length; i<v_size(); ++i) {
 
 		v.at(i) = T(DMIN, DMAX);
+	}
+}
+
+template <typename T>
+void expression_graph<T>::set_numeric_consts(const int length) {
+
+	for (int i=0; i<constants_size(); ++i) {
+
+		const int    index = constants.at(i).first;
+		const double value = constants.at(i).second;
+
+		assert(index>=length);
+
+		v.at(index) = T(value);
 	}
 }
 

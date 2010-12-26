@@ -24,6 +24,7 @@
 #define BUILDER_HPP_
 
 #include <vector>
+#include "typedefs.hpp"
 
 namespace asol {
 
@@ -35,23 +36,35 @@ public:
 
 	builder();
 
-	builder(double value);
+	explicit builder(double value);
 
 	builder(double lb, double ub);
 
 	friend const builder operator+(const builder& x, const builder& y);
 
+	friend const builder operator+(const builder& x, double y);
+
 	friend const builder operator-(const builder& x, const builder& y);
 
+	friend const builder operator-(double x, const builder& y);
+
 	friend const builder operator*(const builder& x, const builder& y);
+
+	friend const builder operator*(double x, const builder& y);
 
 	friend const builder operator/(const builder& x, const builder& y);
 
 	friend const builder sqr(const builder& x);
 
+	//void mark_as_common_subexpression() const;
+
+	//void equals(double value) const;
+
 	static int number_of_variables();
 
-	static const std::vector<primitive*>& get_primitives();
+	static const PrimVector& get_primitives();
+
+	static const PairVector& numeric_constants();
 
 	static void reset();
 
@@ -61,10 +74,18 @@ private:
 
 	static int unused_index;
 
-	static std::vector<primitive*> primitives;
+	static PrimVector primitives;
+
+	static PairVector constants;
+
+	//static IntVector common_subexpressions;
+
+	//static IntVector constraints;
 
 	int index;
 };
+
+const builder operator+(double x, const builder& y);
 
 void dbg_consistency(const builder& x, const builder& y);
 

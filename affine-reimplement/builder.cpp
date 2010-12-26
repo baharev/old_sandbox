@@ -28,16 +28,23 @@ namespace asol {
 
 int builder::unused_index = 0;
 
-std::vector<primitive*> builder::primitives = std::vector<primitive*> ();
+PrimVector builder::primitives = PrimVector();
+
+PairVector builder::constants = PairVector();
 
 int builder::number_of_variables() {
 
 	return unused_index;
 }
 
-const std::vector<primitive*>& builder::get_primitives() {
+const PrimVector& builder::get_primitives() {
 
 	return primitives;
+}
+
+const PairVector& builder::numeric_constants() {
+
+	return constants;
 }
 
 void builder::reset() {
@@ -59,6 +66,7 @@ builder::builder(double lb, double ub) : index(unused_index++) {
 
 }
 
+// FIXME Remove code duplication!
 const builder operator+(const builder& x, const builder& y) {
 
 	dbg_consistency(x, y);
@@ -112,6 +120,33 @@ const builder sqr(const builder& x) {
 	builder::primitives.push_back(new square(z.index, x.index));
 
 	return z;
+}
+
+const builder operator+(const builder& x, double y) {
+
+	const builder Y = builder(y);
+
+	builder::constants.push_back(Pair(Y.index, y));
+
+	return x+Y;
+}
+
+const builder operator-(double x, const builder& y) {
+
+	const builder X = builder(x);
+
+	builder::constants.push_back(Pair(X.index, x));
+
+	return X-y;
+}
+
+const builder operator*(double x, const builder& y) {
+
+	const builder X = builder(x);
+
+	builder::constants.push_back(Pair(X.index, x));
+
+	return X*y;
 }
 
 void builder::dbg_consistency() const {

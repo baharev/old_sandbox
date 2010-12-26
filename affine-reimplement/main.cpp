@@ -39,8 +39,14 @@ T* initial_box() {
 
 	T* box = new T[SIZE];
 
-	box[X] = T(1.33073);
-	box[Y] = T(1);
+	//box[X] = T(1.33073);
+	//box[Y] = T(1);
+
+	//box[X] = T(1);
+	//box[Y] = T(10);
+
+	box[X] = T(1, 10);
+	box[Y] = T(1, 10);
 
 	return box;
 }
@@ -79,7 +85,9 @@ void Main() {
 
 	build();
 
-	expression_graph<interval> dag(builder::number_of_variables(), builder::get_primitives());
+	expression_graph<interval> dag( builder::number_of_variables(),
+									builder::get_primitives(),
+									builder::numeric_constants());
 
 	builder::reset();
 
