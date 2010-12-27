@@ -77,6 +77,8 @@ public:
 
 	static void dbg_dump_type_of_primitives();
 
+	static void dbg_show_info();
+
 	void dbg_consistency() const;
 
 private:

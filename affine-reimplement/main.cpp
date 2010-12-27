@@ -98,6 +98,8 @@ void Main() {
 
 	builder::record_occurence_info();
 
+	builder::dbg_show_info();
+
 	builder::reset();
 
 	set_box(dag);

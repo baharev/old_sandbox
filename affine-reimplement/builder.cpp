@@ -80,6 +80,20 @@ void builder::reset() {
 	constraints_rhs.clear();
 }
 
+
+void builder::dbg_show_info() {
+
+	using namespace std;
+
+	cout << "=============================="                          << endl;
+	cout << "Max used index:        " << unused_index-1               << endl;
+	cout << "Common subexpressions: " << common_subexpressions.size() << endl;
+	cout << "Number of constraints: " << constraints_rhs.size()       << endl;
+	cout << "Number of primitives:  " << primitives.size()            << endl;
+	cout << "Numeric constants:     " << numeric_constants.size()     << endl;
+	cout << "=============================="                          << endl;
+}
+
 builder::builder() : index(-1) {
 
 }
