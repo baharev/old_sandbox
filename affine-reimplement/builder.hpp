@@ -60,24 +60,30 @@ public:
 
 	void equals(double value) const;
 
+	static void record_occurence_info();
+
 	static int number_of_variables();
 
 	static const PrimVector& get_primitives();
 
 	static const PairVector& get_numeric_constants();
 
-	// TODOFigure out how to use this info?
+	// TODO Figure out how to use this info?
 	static const IntVector& get_common_subexpressions();
 
-	static const DVector& get_rhs_of_constraints();
+	static const PairVector& get_rhs_of_constraints();
 
 	static void reset();
+
+	static void dbg_dump_type_of_primitives();
 
 	void dbg_consistency() const;
 
 private:
 
 	static int last_constraint_offset();
+
+	static void occurence_info_of_constraint(const int k);
 
 	static int unused_index;
 
@@ -87,7 +93,7 @@ private:
 
 	static IntVector common_subexpressions;
 
-	static DVector constraints_rhs;
+	static PairVector constraints_rhs;
 
 	int index;
 };

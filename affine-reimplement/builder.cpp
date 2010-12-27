@@ -20,11 +20,16 @@
 //
 //==============================================================================
 
+#include <iostream>
+#include <set>
+#include <typeinfo>
 #include <assert.h>
 #include "builder.hpp"
 #include "primitives.hpp"
 
 namespace asol {
+
+typedef std::set<int> Set;
 
 int builder::unused_index = 0;
 
@@ -34,7 +39,7 @@ PairVector builder::numeric_constants = PairVector();
 
 IntVector builder::common_subexpressions = IntVector();
 
-DVector builder::constraints_rhs = DVector();
+PairVector builder::constraints_rhs = PairVector();
 
 int builder::number_of_variables() {
 
@@ -56,7 +61,7 @@ const IntVector& builder::get_common_subexpressions() {
 	return common_subexpressions;
 }
 
-const DVector& builder::get_rhs_of_constraints() {
+const PairVector& builder::get_rhs_of_constraints() {
 
 	return constraints_rhs;
 }
@@ -188,9 +193,65 @@ void builder::equals(double value) const {
 
 	dbg_consistency();
 
-	constraints_rhs.push_back(value);
+	constraints_rhs.push_back(Pair(index, value));
 
 	primitives.push_back(new equality_constraint(index, last_constraint_offset()));
+}
+
+void builder::record_occurence_info() {
+
+	const int n = static_cast<int>(constraints_rhs.size());
+
+	for (int i=0; i<n; ++i) {
+
+		occurence_info_of_constraint(i);
+	}
+}
+
+void dump_index_set(int k, const Set& index_set) {
+
+	std::cout << "Constraint " << k << std::endl;
+
+	Set::const_iterator i = index_set.begin();
+
+	while (i!=index_set.end()) {
+
+		std::cout << *i << std::endl;
+
+		++i;
+	}
+}
+
+void builder::occurence_info_of_constraint(const int k) {
+
+	const int start = (k!=0) ? constraints_rhs.at(k-1).first + 1 : 0;
+
+	const int end   =          constraints_rhs.at(k  ).first;
+
+	assert(start < end);
+
+	Set index_set;
+
+	for (int i=start; i<end; ++i) {
+
+		primitives.at(i)->record_indices(index_set);
+	}
+
+	dump_index_set(k, index_set);
+}
+
+void builder::dbg_dump_type_of_primitives() {
+
+	using namespace std;
+
+	const int n = static_cast<int> (primitives.size());
+
+	cout << "Dumping type of " << n << " constraints" << endl;
+
+	for (int i=0; i<n; ++i) {
+
+		cout << i << ": " << typeid(primitives.at(i)).name() << endl;
+	}
 }
 
 void builder::dbg_consistency() const {

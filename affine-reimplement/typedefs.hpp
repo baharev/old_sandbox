@@ -37,8 +37,6 @@ typedef std::vector<Pair> PairVector;
 
 typedef std::vector<int> IntVector;
 
-typedef std::vector<double> DVector;
-
 }
 
 

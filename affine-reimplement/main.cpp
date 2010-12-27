@@ -94,6 +94,10 @@ void Main() {
 									builder::get_numeric_constants(),
 									builder::get_rhs_of_constraints());
 
+	builder::dbg_dump_type_of_primitives();
+
+	builder::record_occurence_info();
+
 	builder::reset();
 
 	set_box(dag);

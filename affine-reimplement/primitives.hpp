@@ -23,6 +23,8 @@
 #ifndef PRIMITIVES_HPP_
 #define PRIMITIVES_HPP_
 
+#include <set>
+#include <stdexcept>
 #include "operations.hpp"
 
 namespace asol {
@@ -32,6 +34,8 @@ class primitive {
 public:
 
 	virtual void evaluate(operations* op) const = 0;
+
+	virtual void record_indices(std::set<int>& index_set) const = 0;
 
 	virtual ~primitive() { }
 
@@ -49,6 +53,11 @@ protected:
 	unary_primitive(int value, int arg)
 	: primitive(value), x(arg) { }
 
+	virtual void record_indices(std::set<int>& index_set) const {
+		index_set.insert(z);
+		index_set.insert(x);
+	}
+
 	const int x;
 };
 
@@ -58,6 +67,12 @@ protected:
 
 	binary_primitive(int value, int arg1, int arg2)
 	: primitive(value), x(arg1), y(arg2) { }
+
+	virtual void record_indices(std::set<int>& index_set) const {
+		index_set.insert(z);
+		index_set.insert(x);
+		index_set.insert(y);
+	}
 
 	const int x;
 	const int y;
@@ -145,6 +160,11 @@ private:
 	virtual void evaluate(operations* op) const {
 
 		op->equality_constraint(z, x);
+	}
+
+	virtual void record_indices(std::set<int>& index_set) const {
+		// TODO Figure out what and how to do
+		throw std::logic_error("record_indices called on a constraint");
 	}
 
 	const int x;
