@@ -42,88 +42,95 @@ protected:
 	const int z;
 };
 
-class addition : public primitive {
+class unary_primitive : public primitive {
+
+protected:
+
+	unary_primitive(int value, int arg)
+	: primitive(value), x(arg) { }
+
+	const int x;
+};
+
+class binary_primitive : public primitive {
+
+protected:
+
+	binary_primitive(int value, int arg1, int arg2)
+	: primitive(value), x(arg1), y(arg2) { }
+
+	const int x;
+	const int y;
+};
+
+class addition : public binary_primitive {
 
 public:
 
 	addition(int value, int arg1, int arg2)
-	: primitive(value), x(arg1), y(arg2) { }
+	: binary_primitive(value, arg1, arg2) { }
 
 private:
 
 	virtual void evaluate(operations* op) const {
 		op->addition(z, x, y);
 	}
-
-	const int x;
-	const int y;
 };
 
-class substraction : public primitive {
+class substraction : public binary_primitive {
 
 public:
 
 	substraction(int value, int arg1, int arg2)
-	: primitive(value), x(arg1), y(arg2) { }
+	: binary_primitive(value, arg1, arg2) { }
 
 private:
 
 	virtual void evaluate(operations* op) const {
 		op->substraction(z, x, y);
 	}
-
-	const int x;
-	const int y;
 };
 
-class multiplication : public primitive {
+class multiplication : public binary_primitive {
 
 public:
 
 	multiplication(int value, int arg1, int arg2)
-	: primitive(value), x(arg1), y(arg2) { }
+	: binary_primitive(value, arg1, arg2) { }
 
 private:
 
 	virtual void evaluate(operations* op) const {
 		op->multiplication(z, x, y);
 	}
-
-	const int x;
-	const int y;
 };
 
-class division : public primitive {
+class division : public binary_primitive {
 
 public:
 
 	division(int value, int arg1, int arg2)
-	: primitive(value), x(arg1), y(arg2) { }
+	: binary_primitive(value, arg1, arg2) { }
 
 private:
 
 	virtual void evaluate(operations* op) const {
 		op->division(z, x, y);
 	}
-
-	const int x;
-	const int y;
 };
 
-class square : public primitive {
+class square : public unary_primitive {
 
 public:
 
 	square(int value, int arg)
-	: primitive(value), x(arg) { }
+	: unary_primitive(value, arg) { }
 
 private:
 
 	virtual void evaluate(operations* op) const {
 		op->square(z, x);
 	}
-
-	const int x;
 };
 
 class equality_constraint : public primitive {
