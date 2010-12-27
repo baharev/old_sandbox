@@ -62,6 +62,8 @@ public:
 
 	static void record_occurence_info();
 
+	static int number_of_arguments();
+
 	static int number_of_variables();
 
 	static const PrimVector& get_primitives();
@@ -72,6 +74,8 @@ public:
 	static const IntVector& get_common_subexpressions();
 
 	static const PairVector& get_rhs_of_constraints();
+
+	static const BoundVector& get_initial_box();
 
 	static void reset();
 
@@ -87,6 +91,8 @@ private:
 
 	static void occurence_info_of_constraint(const int k);
 
+	static int number_of_vars;
+
 	static int unused_index;
 
 	static PrimVector primitives;
@@ -97,10 +103,14 @@ private:
 
 	static PairVector constraints_rhs;
 
+	static BoundVector initial_box;
+
 	int index;
 };
 
 const builder operator+(double x, const builder& y);
+
+const builder operator-(const builder& x, double y);
 
 void dbg_consistency(const builder& x, const builder& y);
 

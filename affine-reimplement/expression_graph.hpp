@@ -37,12 +37,11 @@ class expression_graph : private operations {
 
 public:
 
-	expression_graph(int number_of_variables,
+	expression_graph(int number_of_arguments,
 			const PrimVector& primitives,
 			const PairVector& numeric_constants,
-			const PairVector& constraint_rhs);
-
-	void set_variables(const T box[], const int length);
+			const PairVector& constraint_rhs,
+			const BoundVector& initialbox);
 
 	void evaluate_all();
 
@@ -61,6 +60,7 @@ private:
 
 	int v_size() const { return static_cast<int> (v.size()); }
 	int constants_size() const { return static_cast<int> (constants.size()); }
+	void set_variables();
 	void set_non_variables(const int length);
 	void set_numeric_consts(const int length);
 
@@ -75,19 +75,22 @@ private:
 	PrimVector primitives;
 	const PairVector constants;
 	const PairVector rhs_constraints;
+	const BoundVector initial_box;
 };
 
 template <typename T>
-expression_graph<T>::expression_graph(int number_of_variables,
+expression_graph<T>::expression_graph(int number_of_arguments,
 									  const PrimVector& p,
 									  const PairVector& numeric_const,
-									  const PairVector& constraint_rhs)
-: v(number_of_variables),
+									  const PairVector& constraint_rhs,
+									  const BoundVector& initialbox)
+: v(number_of_arguments),
   primitives(p),
   constants(numeric_const),
-  rhs_constraints(constraint_rhs)
+  rhs_constraints(constraint_rhs),
+  initial_box(initialbox)
 {
-
+	set_variables();
 }
 
 template <typename T>
@@ -100,11 +103,15 @@ expression_graph<T>::~expression_graph() {
 }
 
 template <typename T>
-void expression_graph<T>::set_variables(const T box[], const int length) {
+void expression_graph<T>::set_variables() {
+
+	const int length = static_cast<int> (initial_box.size());
 
 	for (int i=0; i<length; ++i) {
 
-		v.at(i) = box[i];
+		const Bounds& bound = initial_box.at(i);
+
+		v.at(i) = T(bound.first, bound.second);
 	}
 
 	set_non_variables(length);

@@ -34,6 +34,8 @@ typedef std::set<int> Set;
 
 int builder::unused_index = 0;
 
+int builder::number_of_vars = 0;
+
 PrimVector builder::primitives = PrimVector();
 
 PairVector builder::numeric_constants = PairVector();
@@ -42,9 +44,17 @@ IntVector builder::common_subexpressions = IntVector();
 
 PairVector builder::constraints_rhs = PairVector();
 
-int builder::number_of_variables() {
+BoundVector builder::initial_box = BoundVector();
+
+int builder::number_of_arguments() {
 
 	return unused_index;
+}
+
+int builder::number_of_variables() {
+
+	assert(number_of_vars == static_cast<int> (initial_box.size()));
+	return number_of_vars;
 }
 
 const PrimVector& builder::get_primitives() {
@@ -67,9 +77,16 @@ const PairVector& builder::get_rhs_of_constraints() {
 	return constraints_rhs;
 }
 
+const BoundVector& builder::get_initial_box() {
+
+	return initial_box;
+}
+
 void builder::reset() {
 
 	unused_index = 0;
+
+	number_of_vars = 0;
 
 	primitives.clear();
 
@@ -78,15 +95,17 @@ void builder::reset() {
 	common_subexpressions.clear();
 
 	constraints_rhs.clear();
-}
 
+	initial_box.clear();
+}
 
 void builder::dbg_show_info() {
 
 	using namespace std;
 
 	cout << "=============================="                          << endl;
-	cout << "Max used index:        " << unused_index-1               << endl;
+	cout << "Number of variables:   " << number_of_vars               << endl;
+	cout << "Max used index (args): " << unused_index-1               << endl;
 	cout << "Common subexpressions: " << common_subexpressions.size() << endl;
 	cout << "Number of constraints: " << constraints_rhs.size()       << endl;
 	cout << "Number of primitives:  " << primitives.size()            << endl;
@@ -104,6 +123,9 @@ builder::builder(double value) : index(unused_index++) {
 
 builder::builder(double lb, double ub) : index(unused_index++) {
 
+	assert(lb <= ub);
+	++number_of_vars;
+	initial_box.push_back(Bounds(lb, ub));
 }
 
 // FIXME Remove code duplication!
@@ -169,6 +191,11 @@ const builder operator+(const builder& x, double y) {
 	builder::numeric_constants.push_back(Pair(Y.index, y));
 
 	return x+Y;
+}
+
+const builder operator-(const builder& x, double y) {
+
+	return x+(-y);
 }
 
 const builder operator-(double x, const builder& y) {

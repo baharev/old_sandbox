@@ -20,28 +20,26 @@
 //
 //==============================================================================
 
-#ifndef TYPEDEFS_HPP_
-#define TYPEDEFS_HPP_
-
-#include <utility>
+#ifndef PROBLEM_HPP_
+#define PROBLEM_HPP_
 
 namespace asol {
 
-class primitive;
+template <typename T>
+class problem {
 
-typedef std::vector<primitive*> PrimVector;
+public:
 
-typedef std::pair<int, double> Pair;
+	virtual int number_of_variables() const = 0;
 
-typedef std::vector<Pair> PairVector;
+	virtual T* initial_box() const = 0;
 
-typedef std::vector<int> IntVector;
+	virtual void evaluate(const T x[]) const = 0;
 
-typedef std::pair<double,double> Bounds;
+	virtual ~problem() { }
 
-typedef std::vector<Bounds> BoundVector;
+};
 
 }
 
-
-#endif // TYPEDEFS_HPP_
+#endif // PROBLEM_HPP_
