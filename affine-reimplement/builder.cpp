@@ -26,6 +26,7 @@
 #include <assert.h>
 #include "builder.hpp"
 #include "primitives.hpp"
+#include "demangle.hpp"
 
 namespace asol {
 
@@ -193,7 +194,9 @@ void builder::equals(double value) const {
 
 	dbg_consistency();
 
-	constraints_rhs.push_back(Pair(index, value));
+	const int primitive_index = static_cast<int>(primitives.size());
+
+	constraints_rhs.push_back(Pair(primitive_index, value));
 
 	primitives.push_back(new equality_constraint(index, last_constraint_offset()));
 }
@@ -250,7 +253,8 @@ void builder::dbg_dump_type_of_primitives() {
 
 	for (int i=0; i<n; ++i) {
 
-		cout << i << ": " << typeid(primitives.at(i)).name() << endl;
+		cout << i << ": ";
+		cout << demangle( typeid(*primitives.at(i)).name() ) << endl;
 	}
 }
 
