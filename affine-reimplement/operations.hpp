@@ -31,15 +31,27 @@ public:
 
 	virtual void addition(int z, int x, int y) = 0;
 
+	virtual void addition_revise(int z, int x, int y) = 0;
+
 	virtual void substraction(int z, int x, int y) = 0;
+
+	virtual void substraction_revise(int z, int x, int y) = 0;
 
 	virtual void multiplication(int z, int x, int y) = 0;
 
+	virtual void multiplication_revise(int z, int x, int y) = 0;
+
 	virtual void division(int z, int x, int y) = 0;
+
+	virtual void division_revise(int z, int x, int y) = 0;
 
 	virtual void square(int z, int x) = 0;
 
+	virtual void square_revise(int z, int x) = 0;
+
 	virtual void equality_constraint(int body, int rhs) = 0;
+
+	virtual void equality_constraint_revise(int body, int rhs) = 0;
 
 	virtual ~operations() { }
 };

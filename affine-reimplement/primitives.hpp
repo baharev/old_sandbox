@@ -35,6 +35,8 @@ public:
 
 	virtual void evaluate(operations* op) const = 0;
 
+	virtual void revise(operations* op) const = 0;
+
 	virtual void record_indices(std::set<int>& index_set) const = 0;
 
 	virtual ~primitive() { }
@@ -104,6 +106,10 @@ private:
 		op->addition(z, x, y);
 	}
 
+	virtual void revise(operations* op) const {
+		op->addition_revise(z, x, y);
+	}
+
 	addition& operator=(const addition& );
 };
 
@@ -118,6 +124,10 @@ private:
 
 	virtual void evaluate(operations* op) const {
 		op->substraction(z, x, y);
+	}
+
+	virtual void revise(operations* op) const {
+		op->substraction_revise(z, x, y);
 	}
 
 	substraction& operator=(const substraction& );
@@ -136,6 +146,10 @@ private:
 		op->multiplication(z, x, y);
 	}
 
+	virtual void revise(operations* op) const {
+		op->multiplication_revise(z, x, y);
+	}
+
 	multiplication& operator=(const multiplication& );
 };
 
@@ -150,6 +164,10 @@ private:
 
 	virtual void evaluate(operations* op) const {
 		op->division(z, x, y);
+	}
+
+	virtual void revise(operations* op) const {
+		op->division_revise(z, x, y);
 	}
 
 	division& operator=(const division& );
@@ -168,6 +186,10 @@ private:
 		op->square(z, x);
 	}
 
+	virtual void revise(operations* op) const {
+		op->square_revise(z, x);
+	}
+
 	square& operator=(const square& );
 };
 
@@ -181,8 +203,11 @@ public:
 private:
 
 	virtual void evaluate(operations* op) const {
-
 		op->equality_constraint(z, x);
+	}
+
+	virtual void revise(operations* op) const {
+		op->equality_constraint_revise(z, x);
 	}
 
 	virtual void record_indices(std::set<int>& ) const {

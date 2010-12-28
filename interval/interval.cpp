@@ -75,6 +75,13 @@ const interval operator+(const interval& x, double y) {
 	return interval(x.lb+y, x.ub+y);
 }
 
+const interval operator-(const interval& x) {
+
+	ASSERT2(x.lb <= x.ub, "x: "<<x)
+
+	return interval(-(x.ub), -(x.lb));
+}
+
 const interval operator-(const interval& x, const interval& y) {
 
 	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y)
@@ -137,6 +144,14 @@ const interval sqr(const interval& x) {
 	swap_if_necessary(lb, ub);
 
 	return (x.lb<=0 && 0<=x.ub) ? interval(0, ub) : interval(lb, ub);
+}
+
+const interval sqrt(const interval& x) {
+
+	ASSERT2(x.lb <= x.ub, "x: "<<x);
+	ASSERT2(0<=x.lb, "x.lb = "<<x.lb);
+
+	return interval(std::sqrt(x.lb), std::sqrt(x.ub));
 }
 
 bool interval::degenerate() const {
@@ -207,6 +222,62 @@ void propagate_mult(interval& z, interval& x, interval& y) {
 
 	// z = x*y
 	z.intersect(x*y);
+}
+
+void addition_inverse(interval& z, interval& x, interval& y) {
+
+	x.intersect(z-y);
+
+	y.intersect(z-x);
+
+	z.intersect(x+y);
+}
+
+void substraction_inverse(interval& z, interval& x, interval& y) {
+
+	// z = x - y --> x = z + y
+	addition_inverse(x, z, y);
+}
+
+void multiplication_inverse(interval& z, interval& x, interval& y) {
+	// TODO Use extended division and save the gap?
+	// TODO Eliminate propagate_mult, only used by envelopes
+	propagate_mult(z, x, y);
+}
+
+void division_inverse(interval& z, interval& x, interval& y) {
+
+	ASSERT2(!y.contains(0), "y: "<<y)
+
+	// z = x/y --> x = z*y
+	multiplication_inverse(x, z, y);
+}
+
+void sqr_inverse(interval& z, interval& x) {
+
+	interval x_new = asol::sqrt(z);
+
+	if (x.inf()>=0) {
+		;
+	}
+	else if (x.sup()<=0) {
+		x_new = -x_new;
+	}
+	else {
+		x_new = interval(-(x_new.sup()), x_new.sup());
+	}
+
+	x.intersect(x_new);
+
+	z.intersect(sqr(x));
+}
+
+// TODO Does this make sense?
+void equality_constraint_inverse(interval& z, interval& x) {
+
+	x.intersect(z);
+
+	z.intersect(x);
 }
 
 void copy_array(const interval src[], interval dstn[], int size) {

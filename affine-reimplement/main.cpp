@@ -85,7 +85,7 @@ void Hansen_example<T>::evaluate(const T v[]) const {
 
 	T z = (5*x-4*sqr(y)+14*xy)/(sqr(x)+y+xy);
 
-	z.equals(10);
+	z.equals(14.5);
 }
 
 //==============================================================================
@@ -156,6 +156,7 @@ void Example_challange<T>::evaluate(const T var[]) const {
 
 	const T f = (a*(u-v)+2*d)/(u+v);
 
+	f.equals(0);
 }
 
 //==============================================================================
@@ -268,8 +269,11 @@ T* Example_3<T>::initial_box() const {
 
 	T* box = new T[SIZE];
 
-	box[X] = T( 0.0, 1.0);
-	box[Y] = T(-1.0, 1.0);
+	//box[X] = T( 0.0, 1.0);
+	//box[Y] = T(-1.0, 1.0);
+
+	box[X] = T(-1.0,-0.5);
+	box[Y] = T( 0.5, 1.0);
 
 	return box;
 }
@@ -326,33 +330,52 @@ void dag_test(const problem<builder>* prob) {
 	builder::dbg_show_info();
 	builder::reset();
 
-	dag.evaluate_all();
+	for (int i=0; i<40; ++i) {
+		dag.revise_all();
+	}
+
+	dag.show_variables(std::cout);
 
 	std::cout << "Last value: " << dag.last_value() << std::endl;
 }
 
 void example_Hansen() {
 
+	std::cout << "===============================================" << std::endl;
+	std::cout << "Hansen\'s example" << std::endl;
+
 	dag_test(new Hansen_example<builder> ());
 }
 
 void example_challenge() {
+
+	std::cout << "===============================================" << std::endl;
+	std::cout << "Neumaier\'s interval challange" << std::endl;
 
 	dag_test(new Example_challange<builder> ());
 }
 
 void example_1() {
 
+	std::cout << "===============================================" << std::endl;
+	std::cout << "(x-1)/(x^2+2)" << std::endl;
+
 	dag_test(new Example_1<builder> ());
 }
 
 void example_2() {
+
+	std::cout << "===============================================" << std::endl;
+	std::cout << "(x^2+x)/(16*x-9)" << std::endl;
 
 	dag_test(new Example_2<builder> ());
 }
 
 void example_3() {
 
+	std::cout << "===============================================" << std::endl;
+	std::cout << "x^2+y^2=1" << std::endl;
+	std::cout << "x^2-y  =0" << std::endl;
 	dag_test(new Example_3<builder> ());
 }
 

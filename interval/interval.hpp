@@ -47,13 +47,13 @@ public:
 
 	friend void copy_array(const interval src[], interval dstn[], int size);
 
-	friend void propagate_mult(interval& z, interval& x, interval& y);
-
 	interval& operator+=(const interval& x);
 
 	friend const interval operator+(const interval& x, const interval& y);
 
 	friend const interval operator+(const interval& x, double y);
+
+	friend const interval operator-(const interval& x);
 
 	friend const interval operator-(const interval& x, const interval& y);
 
@@ -66,6 +66,8 @@ public:
 	friend const interval operator/(const interval& x, const interval& y);
 
 	friend const interval sqr(const interval& x);
+
+	friend const interval sqrt(const interval& x);
 
 	bool degenerate() const;
 
@@ -89,6 +91,20 @@ private:
 
 	double ub;
 };
+
+void addition_inverse(interval& z, interval& x, interval& y);
+
+void substraction_inverse(interval& z, interval& x, interval& y);
+
+void multiplication_inverse(interval& z, interval& x, interval& y);
+
+void division_inverse(interval& z, interval& x, interval& y);
+
+void sqr_inverse(interval& z, interval& x);
+
+void equality_constraint_inverse(interval& z, interval& x);
+
+void propagate_mult(interval& z, interval& x, interval& y);
 
 }
 
