@@ -24,6 +24,7 @@
 #include <exception>
 #include <typeinfo>
 #include "builder.hpp"
+#include "demangle.hpp"
 #include "diagnostics.hpp"
 #include "expression_graph.hpp"
 #include "interval.hpp"
@@ -324,7 +325,8 @@ int main() {
 	}
 	catch (std::exception& e) {
 
-		std::cout << typeid(e).name() << std::endl << e.what() << std::endl;
+		std::cout << demangle(typeid(e).name()) << std::endl;
+		std::cout << e.what() << std::endl;
 	}
 
 	example_Hansen();
