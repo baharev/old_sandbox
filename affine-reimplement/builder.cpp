@@ -117,7 +117,7 @@ builder::builder() : index(-1) {
 
 }
 
-builder::builder(double value) : index(unused_index++) {
+builder::builder(double ) : index(unused_index++) {
 
 }
 

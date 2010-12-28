@@ -44,6 +44,11 @@ protected:
 	explicit primitive(int value_offset) : z(value_offset) { }
 
 	const int z;
+
+private:
+
+	// Unused in all subclasses, just to eliminate compiler warning C4512
+	primitive& operator=(const primitive& );
 };
 
 class unary_primitive : public primitive {
@@ -59,6 +64,10 @@ protected:
 	}
 
 	const int x;
+
+private:
+
+	unary_primitive& operator=(const unary_primitive& );
 };
 
 class binary_primitive : public primitive {
@@ -76,6 +85,10 @@ protected:
 
 	const int x;
 	const int y;
+
+private:
+
+	binary_primitive& operator=(const binary_primitive& );
 };
 
 class addition : public binary_primitive {
@@ -90,6 +103,8 @@ private:
 	virtual void evaluate(operations* op) const {
 		op->addition(z, x, y);
 	}
+
+	addition& operator=(const addition& );
 };
 
 class substraction : public binary_primitive {
@@ -104,6 +119,8 @@ private:
 	virtual void evaluate(operations* op) const {
 		op->substraction(z, x, y);
 	}
+
+	substraction& operator=(const substraction& );
 };
 
 class multiplication : public binary_primitive {
@@ -118,6 +135,8 @@ private:
 	virtual void evaluate(operations* op) const {
 		op->multiplication(z, x, y);
 	}
+
+	multiplication& operator=(const multiplication& );
 };
 
 class division : public binary_primitive {
@@ -132,6 +151,8 @@ private:
 	virtual void evaluate(operations* op) const {
 		op->division(z, x, y);
 	}
+
+	division& operator=(const division& );
 };
 
 class square : public unary_primitive {
@@ -146,6 +167,8 @@ private:
 	virtual void evaluate(operations* op) const {
 		op->square(z, x);
 	}
+
+	square& operator=(const square& );
 };
 
 class equality_constraint : public primitive {
@@ -162,12 +185,14 @@ private:
 		op->equality_constraint(z, x);
 	}
 
-	virtual void record_indices(std::set<int>& index_set) const {
+	virtual void record_indices(std::set<int>& ) const {
 		// TODO Figure out what and how to do
 		throw std::logic_error("record_indices called on a constraint");
 	}
 
 	const int x;
+
+	equality_constraint& operator=(const equality_constraint& );
 };
 
 }
