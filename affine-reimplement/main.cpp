@@ -242,6 +242,59 @@ void Example_2<T>::evaluate(const T v[]) const {
 
 //==============================================================================
 
+template <typename T>
+class Example_3 : public problem<T> {
+
+private:
+
+	virtual int number_of_variables() const;
+
+	virtual T* initial_box() const;
+
+	virtual void evaluate(const T x[]) const;
+
+	enum { X, Y, SIZE };
+
+};
+
+template <typename T>
+int Example_3<T>::number_of_variables() const {
+
+	return SIZE;
+}
+
+template <typename T>
+T* Example_3<T>::initial_box() const {
+
+	T* box = new T[SIZE];
+
+	box[X] = T( 0.0, 1.0);
+	box[Y] = T(-1.0, 1.0);
+
+	return box;
+}
+
+template <typename T>
+void Example_3<T>::evaluate(const T v[]) const {
+
+	const T& x = v[X];
+	const T& y = v[Y];
+
+	const T x2 = sqr(x);
+
+	x2.mark_as_common_subexpression();
+
+	const T eq1 = x2 + sqr(y);
+
+	eq1.equals(1);
+
+	const T eq2 = x2 - y;
+
+	eq2.equals(0);
+}
+
+//==============================================================================
+
 void build(const problem<builder>* prob) {
 
 	builder::reset();
@@ -288,16 +341,19 @@ void example_challenge() {
 	dag_test(new Example_challange<builder> ());
 }
 
-
 void example_1() {
 
 	dag_test(new Example_1<builder> ());
 }
 
-
 void example_2() {
 
 	dag_test(new Example_2<builder> ());
+}
+
+void example_3() {
+
+	dag_test(new Example_3<builder> ());
 }
 
 void assert_tests() {
@@ -336,6 +392,8 @@ int main() {
 	example_1();
 
 	example_2();
+
+	example_3();
 
 	return 0;
 }
