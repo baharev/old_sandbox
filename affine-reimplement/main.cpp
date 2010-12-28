@@ -21,6 +21,8 @@
 //==============================================================================
 
 #include <iostream>
+#include <exception>
+#include <typeinfo>
 #include "builder.hpp"
 #include "diagnostics.hpp"
 #include "expression_graph.hpp"
@@ -311,12 +313,19 @@ void assert_tests() {
 
 	//c.diameter();
 
-	//a/b;
+	a/b;
 }
 
 int main() {
 
-	assert_tests();
+	try {
+
+		assert_tests();
+	}
+	catch (std::exception& e) {
+
+		std::cout << typeid(e).name() << std::endl << e.what() << std::endl;
+	}
 
 	example_Hansen();
 
