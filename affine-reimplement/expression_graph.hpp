@@ -25,8 +25,8 @@
 
 #include <limits>
 #include <vector>
-#include <assert.h>
 #include "operations.hpp"
+#include "diagnostics.hpp"
 #include "primitives.hpp"
 #include "typedefs.hpp"
 
@@ -139,7 +139,7 @@ void expression_graph<T>::set_numeric_consts(const int length) {
 		const int    index = constants.at(i).first;
 		const double value = constants.at(i).second;
 
-		assert(index>=length);
+		ASSERT2(index>=length, "index, length: "<<index<<", "<<length)
 
 		v.at(index) = T(value);
 	}

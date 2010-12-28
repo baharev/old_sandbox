@@ -81,14 +81,14 @@ public:
 
 	double sup() const;
 
+	friend std::ostream& operator<<(std::ostream& , const interval& );
+
 private:
 
 	double lb;
 
 	double ub;
 };
-
-std::ostream& operator<<(std::ostream& , const interval& );
 
 }
 

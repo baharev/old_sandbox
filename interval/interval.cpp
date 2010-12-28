@@ -23,11 +23,9 @@
 #include <ostream>
 #include <cmath>
 #include <algorithm>
-#include <assert.h>
-#include "exceptions.hpp"
 #include "interval.hpp"
-
-using namespace std;
+#include "exceptions.hpp"
+#include "diagnostics.hpp"
 
 namespace {
 
@@ -50,12 +48,14 @@ interval::interval(double value) : lb(value), ub(value) { }
 
 interval::interval(double lo, double up) : lb(lo), ub(up) {
 
-	assert(lb <= ub);
+	ASSERT2(lb <= ub, *this)
 }
 
 interval& interval::operator+=(const interval& x) {
 
-	assert( (lb<=ub) && (x.lb<=x.ub) );
+	ASSERT2(lb <= ub, *this)
+	ASSERT2(x.lb <= x.ub, "x: "<<x)
+
 	lb += x.lb;
 	ub += x.ub;
 	return *this;
@@ -63,48 +63,48 @@ interval& interval::operator+=(const interval& x) {
 
 const interval operator+(const interval& x, const interval& y) {
 
-	assert(x.lb <= x.ub && y.lb <= y.ub);
+	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y)
 
 	return interval(x.lb+y.lb, x.ub+y.ub);
 }
 
 const interval operator+(const interval& x, double y) {
 
-	assert(x.lb <= x.ub);
+	ASSERT2(x.lb <= x.ub, "x: "<<x)
 
 	return interval(x.lb+y, x.ub+y);
 }
 
 const interval operator-(const interval& x, const interval& y) {
 
-	assert(x.lb <= x.ub && y.lb <= y.ub);
+	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y)
 
 	return interval(x.lb-y.ub, x.ub-y.lb);
 }
 
 const interval operator-(double x, const interval& y) {
 
-	assert(y.lb <= y.ub);
+	ASSERT2(y.lb <= y.ub, "y: "<<y)
 
 	return interval(x-y.ub, x-y.lb);
 }
 
 const interval operator*(const interval& x, const interval& y) {
 
-	assert(x.lb <= x.ub && y.lb <= y.ub);
+	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y)
 
 	double z[] = { x.lb*y.lb, x.lb*y.ub, x.ub*y.lb, x.ub*y.ub };
 
-	double zL = *min_element(z, z+4);
+	double zL = *std::min_element(z, z+4);
 
-	double zU = *max_element(z, z+4);
+	double zU = *std::max_element(z, z+4);
 
 	return interval(zL, zU);
 }
 
 const interval operator*(double x, const interval& y) {
 
-	assert(y.lb <= y.ub);
+	ASSERT2(y.lb <= y.ub, "y: "<<y)
 
 	double lb(x*y.lb), ub(x*y.ub);
 
@@ -115,25 +115,22 @@ const interval operator*(double x, const interval& y) {
 
 const interval operator/(const interval& x, const interval& y) {
 
-	assert(x.lb <= x.ub && y.lb <= y.ub);
+	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y)
 
-	if (y.contains(0)) {
-
-		throw assertion_error();
-	}
+	ASSERT2(!y.contains(0), "y: "<<y)
 
 	double z[] = { x.lb/y.lb, x.lb/y.ub, x.ub/y.lb, x.ub/y.ub };
 
-	double zL = *min_element(z, z+4);
+	double zL = *std::min_element(z, z+4);
 
-	double zU = *max_element(z, z+4);
+	double zU = *std::max_element(z, z+4);
 
 	return interval(zL, zU);
 }
 
 const interval sqr(const interval& x) {
 
-	assert(x.lb <= x.ub);
+	ASSERT2(x.lb <= x.ub, "x: "<<x)
 
 	double lb(std::pow(x.lb, 2)), ub(std::pow(x.ub, 2));
 
@@ -144,14 +141,14 @@ const interval sqr(const interval& x) {
 
 bool interval::degenerate() const {
 
-	assert(lb <= ub);
+	ASSERT2(lb <= ub, *this)
 
 	return lb==ub;
 }
 
 bool interval::contains(double value) const {
 
-	assert(lb <= ub);
+	ASSERT2(lb <= ub, *this)
 
 	return lb<=value && value<=ub;
 }
@@ -173,8 +170,8 @@ void interval::equals(double value) {
 
 bool interval::intersect(const double l, const double u) {
 
-	assert(l<=u);
-	assert(lb<=ub);
+	ASSERT2(l <= u, "l: "<<l<<", u: "<<u)
+	ASSERT2(lb <= ub, *this)
 
 	bool improved = false;
 
@@ -212,7 +209,6 @@ void propagate_mult(interval& z, interval& x, interval& y) {
 	z.intersect(x*y);
 }
 
-
 void copy_array(const interval src[], interval dstn[], int size) {
 
 	for (int i=0; i<size; ++i) {
@@ -223,42 +219,42 @@ void copy_array(const interval src[], interval dstn[], int size) {
 
 double interval::midpoint() const {
 
-	assert(lb <= ub);
+	ASSERT2(lb <= ub, *this)
 
 	return (lb+ub)/2.0;
 }
 
 double interval::diameter() const {
 
-	assert(lb <= ub);
+	ASSERT2(lb <= ub, *this)
 
 	return ub-lb;
 }
 
 double interval::radius() const {
 
-	assert(lb <= ub);
+	ASSERT2(lb <= ub, *this)
 
 	return (ub-lb)/2.0;
 }
 
 double interval::inf() const {
 
-	assert(lb <= ub);
+	ASSERT2(lb <= ub, *this)
 
 	return lb;
 }
 
 double interval::sup() const {
 
-	assert (lb <= ub);
+	ASSERT2(lb <= ub, *this)
 
 	return ub;
 }
 
 std::ostream& operator<<(std::ostream& os, const interval& x) {
 
-	return os << "[ " << x.inf() << ", " << x.sup() << "]";
+	return os << "[ " << x.lb << ", " << x.ub << "]";
 }
 
 }

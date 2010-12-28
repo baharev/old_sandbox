@@ -23,8 +23,8 @@
 #include <iostream>
 #include <set>
 #include <typeinfo>
-#include <assert.h>
 #include "builder.hpp"
+#include "diagnostics.hpp"
 #include "primitives.hpp"
 #include "demangle.hpp"
 
@@ -53,7 +53,7 @@ int builder::number_of_arguments() {
 
 int builder::number_of_variables() {
 
-	assert(number_of_vars == static_cast<int> (initial_box.size()));
+	ASSERT(number_of_vars == static_cast<int> (initial_box.size()))
 	return number_of_vars;
 }
 
@@ -123,7 +123,7 @@ builder::builder(double value) : index(unused_index++) {
 
 builder::builder(double lb, double ub) : index(unused_index++) {
 
-	assert(lb <= ub);
+	ASSERT2(lb<=ub, "lb, ub: "<<lb<<", "<<ub)
 	++number_of_vars;
 	initial_box.push_back(Bounds(lb, ub));
 }
@@ -272,7 +272,7 @@ void builder::occurence_info_of_constraint(const int k) {
 
 	const int end   =          constraints_rhs.at(k  ).first;
 
-	assert(start < end);
+	ASSERT2(start < end, "start, end: "<<start<<", "<<end)
 
 	Set index_set;
 
@@ -301,7 +301,7 @@ void builder::dbg_dump_type_of_primitives() {
 
 void builder::dbg_consistency() const {
 
-	assert(0<=index && index<unused_index);
+	ASSERT2(0<=index && index<unused_index, "index, unused_index: "<<index<<", "<<unused_index)
 }
 
 void dbg_consistency(const builder& x, const builder& y) {

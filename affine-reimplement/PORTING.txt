@@ -1,0 +1,6 @@
+
+Compiler specific hacks:
+
+const string demangle(const char* name)
+
+#define FUNCTION_ 
