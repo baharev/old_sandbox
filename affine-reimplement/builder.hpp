@@ -37,8 +37,6 @@ public:
 
 	builder();
 
-	explicit builder(double value);
-
 	builder(double lb, double ub);
 
 	friend const builder operator+(const builder& x, const builder& y);
@@ -95,6 +93,8 @@ public:
 	void dbg_consistency() const;
 
 private:
+
+	explicit builder(double value);
 
 	static int last_constraint_offset();
 
