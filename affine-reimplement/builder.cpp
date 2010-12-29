@@ -184,6 +184,17 @@ const builder sqr(const builder& x) {
 	return z;
 }
 
+const builder exp(const builder& x) {
+
+	x.dbg_consistency();
+
+	const builder z(0);
+
+	builder::primitives.push_back(new exponential(z.index, x.index));
+
+	return z;
+}
+
 const builder operator+(const builder& x, double y) {
 
 	const builder Y = builder(y);
@@ -191,6 +202,11 @@ const builder operator+(const builder& x, double y) {
 	builder::numeric_constants.push_back(Pair(Y.index, y));
 
 	return x+Y;
+}
+
+const builder operator+(double x, const builder& y) {
+
+	return y+x;
 }
 
 const builder operator-(const builder& x, double y) {
@@ -214,6 +230,15 @@ const builder operator*(double x, const builder& y) {
 	builder::numeric_constants.push_back(Pair(X.index, x));
 
 	return X*y;
+}
+
+const builder operator/(double x, const builder& y) {
+
+	const builder X = builder(x);
+
+	builder::numeric_constants.push_back(Pair(X.index, x));
+
+	return X/y;
 }
 
 // TODO Is there any benefit in saving this information?
@@ -290,7 +315,7 @@ void builder::dbg_dump_type_of_primitives() {
 
 	const int n = static_cast<int> (primitives.size());
 
-	cout << "Dumping type of " << n << " constraints" << endl;
+	cout << "Dumping type of " << n << " primitives" << endl;
 
 	for (int i=0; i<n; ++i) {
 

@@ -54,7 +54,11 @@ public:
 
 	friend const builder operator/(const builder& x, const builder& y);
 
+	friend const builder operator/(double x, const builder& y);
+
 	friend const builder sqr(const builder& x);
+
+	friend const builder exp(const builder& x);
 
 	void mark_as_common_subexpression() const;
 

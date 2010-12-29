@@ -154,6 +154,21 @@ const interval sqrt(const interval& x) {
 	return interval(std::sqrt(x.lb), std::sqrt(x.ub));
 }
 
+const interval exp(const interval& x) {
+
+	ASSERT2(x.lb <= x.ub, "x: "<<x);
+
+	return interval(std::exp(x.lb), std::exp(x.ub));
+}
+
+const interval log(const interval& x) {
+
+	ASSERT2(x.lb <= x.ub, "x: "<<x);
+	ASSERT2(0<x.lb, "x.lb = "<<x.lb);
+
+	return interval(std::log(x.lb), std::log(x.ub));
+}
+
 bool interval::degenerate() const {
 
 	ASSERT2(lb <= ub, *this)
@@ -255,7 +270,7 @@ void division_inverse(interval& z, interval& x, interval& y) {
 
 void sqr_inverse(interval& z, interval& x) {
 
-	interval x_new = asol::sqrt(z);
+	interval x_new = sqrt(z);
 
 	if (x.inf()>=0) {
 		;
@@ -270,6 +285,13 @@ void sqr_inverse(interval& z, interval& x) {
 	x.intersect(x_new);
 
 	z.intersect(sqr(x));
+}
+
+void exp_inverse(interval& z, interval& x) {
+
+	x.intersect(log(z));
+
+	z.intersect(exp(x));
 }
 
 // TODO Does this make sense?

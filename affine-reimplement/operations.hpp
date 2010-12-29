@@ -49,6 +49,10 @@ public:
 
 	virtual void square_revise(int z, int x) = 0;
 
+	virtual void exponential(int z, int x) = 0;
+
+	virtual void exponential_revise(int z, int x) = 0;
+
 	virtual void equality_constraint(int body, int rhs) = 0;
 
 	virtual void equality_constraint_revise(int body, int rhs) = 0;

@@ -193,6 +193,26 @@ private:
 	square& operator=(const square& );
 };
 
+class exponential : public unary_primitive {
+
+public:
+
+	exponential(int value, int arg)
+	: unary_primitive(value, arg) { }
+
+private:
+
+	virtual void evaluate(operations* op) const {
+		op->exponential(z, x);
+	}
+
+	virtual void revise(operations* op) const {
+		op->exponential_revise(z, x);
+	}
+
+	exponential& operator=(const exponential& );
+};
+
 class equality_constraint : public primitive {
 
 public:

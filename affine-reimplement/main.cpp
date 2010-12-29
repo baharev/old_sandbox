@@ -78,12 +78,12 @@ void Hansen_example<T>::evaluate(const T v[]) const {
 	const T& x = v[X];
 	const T& y = v[Y];
 
-	T xy = x*y;
+	const T xy = x*y;
 
 	// FIXME Expression graph does not call common subexpression on interval
 	xy.mark_as_common_subexpression();
 
-	T z = (5*x-4*sqr(y)+14*xy)/(sqr(x)+y+xy);
+	const T z = (5*x-4*sqr(y)+14*xy)/(sqr(x)+y+xy);
 
 	z.equals(14.5);
 }
@@ -299,6 +299,253 @@ void Example_3<T>::evaluate(const T v[]) const {
 
 //==============================================================================
 
+template <typename T>
+class Jacobsen : public problem<T> {
+
+private:
+
+	virtual int number_of_variables() const;
+
+	virtual T* initial_box() const;
+
+	virtual void evaluate(const T x[]) const;
+
+	enum {
+		X1, X2, X3, X4, X5, X6, X7, X8,
+		v1, v2, v3, v4, v5, v6, v7, C, SIZE
+	};
+
+};
+
+template <typename T>
+int Jacobsen<T>::number_of_variables() const {
+
+	return SIZE;
+}
+
+template <typename T>
+T* Jacobsen<T>::initial_box() const {
+
+	T* v = new T[SIZE];
+
+	//      T(1.0e-4, 1.0);
+	v[X1] = T(0.93, 0.94);
+
+	for (int i=X2; i<=X8; ++i) {
+		v[i] = T(1.0e-4, 1.0);
+	}
+
+	for (int i=v1; i<=v7; ++i) {
+		v[i] = T(2.0, 4.0);
+	}
+	//     T(0.0, 1.12);
+	v[C] = T(0.50, 0.51);
+
+	return v;
+}
+
+// TODO Make an interval function for this: it is monotonous!
+template <typename T>
+const T H_Vap(const T& x) {
+
+	return 0.1349*exp(-3.98*x) + 0.4397*exp(-0.088*x);
+}
+
+template <typename T>
+const T H_Liq(const T& x) {
+
+	return 0.1667*exp(-1.087*x);
+}
+
+template <typename T>
+const T y_eq(const T& x) {
+
+	return 3.55/( 1/x + 2.55 );
+}
+
+template <typename T>
+void Jacobsen<T>::evaluate(const T v[]) const {
+
+	const T& x1 = v[X1];
+	const T& x2 = v[X2];
+	const T& x3 = v[X3];
+	const T& x4 = v[X4];
+	const T& x5 = v[X5];
+	const T& x6 = v[X6];
+	const T& x7 = v[X7];
+	const T& x8 = v[X8];
+	const T& V1 = v[v1];
+	const T& V2 = v[v2];
+	const T& V3 = v[v3];
+	const T& V4 = v[v4];
+	const T& V5 = v[v5];
+	const T& V6 = v[v6];
+	const T& V7 = v[v7];
+	const T& D = v[C];
+
+	const T y1 = y_eq(x1);
+
+	const T d = D*y1;
+
+	d.mark_as_common_subexpression();
+
+	const T Lw = (V1 - D)*(0.6010 - 0.2806*y1);
+
+	Lw.equals(0.96);
+
+	//--------------------------------------------------------------------------
+
+	const T HV1 = H_Vap(x1);
+
+	const T HL0 = H_Liq(y1);
+
+	const T Q = V1*(HV1 - HL0) + D*HL0;
+
+	Q.mark_as_common_subexpression();
+
+	//==========================================================================
+
+	const T M8 = (1.0-D)*x8 + d;
+
+	M8.equals(0.5);
+
+	//==========================================================================
+
+	const T L7 = 4.0-D;
+
+	const T y8 = y_eq(x8);
+
+	const T M7 = 3.0*y8-L7*x7-d;
+
+	M7.equals(-0.5);
+
+	//--------------------------------------------------------------------------
+
+	const T HV8 = H_Vap(x8);
+
+	const T HL7 = H_Liq(x7);
+
+	const T H7 = 3*HV8 -L7*HL7 - Q;
+
+	H7.equals(-0.0968047);
+
+	//==========================================================================
+
+	const T y2 = y_eq(x2);
+
+	const T M1 = V2* y2 - (    V2 - D)* x1 - d;
+
+	M1.equals(0.0);
+
+	//--------------------------------------------------------------------------
+
+	const T HV2 = H_Vap(x2);
+
+	const T HL1 = H_Liq(x1);
+
+	const T H1 = V2*HV2 - (    V2 - D)*HL1 - Q;
+
+	H1.equals(0.0);
+
+	//==========================================================================
+
+	const T y7 = y_eq(x7);
+
+	const T M6 = V7* y7 - (1 + V7 - D)* x6 - d;
+
+	M6.equals(-0.5);
+
+	//--------------------------------------------------------------------------
+
+	const T HV7 = H_Vap(x7);
+
+	const T HL6 = H_Liq(x6);
+
+	const T H6 = V7*HV7 - (1 + V7 - D)*HL6 - Q;
+
+	H6.equals(-0.0968047);
+
+	//==========================================================================
+
+	const T y3 = y_eq(x3);
+
+	const T M2 = V3* y3 - (    V3 - D)* x2 - d;
+
+	M2.equals(0.0);
+
+	//--------------------------------------------------------------------------
+
+	const T HV3 = H_Vap(x3);
+
+	const T HL2 = H_Liq(x2);
+
+	const T H2 = V3*HV3 - (    V3 - D)*HL2 - Q;
+
+	H2.equals(0.0);
+
+	//==========================================================================
+
+	const T y6 = y_eq(x6);
+
+	const T M5 = V6* y6 - (1 + V6 - D)* x5 - d;
+
+	M5.equals(-0.5);
+
+	//--------------------------------------------------------------------------
+
+	const T HV6 = H_Vap(x6);
+
+	const T HL5 = H_Liq(x5);
+
+	const T H5 = V6*HV6 - (1 + V6 - D)*HL5 - Q;
+
+	H5.equals(-0.0968047);
+
+	//==========================================================================
+
+	const T y4 = y_eq(x4);
+
+	const T M3 = V4* y4 - (    V4 - D)* x3 - d;
+
+	M3.equals(0.0);
+
+	//--------------------------------------------------------------------------
+
+	const T HV4 = H_Vap(x4);
+
+	const T HL3 = H_Liq(x3);
+
+	const T H3 = V4*HV4 - (    V4 - D)*HL3 - Q;
+
+	H3.equals(0.0);
+
+	//==========================================================================
+
+	const T y5 = y_eq(x5);
+
+	const T M4 = V5* y5 - (    V5 - D)* x4 - d;
+
+	M4.equals(0.0);
+
+	//--------------------------------------------------------------------------
+
+	const T HV5 = H_Vap(x5);
+
+	const T HL4 = H_Liq(x4);
+
+	const T H4 = V5*HV5 - (    V5 - D)*HL4 - Q;
+
+	H4.equals(0.0);
+
+	//cout << "V5: " << V5.compute_bounds() << endl;
+	//cout << "x5: " << x5.compute_bounds() << endl;
+
+	return;
+}
+
+
+//==============================================================================
+
 void build(const problem<builder>* prob) {
 
 	builder::reset();
@@ -379,6 +626,14 @@ void example_3() {
 	dag_test(new Example_3<builder> ());
 }
 
+void example_Jacobsen() {
+
+	std::cout << "===============================================" << std::endl;
+	std::cout << "Jacobsen" << std::endl;
+
+	dag_test(new Jacobsen<builder> ());
+}
+
 void assert_tests() {
 
 	double lb(0), ub(2), x(1);
@@ -417,6 +672,8 @@ int main() {
 	example_2();
 
 	example_3();
+
+	example_Jacobsen();
 
 	return 0;
 }

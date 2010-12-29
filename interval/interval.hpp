@@ -69,6 +69,10 @@ public:
 
 	friend const interval sqrt(const interval& x);
 
+	friend const interval exp(const interval& x);
+
+	friend const interval log(const interval& x);
+
 	bool degenerate() const;
 
 	bool contains(double value) const;
@@ -101,6 +105,8 @@ void multiplication_inverse(interval& z, interval& x, interval& y);
 void division_inverse(interval& z, interval& x, interval& y);
 
 void sqr_inverse(interval& z, interval& x);
+
+void exp_inverse(interval& z, interval& x);
 
 void equality_constraint_inverse(interval& z, interval& x);
 

@@ -75,6 +75,7 @@ private:
 	virtual void multiplication(int z, int x, int y);
 	virtual void division(int z, int x, int y);
 	virtual void square(int z, int x);
+	virtual void exponential(int z, int x);
 	virtual void equality_constraint(int body, int rhs);
 
 	virtual void addition_revise(int z, int x, int y);
@@ -82,6 +83,7 @@ private:
 	virtual void multiplication_revise(int z, int x, int y);
 	virtual void division_revise(int z, int x, int y);
 	virtual void square_revise(int z, int x);
+	virtual void exponential_revise(int z, int x);
 	virtual void equality_constraint_revise(int body, int rhs);
 
 	std::vector<T> v;
@@ -232,6 +234,12 @@ void expression_graph<T>::square(int z, int x) {
 }
 
 template <typename T>
+void expression_graph<T>::exponential(int z, int x) {
+
+	v.at(z).assign( exp(v.at(x)) );
+}
+
+template <typename T>
 void expression_graph<T>::equality_constraint(int body, int rhs) {
 
 	const double rhs_value = rhs_constraints.at(rhs).second;
@@ -267,6 +275,12 @@ template <typename T>
 void expression_graph<T>::square_revise(int z, int x) {
 
 	sqr_inverse(v.at(z), v.at(x));
+}
+
+template <typename T>
+void expression_graph<T>::exponential_revise(int z, int x) {
+
+	exp_inverse(v.at(z), v.at(x));
 }
 
 // TODO Not yet clear how to invert a constraint
