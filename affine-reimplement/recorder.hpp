@@ -20,29 +20,37 @@
 //
 //==============================================================================
 
-#ifndef TYPEDEFS_HPP_
-#define TYPEDEFS_HPP_
-
-#include <vector>
-#include <utility>
+#ifndef RECORDER_HPP_
+#define RECORDER_HPP_
 
 namespace asol {
 
 class primitive;
+class unary_primitive;
+class binary_primitive;
+class addition;
+class substraction;
+class multiplication;
+class division;
+class square;
+class exponential;
+class equality_constraint;
 
-typedef std::vector<primitive*> PrimVector;
+class recorder {
 
-typedef std::pair<int, double> Pair;
+public:
 
-typedef std::vector<Pair> PairVector;
+	virtual void record(const addition*            ) = 0;
+	virtual void record(const substraction*        ) = 0;
+	virtual void record(const multiplication*      ) = 0;
+	virtual void record(const division*            ) = 0;
+	virtual void record(const square*              ) = 0;
+	virtual void record(const exponential*         ) = 0;
+	virtual void record(const equality_constraint* ) = 0;
 
-typedef std::vector<int> IntVector;
-
-typedef std::pair<double,double> Bounds;
-
-typedef std::vector<Bounds> BoundVector;
+	virtual ~recorder() { }
+};
 
 }
 
-
-#endif // TYPEDEFS_HPP_
+#endif // RECORDER_HPP_

@@ -26,6 +26,7 @@
 #include "builder.hpp"
 #include "diagnostics.hpp"
 #include "primitives.hpp"
+#include "printer.hpp"
 #include "demangle.hpp"
 
 namespace asol {
@@ -80,6 +81,11 @@ const PairVector& builder::get_rhs_of_constraints() {
 const BoundVector& builder::get_initial_box() {
 
 	return initial_box;
+}
+
+int builder::primitives_size() {
+
+	return static_cast<int>(primitives.size());
 }
 
 void builder::reset() {
@@ -260,7 +266,7 @@ void builder::equals(double value) const {
 
 	dbg_consistency();
 
-	const int primitive_index = static_cast<int>(primitives.size());
+	const int primitive_index = primitives_size();
 
 	constraints_rhs.push_back(Pair(primitive_index, value));
 
@@ -313,7 +319,7 @@ void builder::dbg_dump_type_of_primitives() {
 
 	using namespace std;
 
-	const int n = static_cast<int> (primitives.size());
+	const int n = primitives_size();
 
 	cout << "Dumping type of " << n << " primitives" << endl;
 
@@ -321,6 +327,51 @@ void builder::dbg_dump_type_of_primitives() {
 
 		cout << i << ": ";
 		cout << demangle( typeid(*primitives.at(i)).name() ) << endl;
+	}
+}
+
+
+void builder::print_primitives(std::ostream& out) {
+
+	out << "Primitives in plain text format" << std::endl << std::endl;
+
+	const int n = primitives_size();
+
+	recorder* const rec = new printer(out, numeric_constants);
+
+	for (int i=0; i<n; ++i) {
+
+		out << i << ": ";
+		primitives.at(i)->record(rec);
+	}
+}
+
+void builder::common_subexpressions_type1(const int i) {
+
+	const int n = primitives_size();
+
+	const primitive* const p1 = primitives.at(i);
+
+	for (int j=i+1; j<n; ++j) {
+
+		const primitive* const p2 = primitives.at(j);
+
+		if (p1->common_subexpressions(p2)) {
+
+			std::cout << "Found in primitives: " << i << ", " << j << std::endl;
+		}
+	}
+}
+
+void builder::dbg_common_subexpressions_type1() {
+
+	std::cout << "Type 1 common subexpressions" << std::endl;
+
+	const int n = primitives_size();
+
+	for (int i=0; i<n; ++i) {
+
+		common_subexpressions_type1(i);
 	}
 }
 

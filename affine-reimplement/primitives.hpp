@@ -26,6 +26,7 @@
 #include <set>
 #include <stdexcept>
 #include "operations.hpp"
+#include "recorder.hpp"
 
 namespace asol {
 
@@ -37,15 +38,20 @@ public:
 
 	virtual void revise(operations* op) const = 0;
 
+	// TODO Is there a way to do it without the cast?
+	virtual bool common_subexpressions(const primitive* other) const = 0;
+
+	virtual void record(recorder* rec) const = 0;
+
 	virtual void record_indices(std::set<int>& index_set) const = 0;
 
 	virtual ~primitive() { }
 
+	const int z;
+
 protected:
 
 	explicit primitive(int value_offset) : z(value_offset) { }
-
-	const int z;
 
 private:
 
@@ -54,6 +60,10 @@ private:
 };
 
 class unary_primitive : public primitive {
+
+public:
+
+	const int x;
 
 protected:
 
@@ -65,7 +75,9 @@ protected:
 		index_set.insert(x);
 	}
 
-	const int x;
+	bool args_equal(const unary_primitive* other) const {
+		return x==other->x;
+	}
 
 private:
 
@@ -73,6 +85,11 @@ private:
 };
 
 class binary_primitive : public primitive {
+
+public:
+
+	const int x;
+	const int y;
 
 protected:
 
@@ -85,8 +102,9 @@ protected:
 		index_set.insert(y);
 	}
 
-	const int x;
-	const int y;
+	bool args_equal(const binary_primitive* other) const {
+		return x==other->x && y==other->y;
+	}
 
 private:
 
@@ -110,6 +128,20 @@ private:
 		op->addition_revise(z, x, y);
 	}
 
+	virtual bool common_subexpressions(const primitive* p) const {
+
+		bool ret_val = false;
+
+		if (const addition* other=dynamic_cast<const addition*>(p)) {
+			ret_val = args_equal(other);
+		}
+		return ret_val;
+	}
+
+	virtual void record(recorder* rec) const {
+		rec->record(this);
+	}
+
 	addition& operator=(const addition& );
 };
 
@@ -128,6 +160,20 @@ private:
 
 	virtual void revise(operations* op) const {
 		op->substraction_revise(z, x, y);
+	}
+
+	virtual bool common_subexpressions(const primitive* p) const {
+
+		bool ret_val = false;
+
+		if (const substraction* other=dynamic_cast<const substraction*>(p)) {
+			ret_val = args_equal(other);
+		}
+		return ret_val;
+	}
+
+	virtual void record(recorder* rec) const {
+		rec->record(this);
 	}
 
 	substraction& operator=(const substraction& );
@@ -150,6 +196,20 @@ private:
 		op->multiplication_revise(z, x, y);
 	}
 
+	virtual bool common_subexpressions(const primitive* p) const {
+
+		bool ret_val = false;
+
+		if (const multiplication* other=dynamic_cast<const multiplication*>(p)){
+			ret_val = args_equal(other);
+		}
+		return ret_val;
+	}
+
+	virtual void record(recorder* rec) const {
+		rec->record(this);
+	}
+
 	multiplication& operator=(const multiplication& );
 };
 
@@ -168,6 +228,20 @@ private:
 
 	virtual void revise(operations* op) const {
 		op->division_revise(z, x, y);
+	}
+
+	virtual bool common_subexpressions(const primitive* p) const {
+
+		bool ret_val = false;
+
+		if (const division* other=dynamic_cast<const division*>(p)) {
+			ret_val = args_equal(other);
+		}
+		return ret_val;
+	}
+
+	virtual void record(recorder* rec) const {
+		rec->record(this);
 	}
 
 	division& operator=(const division& );
@@ -190,6 +264,20 @@ private:
 		op->square_revise(z, x);
 	}
 
+	virtual bool common_subexpressions(const primitive* p) const {
+
+		bool ret_val = false;
+
+		if (const square* other=dynamic_cast<const square*>(p)) {
+			ret_val = args_equal(other);
+		}
+		return ret_val;
+	}
+
+	virtual void record(recorder* rec) const {
+		rec->record(this);
+	}
+
 	square& operator=(const square& );
 };
 
@@ -210,6 +298,20 @@ private:
 		op->exponential_revise(z, x);
 	}
 
+	virtual bool common_subexpressions(const primitive* p) const {
+
+		bool ret_val = false;
+
+		if (const exponential* other=dynamic_cast<const exponential*>(p)) {
+			ret_val = args_equal(other);
+		}
+		return ret_val;
+	}
+
+	virtual void record(recorder* rec) const {
+		rec->record(this);
+	}
+
 	exponential& operator=(const exponential& );
 };
 
@@ -219,6 +321,8 @@ public:
 
 	equality_constraint(int body, int rhs)
 	: primitive(body), x(rhs) { }
+
+	const int x;
 
 private:
 
@@ -235,7 +339,19 @@ private:
 		throw std::logic_error("record_indices called on a constraint");
 	}
 
-	const int x;
+	virtual bool common_subexpressions(const primitive* p) const {
+
+		bool ret_val = false;
+
+		if (const equality_constraint* other=dynamic_cast<const equality_constraint*>(p)) {
+			ret_val = (x == other->x);
+		}
+		return ret_val;
+	}
+
+	virtual void record(recorder* rec) const {
+		rec->record(this);
+	}
 
 	equality_constraint& operator=(const equality_constraint& );
 };

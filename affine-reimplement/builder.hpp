@@ -24,6 +24,7 @@
 #define BUILDER_HPP_
 
 #include <vector>
+#include <iosfwd>
 #include "typedefs.hpp"
 
 namespace asol {
@@ -85,6 +86,10 @@ public:
 
 	static void dbg_dump_type_of_primitives();
 
+	static void print_primitives(std::ostream& out);
+
+	static void dbg_common_subexpressions_type1();
+
 	static void dbg_show_info();
 
 	void dbg_consistency() const;
@@ -94,6 +99,10 @@ private:
 	static int last_constraint_offset();
 
 	static void occurence_info_of_constraint(const int k);
+
+	static void common_subexpressions_type1(const int i);
+
+	static int primitives_size();
 
 	static int number_of_vars;
 

@@ -573,8 +573,10 @@ void dag_test(const problem<builder>* prob) {
 									builder::get_rhs_of_constraints(),
 									builder::get_initial_box());
 
-	builder::dbg_dump_type_of_primitives();
+	//builder::dbg_dump_type_of_primitives();
 	builder::dbg_show_info();
+	builder::print_primitives(std::cout);
+	builder::dbg_common_subexpressions_type1();
 	builder::reset();
 
 	for (int i=0; i<40; ++i) {
