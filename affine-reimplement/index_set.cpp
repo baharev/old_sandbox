@@ -37,7 +37,14 @@ index_set::index_set(const int num_of_vars, const Map& numeric_constants)
 
 void index_set::finished() {
 
-	delete current;
+	if (current->empty()) {
+
+		delete current;
+	}
+	else {
+
+		constraint_index_sets.push_back(current);
+	}
 
 	current = 0;
 }
