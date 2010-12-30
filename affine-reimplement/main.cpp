@@ -433,7 +433,9 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T y2 = y_eq(x2);
 
-	const T M1 = V2* y2 - (    V2 - D)* x1 - d;
+	const T L1 = V2 - D;
+
+	const T M1 = V2*y2 - L1*x1 - d;
 
 	M1.equals(0.0);
 
@@ -443,7 +445,7 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T HL1 = H_Liq(x1);
 
-	const T H1 = V2*HV2 - (    V2 - D)*HL1 - Q;
+	const T H1 = V2*HV2 - L1*HL1 - Q;
 
 	H1.equals(0.0);
 
@@ -451,7 +453,9 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T y7 = y_eq(x7);
 
-	const T M6 = V7* y7 - (1 + V7 - D)* x6 - d;
+	const T L6 = 1 + V7 - D;
+
+	const T M6 = V7* y7 - L6*x6 - d;
 
 	M6.equals(-0.5);
 
@@ -461,7 +465,7 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T HL6 = H_Liq(x6);
 
-	const T H6 = V7*HV7 - (1 + V7 - D)*HL6 - Q;
+	const T H6 = V7*HV7 - L6*HL6 - Q;
 
 	H6.equals(-0.0968047);
 
@@ -469,7 +473,9 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T y3 = y_eq(x3);
 
-	const T M2 = V3* y3 - (    V3 - D)* x2 - d;
+	const T L2 = V3 - D;
+
+	const T M2 = V3*y3 - L2*x2 - d;
 
 	M2.equals(0.0);
 
@@ -479,7 +485,7 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T HL2 = H_Liq(x2);
 
-	const T H2 = V3*HV3 - (    V3 - D)*HL2 - Q;
+	const T H2 = V3*HV3 - L2*HL2 - Q;
 
 	H2.equals(0.0);
 
@@ -487,7 +493,9 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T y6 = y_eq(x6);
 
-	const T M5 = V6* y6 - (1 + V6 - D)* x5 - d;
+	const T L5 = 1 + V6 - D;
+
+	const T M5 = V6*y6 - L5*x5 - d;
 
 	M5.equals(-0.5);
 
@@ -497,7 +505,7 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T HL5 = H_Liq(x5);
 
-	const T H5 = V6*HV6 - (1 + V6 - D)*HL5 - Q;
+	const T H5 = V6*HV6 - L5*HL5 - Q;
 
 	H5.equals(-0.0968047);
 
@@ -505,7 +513,9 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T y4 = y_eq(x4);
 
-	const T M3 = V4* y4 - (    V4 - D)* x3 - d;
+	const T L3 = V4 - D;
+
+	const T M3 = V4*y4 - L3*x3 - d;
 
 	M3.equals(0.0);
 
@@ -515,7 +525,7 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T HL3 = H_Liq(x3);
 
-	const T H3 = V4*HV4 - (    V4 - D)*HL3 - Q;
+	const T H3 = V4*HV4 - L3*HL3 - Q;
 
 	H3.equals(0.0);
 
@@ -523,7 +533,9 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T y5 = y_eq(x5);
 
-	const T M4 = V5* y5 - (    V5 - D)* x4 - d;
+	const T L4 = V5 - D;
+
+	const T M4 = V5*y5 - L4*x4 - d;
 
 	M4.equals(0.0);
 
@@ -533,12 +545,9 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T HL4 = H_Liq(x4);
 
-	const T H4 = V5*HV5 - (    V5 - D)*HL4 - Q;
+	const T H4 = V5*HV5 - L4*HL4 - Q;
 
 	H4.equals(0.0);
-
-	//cout << "V5: " << V5.compute_bounds() << endl;
-	//cout << "x5: " << x5.compute_bounds() << endl;
 
 	return;
 }
@@ -574,7 +583,7 @@ void dag_test(const problem<builder>* prob) {
 
 	builder::print_info(std::cout);
 	builder::print_primitives(std::cout);
-	builder::print_index_set(std::cout);
+	//builder::print_index_set(std::cout);
 	builder::print_type1_common_subexpressions(std::cout);
 	builder::print_type2_common_subexpressions(std::cout);
 	builder::reset();
@@ -590,7 +599,7 @@ void dag_test(const problem<builder>* prob) {
 
 void example_Hansen() {
 
-	std::cout << "===============================================" << std::endl;
+	std::cout << "###############################################" << std::endl;
 	std::cout << "Hansen\'s example" << std::endl;
 
 	dag_test(new Hansen_example<builder> ());
@@ -598,7 +607,7 @@ void example_Hansen() {
 
 void example_challenge() {
 
-	std::cout << "===============================================" << std::endl;
+	std::cout << "###############################################" << std::endl;
 	std::cout << "Neumaier\'s interval challange" << std::endl;
 
 	dag_test(new Example_challange<builder> ());
@@ -606,7 +615,7 @@ void example_challenge() {
 
 void example_1() {
 
-	std::cout << "===============================================" << std::endl;
+	std::cout << "###############################################" << std::endl;
 	std::cout << "(x-1)/(x^2+2)" << std::endl;
 
 	dag_test(new Example_1<builder> ());
@@ -614,7 +623,7 @@ void example_1() {
 
 void example_2() {
 
-	std::cout << "===============================================" << std::endl;
+	std::cout << "###############################################" << std::endl;
 	std::cout << "(x^2+x)/(16*x-9)" << std::endl;
 
 	dag_test(new Example_2<builder> ());
@@ -622,7 +631,7 @@ void example_2() {
 
 void example_3() {
 
-	std::cout << "===============================================" << std::endl;
+	std::cout << "###############################################" << std::endl;
 	std::cout << "x^2+y^2=1" << std::endl;
 	std::cout << "x^2-y  =0" << std::endl;
 	dag_test(new Example_3<builder> ());
@@ -630,7 +639,7 @@ void example_3() {
 
 void example_Jacobsen() {
 
-	std::cout << "===============================================" << std::endl;
+	std::cout << "###############################################" << std::endl;
 	std::cout << "Jacobsen" << std::endl;
 
 	dag_test(new Jacobsen<builder> ());
