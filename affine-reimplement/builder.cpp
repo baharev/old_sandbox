@@ -40,7 +40,7 @@ int builder::number_of_vars = 0;
 
 PrimVector builder::primitives = PrimVector();
 
-PairVector builder::numeric_constants = PairVector();
+std::map<int,double> builder::numeric_constants = std::map<int,double> ();
 
 IntVector builder::common_subexpressions = IntVector();
 
@@ -64,7 +64,7 @@ const PrimVector& builder::get_primitives() {
 	return primitives;
 }
 
-const PairVector& builder::get_numeric_constants() {
+const std::map<int,double>& builder::get_numeric_constants() {
 
 	return numeric_constants;
 }
@@ -202,11 +202,20 @@ const builder exp(const builder& x) {
 	return z;
 }
 
+void builder::insert_numeric_constant(const int index, const double value) {
+
+	typedef std::pair<std::map<int,double>::iterator,bool> Result;
+
+	Result r = numeric_constants.insert(Pair(index, value));
+
+	ASSERT2(r.second, "index "<<index<<" already inserted");
+}
+
 const builder operator+(const builder& x, double y) {
 
 	const builder Y = builder(y);
 
-	builder::numeric_constants.push_back(Pair(Y.index, y));
+	builder::insert_numeric_constant(Y.index, y);
 
 	return x+Y;
 }
@@ -225,7 +234,7 @@ const builder operator-(double x, const builder& y) {
 
 	const builder X = builder(x);
 
-	builder::numeric_constants.push_back(Pair(X.index, x));
+	builder::insert_numeric_constant(X.index, x);
 
 	return X-y;
 }
@@ -234,7 +243,7 @@ const builder operator*(double x, const builder& y) {
 
 	const builder X = builder(x);
 
-	builder::numeric_constants.push_back(Pair(X.index, x));
+	builder::insert_numeric_constant(X.index, x);
 
 	return X*y;
 }
@@ -243,7 +252,7 @@ const builder operator/(double x, const builder& y) {
 
 	const builder X = builder(x);
 
-	builder::numeric_constants.push_back(Pair(X.index, x));
+	builder::insert_numeric_constant(X.index, x);
 
 	return X/y;
 }
@@ -350,7 +359,7 @@ void builder::print_primitives(std::ostream& out) {
 
 void builder::print_index_set(std::ostream& out) {
 
-	index_set* const rec = new index_set(number_of_variables());
+	index_set* const rec = new index_set(numeric_constants);
 
 	const int n = primitives_size();
 

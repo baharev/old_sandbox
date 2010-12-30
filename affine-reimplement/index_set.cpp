@@ -26,9 +26,9 @@
 
 namespace asol {
 
-// FIXME Pass in numeric constants
-index_set::index_set(int max_variable_index) : max_var_index(max_variable_index) {
-
+index_set::index_set(const std::map<int,double>& numeric_constants)
+: numeric_const(numeric_constants)
+{
 	current = new Set;
 }
 
@@ -45,7 +45,6 @@ int index_set::number_of_constraints() const {
 }
 
 index_set::~index_set() {
-
 
 	const int n = number_of_constraints();
 
@@ -64,10 +63,16 @@ void index_set::record_primitive(const primitive* p) {
 	record_arg(p->x);
 }
 
+bool index_set::is_variable(const int index) const {
+
+	Map::const_iterator i = numeric_const.find(index);
+
+	return (i==numeric_const.end()) ? true : false;
+}
+
 void index_set::record_arg(const int index) {
 
-	// FIXME Bug: also filters out common subexpressions!!! E.g. Eq15 v48
-	if (index <= max_var_index) {
+	if (is_variable(index)) {
 
 		current->insert(index);
 	}

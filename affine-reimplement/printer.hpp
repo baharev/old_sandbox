@@ -24,9 +24,9 @@
 #define PRINTER_HPP_
 
 #include <iosfwd>
+#include <map>
 #include <string>
 #include "recorder.hpp"
-#include "typedefs.hpp"
 
 namespace asol {
 
@@ -34,7 +34,7 @@ class printer : public recorder {
 
 public:
 
-	printer(std::ostream& os, const PairVector& numeric_const);
+	printer(std::ostream& os, const std::map<int,double>& numeric_const);
 
 private:
 
@@ -49,13 +49,13 @@ private:
 	void record_unary_primitive(const unary_primitive* p, const char* op);
 	void record_binary_primitive(const binary_primitive* p, const char* op);
 
-	void dbg_check_if_sorted();
-	int numeric_const_size() const;
 	const std::string arg(const int index) const;
 	char type(const int index) const;
 
+	typedef std::map<int,double> Map;
+
 	std::ostream& out;
-	const PairVector& numeric_const;
+	const Map& numeric_const;
 };
 
 }

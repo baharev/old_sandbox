@@ -25,6 +25,7 @@
 
 #include <iosfwd>
 #include <vector>
+#include <map>
 #include <set>
 #include "recorder.hpp"
 
@@ -34,7 +35,7 @@ class index_set : public recorder {
 
 public:
 
-	index_set(int max_variable_index);
+	index_set(const std::map<int,double>& numeric_constants);
 
 	void print(std::ostream& out) const;
 
@@ -62,10 +63,13 @@ private:
 	void print_constraint(const int i, std::ostream& out) const;
 
 	int number_of_constraints() const;
+	bool is_variable(const int index) const;
+
+	typedef std::map<int,double> Map;
+
+	const Map& numeric_const;
 
 	typedef std::set<int> Set;
-
-	const int max_var_index;
 
 	std::vector<Set*> constraint_index_sets;
 

@@ -25,6 +25,7 @@
 
 #include <iosfwd>
 #include <limits>
+#include <map>
 #include <vector>
 #include "operations.hpp"
 #include "diagnostics.hpp"
@@ -40,7 +41,7 @@ public:
 
 	expression_graph(int number_of_arguments,
 			const PrimVector& primitives,
-			const PairVector& numeric_constants,
+			const std::map<int,double>& numeric_constants,
 			const PairVector& constraint_rhs,
 			const BoundVector& initialbox);
 
@@ -58,14 +59,13 @@ public:
 
 private:
 
-	typedef PrimVector::iterator itr;
-	typedef PrimVector::reverse_iterator ritr;
+	typedef PrimVector::const_iterator itr;
+	typedef PrimVector::const_reverse_iterator ritr;
 
 	expression_graph(const expression_graph& );
 	expression_graph& operator=(const expression_graph& );
 
 	int v_size() const { return static_cast<int> (v.size()); }
-	int constants_size() const { return static_cast<int> (constants.size()); }
 	void set_variables();
 	void set_non_variables(const int length);
 	void set_numeric_consts(const int length);
@@ -87,8 +87,8 @@ private:
 	virtual void equality_constraint_revise(int body, int rhs);
 
 	std::vector<T> v;
-	PrimVector primitives;
-	const PairVector constants;
+	const PrimVector primitives;
+	const std::map<int,double> constants;
 	const PairVector rhs_constraints;
 	const BoundVector initial_box;
 };
@@ -96,7 +96,7 @@ private:
 template <typename T>
 expression_graph<T>::expression_graph(int number_of_arguments,
 									  const PrimVector& p,
-									  const PairVector& numeric_const,
+									  const std::map<int,double>& numeric_const,
 									  const PairVector& constraint_rhs,
 									  const BoundVector& initialbox)
 : v(number_of_arguments),
@@ -149,14 +149,18 @@ void expression_graph<T>::set_non_variables(const int length) {
 template <typename T>
 void expression_graph<T>::set_numeric_consts(const int length) {
 
-	for (int i=0; i<constants_size(); ++i) {
+	std::map<int,double>::const_iterator i = constants.begin();
 
-		const int    index = constants.at(i).first;
-		const double value = constants.at(i).second;
+	while (i!=constants.end()) {
+
+		const int    index = i->first;
+		const double value = i->second;
 
 		ASSERT2(index>=length, "index, length: "<<index<<", "<<length)
 
 		v.at(index) = T(value);
+
+		++i;
 	}
 }
 

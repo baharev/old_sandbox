@@ -32,57 +32,17 @@ using std::endl;
 
 namespace asol {
 
-printer::printer(std::ostream& os, const PairVector& num_const)
+printer::printer(std::ostream& os, const std::map<int,double>& num_const)
 : out(os), numeric_const(num_const)
 {
-	dbg_check_if_sorted();
+
 }
-
-int printer::numeric_const_size() const {
-
-	return static_cast<int>(numeric_const.size());
-}
-
-void printer::dbg_check_if_sorted() {
-
-	const int n = numeric_const_size();
-
-	if (n<=1) {
-
-		return;
-	}
-
-	for (int i=1; i<n; ++i) {
-
-		ASSERT(numeric_const.at(i-1) < numeric_const.at(i));
-	}
-}
-
-struct compareIndices : std::less<Pair> {
-
-	bool operator() (const Pair& p1, const Pair& p2) {
-
-		return p1.first < p2.first;
-	}
-
-} byIndex;
 
 char printer::type(const int index) const {
 
-	typedef PairVector::const_iterator itr;
+	Map::const_iterator i = numeric_const.find(index);
 
-	Pair p(index, 0.0);
-
-	itr i = std::lower_bound(numeric_const.begin(), numeric_const.end(), p, byIndex);
-
-	char ret_val = 'v';
-
-	if (i!=numeric_const.end() && i->first == index) {
-
-		ret_val = 'n';
-	}
-
-	return ret_val;
+	return (i==numeric_const.end()) ? 'v' : 'n' ;
 }
 
 const std::string printer::arg(const int index) const {

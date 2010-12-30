@@ -23,6 +23,7 @@
 #ifndef BUILDER_HPP_
 #define BUILDER_HPP_
 
+#include <map>
 #include <vector>
 #include <iosfwd>
 #include "typedefs.hpp"
@@ -71,7 +72,7 @@ public:
 
 	static const PrimVector& get_primitives();
 
-	static const PairVector& get_numeric_constants();
+	static const std::map<int,double>& get_numeric_constants();
 
 	// TODO Figure out how to use this info?
 	static const IntVector& get_common_subexpressions();
@@ -104,6 +105,8 @@ private:
 
 	static void common_subexpressions_type1(const int i);
 
+	static void insert_numeric_constant(const int index, const double value);
+
 	static int primitives_size();
 
 	static int number_of_vars;
@@ -112,8 +115,7 @@ private:
 
 	static PrimVector primitives;
 
-	// FIXME Make it a std::map
-	static PairVector numeric_constants;
+	static std::map<int,double> numeric_constants;
 
 	static IntVector common_subexpressions;
 
