@@ -576,10 +576,11 @@ void dag_test(const problem<builder>* prob) {
 									builder::get_initial_box());
 
 	//builder::dbg_dump_type_of_primitives();
-	builder::dbg_show_info();
+	builder::print_info(std::cout);
 	builder::print_primitives(std::cout);
 	builder::print_index_set(std::cout);
-	builder::dbg_common_subexpressions_type1();
+	builder::print_type1_common_subexpressions(std::cout);
+	builder::print_type2_common_subexpressions(std::cout);
 	builder::reset();
 
 	for (int i=0; i<40; ++i) {

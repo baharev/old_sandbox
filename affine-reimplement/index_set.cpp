@@ -24,6 +24,7 @@
 #include <iterator>
 #include <ostream>
 #include "index_set.hpp"
+#include "diagnostics.hpp"
 #include "primitives.hpp"
 
 namespace asol {
@@ -126,20 +127,13 @@ void index_set::record(const equality_constraint* p) {
 
 void index_set::print_constraint(const int k, std::ostream& out) const {
 
-	out << "Constraint " << k << std::endl;
+	out << "Constraint " << k << '\n';
 
 	const Set* const idx = constraint_index_sets.at(k);
 
-	Set::const_iterator i = idx->begin();
+	std::copy(idx->begin(), idx->end(), std::ostream_iterator<int>(out, "\n"));
 
-	while (i!=idx->end()) {
-
-		out << *i << std::endl;
-
-		++i;
-	}
-
-	out << std::endl;
+	out << '\n' << std::flush;
 }
 
 void index_set::print(std::ostream& out) const {
@@ -156,7 +150,7 @@ const std::set<int> index_set::non_variables(const int i) const {
 
 	const Set* s_i = constraint_index_sets.at(i);
 
-	return Set(s_i->lower_bound(number_of_variables), s_i->end()); // TODO Check!
+	return Set(s_i->lower_bound(number_of_variables), s_i->end());
 }
 
 void index_set::check_for_common_subexpressions(const int i) {
@@ -169,7 +163,6 @@ void index_set::check_for_common_subexpressions(const int i) {
 
 		Set tmp;
 
-		 // TODO Check!
 		std::set_intersection(si.begin(), si.end(),
 							  sj.begin(), sj.end(),
 							  std::inserter(tmp, tmp.begin()) );
@@ -179,6 +172,8 @@ void index_set::check_for_common_subexpressions(const int i) {
 }
 
 void index_set::collect_type2_common_subexpressions() {
+
+	ASSERT2(current==0,"recording not finished or not run");
 
 	for (int i=0; i<number_of_constraints(); ++i) {
 

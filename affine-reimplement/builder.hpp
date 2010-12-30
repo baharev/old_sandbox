@@ -23,14 +23,15 @@
 #ifndef BUILDER_HPP_
 #define BUILDER_HPP_
 
+#include <iosfwd>
 #include <map>
 #include <vector>
-#include <iosfwd>
 #include "typedefs.hpp"
 
 namespace asol {
 
 class primitive;
+class index_set;
 
 class builder {
 
@@ -64,7 +65,7 @@ public:
 
 	void equals(double value) const;
 
-	static void record_occurence_info();
+	static void record_occurence_info(); // FIXME Remove
 
 	static int number_of_arguments();
 
@@ -83,15 +84,17 @@ public:
 
 	static void reset();
 
-	static void dbg_dump_type_of_primitives();
+	static void dbg_dump_type_of_primitives(); // FIXME Remove
 
 	static void print_primitives(std::ostream& out);
 
 	static void print_index_set(std::ostream& out);
 
-	static void dbg_common_subexpressions_type1();
+	static void print_type1_common_subexpressions(std::ostream& out);
 
-	static void dbg_show_info();
+	static void print_type2_common_subexpressions(std::ostream& out);
+
+	static void print_info(std::ostream& out);
 
 	void dbg_consistency() const;
 
@@ -103,9 +106,11 @@ private:
 
 	static void occurence_info_of_constraint(const int k);
 
-	static void common_subexpressions_type1(const int i);
+	static void common_subexpressions_type1(const int i, std::ostream& out);
 
 	static void insert_numeric_constant(const int index, const double value);
+
+	static index_set* record_index_set();
 
 	static int primitives_size();
 

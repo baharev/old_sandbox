@@ -20,7 +20,10 @@
 //
 //==============================================================================
 
+#include <algorithm>
+// FIXME Make it ostream when cout is removed!
 #include <iostream>
+#include <iterator>
 #include <set>
 #include <typeinfo>
 #include "builder.hpp"
@@ -30,9 +33,11 @@
 #include "index_set.hpp"
 #include "demangle.hpp"
 
+using namespace std;
+
 namespace asol {
 
-typedef std::set<int> Set;
+typedef set<int> Set;
 
 int builder::unused_index = 0;
 
@@ -40,7 +45,7 @@ int builder::number_of_vars = 0;
 
 PrimVector builder::primitives = PrimVector();
 
-std::map<int,double> builder::numeric_constants = std::map<int,double> ();
+map<int,double> builder::numeric_constants = map<int,double> ();
 
 IntVector builder::common_subexpressions = IntVector();
 
@@ -64,7 +69,7 @@ const PrimVector& builder::get_primitives() {
 	return primitives;
 }
 
-const std::map<int,double>& builder::get_numeric_constants() {
+const map<int,double>& builder::get_numeric_constants() {
 
 	return numeric_constants;
 }
@@ -106,18 +111,18 @@ void builder::reset() {
 	initial_box.clear();
 }
 
-void builder::dbg_show_info() {
+void builder::print_info(ostream& out) {
 
-	using namespace std;
+	ASSERT(number_of_vars == static_cast<int> (initial_box.size()));
 
-	cout << "=============================="                          << endl;
-	cout << "Number of variables:   " << number_of_vars               << endl;
-	cout << "Max used index (args): " << unused_index-1               << endl;
-	cout << "Common subexpressions: " << common_subexpressions.size() << endl;
-	cout << "Number of constraints: " << constraints_rhs.size()       << endl;
-	cout << "Number of primitives:  " << primitives.size()            << endl;
-	cout << "Numeric constants:     " << numeric_constants.size()     << endl;
-	cout << "=============================="                          << endl;
+	out << "=============================="                          << endl;
+	out << "Number of variables:   " << number_of_vars               << endl;
+	out << "Max used index (args): " << unused_index-1               << endl;
+	out << "Common subexpressions: " << common_subexpressions.size() << endl;
+	out << "Number of constraints: " << constraints_rhs.size()       << endl;
+	out << "Number of primitives:  " << primitives.size()            << endl;
+	out << "Numeric constants:     " << numeric_constants.size()     << endl;
+	out << "=============================="                          << endl;
 }
 
 builder::builder() : index(-1) {
@@ -130,7 +135,8 @@ builder::builder(double ) : index(unused_index++) {
 
 builder::builder(double lb, double ub) : index(unused_index++) {
 
-	ASSERT2(lb<=ub, "lb, ub: "<<lb<<", "<<ub)
+	ASSERT2(lb<=ub, "lb, ub: "<<lb<<", "<<ub);
+
 	++number_of_vars;
 	initial_box.push_back(Bounds(lb, ub));
 }
@@ -204,7 +210,7 @@ const builder exp(const builder& x) {
 
 void builder::insert_numeric_constant(const int index, const double value) {
 
-	typedef std::pair<std::map<int,double>::iterator,bool> Result;
+	typedef pair<map<int,double>::iterator,bool> Result;
 
 	Result r = numeric_constants.insert(Pair(index, value));
 
@@ -283,6 +289,7 @@ void builder::equals(double value) const {
 	primitives.push_back(new equality_constraint(index, last_constraint_offset()));
 }
 
+// FIXME Drop this when index_set is ready
 void builder::record_occurence_info() {
 
 	const int n = static_cast<int>(constraints_rhs.size());
@@ -295,16 +302,11 @@ void builder::record_occurence_info() {
 
 void dump_index_set(int k, const Set& index_set) {
 
-	std::cout << "Constraint " << k << std::endl;
+	cout << "Constraint " << k << endl;
 
-	Set::const_iterator i = index_set.begin();
+	copy(index_set.begin(), index_set.end(), ostream_iterator<int>(cout, "\n"));
 
-	while (i!=index_set.end()) {
-
-		std::cout << *i << std::endl;
-
-		++i;
-	}
+	cout.flush();
 }
 
 void builder::occurence_info_of_constraint(const int k) {
@@ -327,8 +329,6 @@ void builder::occurence_info_of_constraint(const int k) {
 
 void builder::dbg_dump_type_of_primitives() {
 
-	using namespace std;
-
 	const int n = primitives_size();
 
 	cout << "Dumping type of " << n << " primitives" << endl;
@@ -340,9 +340,9 @@ void builder::dbg_dump_type_of_primitives() {
 	}
 }
 
-void builder::print_primitives(std::ostream& out) {
+void builder::print_primitives(ostream& out) {
 
-	out << "Primitives in plain text format" << std::endl << std::endl;
+	out << "Primitives in plain text format" << endl << endl;
 
 	recorder* const rec = new printer(out, numeric_constants);
 
@@ -351,13 +351,34 @@ void builder::print_primitives(std::ostream& out) {
 	for (int i=0; i<n; ++i) {
 
 		out << i << ": ";
+
 		primitives.at(i)->record(rec);
 	}
 
 	delete rec;
 }
 
-void builder::print_index_set(std::ostream& out) {
+void builder::print_type2_common_subexpressions(ostream& out) {
+
+	index_set* const rec = record_index_set();
+
+	rec->collect_type2_common_subexpressions();
+
+	out << "Type 2 common subexpressions:\n" << flush;
+
+	const Set& type2_cse = rec->type2_common_subexpressions();
+
+	copy(type2_cse.begin(), type2_cse.end(), ostream_iterator<int> (out, "\n"));
+
+	out.flush();
+
+	delete rec;
+}
+
+// TODO Make rec member and pass it to expression_graph when ready; solves:
+//      - transferring ownership
+//      - eliminates duplication
+index_set* builder::record_index_set() {
 
 	index_set* const rec = new index_set(number_of_variables(), numeric_constants);
 
@@ -370,27 +391,19 @@ void builder::print_index_set(std::ostream& out) {
 
 	rec->finished();
 
+	return rec;
+}
+
+void builder::print_index_set(ostream& out) {
+
+	index_set* const rec = record_index_set();
+
 	rec->print(out);
-
-	rec->collect_type2_common_subexpressions();
-
-	const std::set<int>& type2_cse = rec->type2_common_subexpressions();
-
-	out << "Type 2 common subexpressions:" <<std::endl;
-
-	std::set<int>::const_iterator i = type2_cse.begin();
-
-	while (i!=type2_cse.end()) {
-
-		out << *i << std::endl;
-
-		++i;
-	}
 
 	delete rec;
 }
 
-void builder::common_subexpressions_type1(const int i) {
+void builder::common_subexpressions_type1(const int i, ostream& out) {
 
 	const int n = primitives_size();
 
@@ -402,20 +415,20 @@ void builder::common_subexpressions_type1(const int i) {
 
 		if (p1->common_subexpressions(p2)) {
 
-			std::cout << "Found in primitives: " << i << ", " << j << std::endl;
+			out << "Found in primitives: " << i << ", " << j << endl;
 		}
 	}
 }
 
-void builder::dbg_common_subexpressions_type1() {
+void builder::print_type1_common_subexpressions(ostream& out) {
 
-	std::cout << "Type 1 common subexpressions" << std::endl;
+	out << "Type 1 common subexpressions:" << endl;
 
 	const int n = primitives_size();
 
 	for (int i=0; i<n; ++i) {
 
-		common_subexpressions_type1(i);
+		common_subexpressions_type1(i, out);
 	}
 }
 
