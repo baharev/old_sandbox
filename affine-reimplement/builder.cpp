@@ -359,7 +359,7 @@ void builder::print_primitives(std::ostream& out) {
 
 void builder::print_index_set(std::ostream& out) {
 
-	index_set* const rec = new index_set(numeric_constants);
+	index_set* const rec = new index_set(number_of_variables(), numeric_constants);
 
 	const int n = primitives_size();
 
@@ -371,6 +371,21 @@ void builder::print_index_set(std::ostream& out) {
 	rec->finished();
 
 	rec->print(out);
+
+	rec->collect_type2_common_subexpressions();
+
+	const std::set<int>& type2_cse = rec->type2_common_subexpressions();
+
+	out << "Type 2 common subexpressions:" <<std::endl;
+
+	std::set<int>::const_iterator i = type2_cse.begin();
+
+	while (i!=type2_cse.end()) {
+
+		out << *i << std::endl;
+
+		++i;
+	}
 
 	delete rec;
 }

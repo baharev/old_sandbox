@@ -20,8 +20,6 @@
 //
 //==============================================================================
 
-#include <algorithm>
-#include <functional>
 #include <ostream>
 #include <sstream>
 #include "printer.hpp"

@@ -20,14 +20,16 @@
 //
 //==============================================================================
 
+#include <algorithm>
+#include <iterator>
 #include <ostream>
 #include "index_set.hpp"
 #include "primitives.hpp"
 
 namespace asol {
 
-index_set::index_set(const std::map<int,double>& numeric_constants)
-: numeric_const(numeric_constants)
+index_set::index_set(const int num_of_vars, const Map& numeric_constants)
+: number_of_variables(num_of_vars), numeric_const(numeric_constants)
 {
 	current = new Set;
 }
@@ -63,16 +65,16 @@ void index_set::record_primitive(const primitive* p) {
 	record_arg(p->x);
 }
 
-bool index_set::is_variable(const int index) const {
+bool index_set::is_numeric_constant(const int index) const {
 
 	Map::const_iterator i = numeric_const.find(index);
 
-	return (i==numeric_const.end()) ? true : false;
+	return (i!=numeric_const.end()) ? true : false;
 }
 
 void index_set::record_arg(const int index) {
 
-	if (is_variable(index)) {
+	if (!is_numeric_constant(index)) {
 
 		current->insert(index);
 	}
@@ -148,6 +150,45 @@ void index_set::print(std::ostream& out) const {
 
 		print_constraint(i, out);
 	}
+}
+
+const std::set<int> index_set::non_variables(const int i) const {
+
+	const Set* s_i = constraint_index_sets.at(i);
+
+	return Set(s_i->lower_bound(number_of_variables), s_i->end()); // TODO Check!
+}
+
+void index_set::check_for_common_subexpressions(const int i) {
+
+	const Set si(non_variables(i));
+
+	for (int j=i+1; j<number_of_constraints(); ++j) {
+
+		const Set sj(non_variables(j));
+
+		Set tmp;
+
+		 // TODO Check!
+		std::set_intersection(si.begin(), si.end(),
+							  sj.begin(), sj.end(),
+							  std::inserter(tmp, tmp.begin()) );
+
+		type2_cse.insert(tmp.begin(), tmp.end());
+	}
+}
+
+void index_set::collect_type2_common_subexpressions() {
+
+	for (int i=0; i<number_of_constraints(); ++i) {
+
+		check_for_common_subexpressions(i);
+	}
+}
+
+const std::set<int>& index_set::type2_common_subexpressions() const {
+
+	return type2_cse;
 }
 
 }

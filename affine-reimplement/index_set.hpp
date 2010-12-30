@@ -35,15 +35,23 @@ class index_set : public recorder {
 
 public:
 
-	index_set(const std::map<int,double>& numeric_constants);
+	typedef std::map<int,double> Map;
+
+	index_set(const int number_of_variables, const Map& numeric_constants);
 
 	void print(std::ostream& out) const;
+
+	void collect_type2_common_subexpressions();
+
+	const std::set<int>& type2_common_subexpressions() const;
 
 	void finished();
 
 	~index_set();
 
 private:
+
+	typedef std::set<int> Set;
 
 	index_set(const index_set& );
 	index_set& operator=(const index_set& );
@@ -61,19 +69,21 @@ private:
 	void record_binary_primitive(const binary_primitive* p);
 
 	void print_constraint(const int i, std::ostream& out) const;
+	const Set non_variables(const int from_constraint_i) const;
+	void check_for_common_subexpressions(const int i);
 
 	int number_of_constraints() const;
-	bool is_variable(const int index) const;
+	bool is_numeric_constant(const int index) const;
 
-	typedef std::map<int,double> Map;
+	const int number_of_variables;
 
 	const Map& numeric_const;
-
-	typedef std::set<int> Set;
 
 	std::vector<Set*> constraint_index_sets;
 
 	Set* current;
+
+	Set type2_cse;
 };
 
 }
