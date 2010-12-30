@@ -560,12 +560,14 @@ void build(const problem<builder>* prob) {
 
 	delete prob;
 
-	builder::record_occurence_info();
 }
 
 void dag_test(const problem<builder>* prob) {
 
 	build(prob);
+
+	// FIXME Recording occurence info should be part of the building procedure
+	builder::record_occurence_info();
 
 	expression_graph<interval> dag( builder::number_of_arguments(),
 									builder::get_primitives(),
@@ -576,6 +578,7 @@ void dag_test(const problem<builder>* prob) {
 	//builder::dbg_dump_type_of_primitives();
 	builder::dbg_show_info();
 	builder::print_primitives(std::cout);
+	builder::print_index_set(std::cout);
 	builder::dbg_common_subexpressions_type1();
 	builder::reset();
 

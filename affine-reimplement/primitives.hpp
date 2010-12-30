@@ -49,9 +49,12 @@ public:
 
 	const int z;
 
+	const int x;
+
 protected:
 
-	explicit primitive(int value_offset) : z(value_offset) { }
+	explicit primitive(int value_offset, int first_arg)
+	: z(value_offset), x(first_arg) { }
 
 private:
 
@@ -61,14 +64,10 @@ private:
 
 class unary_primitive : public primitive {
 
-public:
-
-	const int x;
-
 protected:
 
 	unary_primitive(int value, int arg)
-	: primitive(value), x(arg) { }
+	: primitive(value, arg) { }
 
 	virtual void record_indices(std::set<int>& index_set) const {
 		index_set.insert(z);
@@ -88,13 +87,12 @@ class binary_primitive : public primitive {
 
 public:
 
-	const int x;
 	const int y;
 
 protected:
 
 	binary_primitive(int value, int arg1, int arg2)
-	: primitive(value), x(arg1), y(arg2) { }
+	: primitive(value, arg1), y(arg2) { }
 
 	virtual void record_indices(std::set<int>& index_set) const {
 		index_set.insert(z);
@@ -320,9 +318,7 @@ class equality_constraint : public primitive {
 public:
 
 	equality_constraint(int body, int rhs)
-	: primitive(body), x(rhs) { }
-
-	const int x;
+	: primitive(body, rhs) { }
 
 private:
 

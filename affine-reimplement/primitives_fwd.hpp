@@ -20,28 +20,22 @@
 //
 //==============================================================================
 
-#ifndef RECORDER_HPP_
-#define RECORDER_HPP_
-
-#include "primitives_fwd.hpp"
+#ifndef PRIMITIVES_FWD_HPP_
+#define PRIMITIVES_FWD_HPP_
 
 namespace asol {
 
-class recorder {
-
-public:
-
-	virtual void record(const addition*            ) = 0;
-	virtual void record(const substraction*        ) = 0;
-	virtual void record(const multiplication*      ) = 0;
-	virtual void record(const division*            ) = 0;
-	virtual void record(const square*              ) = 0;
-	virtual void record(const exponential*         ) = 0;
-	virtual void record(const equality_constraint* ) = 0;
-
-	virtual ~recorder() { }
-};
+class primitive;
+class unary_primitive;
+class binary_primitive;
+class addition;
+class substraction;
+class multiplication;
+class division;
+class square;
+class exponential;
+class equality_constraint;
 
 }
 
-#endif // RECORDER_HPP_
+#endif // PRIMITIVES_FWD_HPP_

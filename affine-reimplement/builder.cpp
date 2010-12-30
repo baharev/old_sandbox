@@ -27,6 +27,7 @@
 #include "diagnostics.hpp"
 #include "primitives.hpp"
 #include "printer.hpp"
+#include "index_set.hpp"
 #include "demangle.hpp"
 
 namespace asol {
@@ -330,20 +331,39 @@ void builder::dbg_dump_type_of_primitives() {
 	}
 }
 
-
 void builder::print_primitives(std::ostream& out) {
 
 	out << "Primitives in plain text format" << std::endl << std::endl;
 
-	const int n = primitives_size();
-
 	recorder* const rec = new printer(out, numeric_constants);
+
+	const int n = primitives_size();
 
 	for (int i=0; i<n; ++i) {
 
 		out << i << ": ";
 		primitives.at(i)->record(rec);
 	}
+
+	delete rec;
+}
+
+void builder::print_index_set(std::ostream& out) {
+
+	index_set* const rec = new index_set(number_of_variables());
+
+	const int n = primitives_size();
+
+	for (int i=0; i<n; ++i) {
+
+		primitives.at(i)->record(rec);
+	}
+
+	rec->finished();
+
+	rec->print(out);
+
+	delete rec;
 }
 
 void builder::common_subexpressions_type1(const int i) {

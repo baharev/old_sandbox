@@ -86,6 +86,8 @@ public:
 
 	static void print_primitives(std::ostream& out);
 
+	static void print_index_set(std::ostream& out);
+
 	static void dbg_common_subexpressions_type1();
 
 	static void dbg_show_info();
@@ -110,6 +112,7 @@ private:
 
 	static PrimVector primitives;
 
+	// FIXME Make it a std::map
 	static PairVector numeric_constants;
 
 	static IntVector common_subexpressions;
