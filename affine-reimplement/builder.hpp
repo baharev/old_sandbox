@@ -65,8 +65,6 @@ public:
 
 	void equals(double value) const;
 
-	static void record_occurence_info(); // FIXME Remove
-
 	static int number_of_arguments();
 
 	static int number_of_variables();
@@ -83,8 +81,6 @@ public:
 	static const BoundVector& get_initial_box();
 
 	static void reset();
-
-	static void dbg_dump_type_of_primitives(); // FIXME Remove
 
 	static void print_primitives(std::ostream& out);
 
@@ -103,8 +99,6 @@ private:
 	explicit builder(double value);
 
 	static int last_constraint_offset();
-
-	static void occurence_info_of_constraint(const int k);
 
 	static void common_subexpressions_type1(const int i, std::ostream& out);
 

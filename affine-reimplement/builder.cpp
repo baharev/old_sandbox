@@ -21,17 +21,14 @@
 //==============================================================================
 
 #include <algorithm>
-// FIXME Make it ostream when cout is removed!
-#include <iostream>
 #include <iterator>
+#include <ostream>
 #include <set>
-#include <typeinfo>
 #include "builder.hpp"
 #include "diagnostics.hpp"
 #include "primitives.hpp"
 #include "printer.hpp"
 #include "index_set.hpp"
-#include "demangle.hpp"
 
 using namespace std;
 
@@ -287,57 +284,6 @@ void builder::equals(double value) const {
 	constraints_rhs.push_back(Pair(primitive_index, value));
 
 	primitives.push_back(new equality_constraint(index, last_constraint_offset()));
-}
-
-// FIXME Drop this when index_set is ready
-void builder::record_occurence_info() {
-
-	const int n = static_cast<int>(constraints_rhs.size());
-
-	for (int i=0; i<n; ++i) {
-
-		occurence_info_of_constraint(i);
-	}
-}
-
-void dump_index_set(int k, const Set& index_set) {
-
-	cout << "Constraint " << k << endl;
-
-	copy(index_set.begin(), index_set.end(), ostream_iterator<int>(cout, "\n"));
-
-	cout.flush();
-}
-
-void builder::occurence_info_of_constraint(const int k) {
-
-	const int start = (k!=0) ? constraints_rhs.at(k-1).first + 1 : 0;
-
-	const int end   =          constraints_rhs.at(k  ).first;
-
-	ASSERT2(start < end, "start, end: "<<start<<", "<<end)
-
-	Set index_set;
-
-	for (int i=start; i<end; ++i) {
-
-		primitives.at(i)->record_indices(index_set);
-	}
-
-	dump_index_set(k, index_set);
-}
-
-void builder::dbg_dump_type_of_primitives() {
-
-	const int n = primitives_size();
-
-	cout << "Dumping type of " << n << " primitives" << endl;
-
-	for (int i=0; i<n; ++i) {
-
-		cout << i << ": ";
-		cout << demangle( typeid(*primitives.at(i)).name() ) << endl;
-	}
 }
 
 void builder::print_primitives(ostream& out) {
