@@ -90,6 +90,8 @@ public:
 
 	static void print_type2_common_subexpressions(std::ostream& out);
 
+	static void print_type3_common_subexpressions(std::ostream& out);
+
 	static void print_info(std::ostream& out);
 
 	void dbg_consistency() const;

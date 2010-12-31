@@ -29,24 +29,48 @@
 
 namespace asol {
 
-index_set::index_set(const int num_of_vars, const Map& numeric_constants)
+index_set::index_set(const int num_of_vars,
+		             const std::map<int,double>& numeric_constants)
 : number_of_variables(num_of_vars), numeric_const(numeric_constants)
 {
-	current = new Set;
+
 }
 
 void index_set::finished() {
 
-	if (current->empty()) {
+	if (!current.empty()) {
 
-		delete current;
+		push_back_current();
 	}
-	else {
+}
 
-		constraint_index_sets.push_back(current);
+void index_set::push_back_current() {
+
+	Set* tmp = new Set;
+
+	for (Map::const_iterator i=current.begin(); i!=current.end(); ++i) {
+
+		const int index = i->first;
+		const int count = i->second;
+
+		tmp->insert(index);
+
+		push_back_type3_cse(index, count);
 	}
 
-	current = 0;
+	ASSERT(!tmp->empty());
+
+	constraint_index_sets.push_back(tmp);
+
+	current.clear();
+}
+
+void index_set::push_back_type3_cse(const int index, const int count) {
+
+	if (index>=number_of_variables && count>=2) {
+
+		type3_cse.insert(index);
+	}
 }
 
 int index_set::number_of_constraints() const {
@@ -62,29 +86,40 @@ index_set::~index_set() {
 
 		delete constraint_index_sets.at(i);
 	}
-
-	delete current;
 }
 
 void index_set::record_primitive(const primitive* p) {
 
-	current->insert(p->z);
+	std::pair<Map::iterator,bool> res = current.insert(Pair(p->z, 0));
+
+	ASSERT2(res.second, "index already inserted: "<<res.first->first);
 
 	record_arg(p->x);
 }
 
 bool index_set::is_numeric_constant(const int index) const {
 
-	Map::const_iterator i = numeric_const.find(index);
+	std::map<int,double>::const_iterator i = numeric_const.find(index);
 
 	return (i!=numeric_const.end()) ? true : false;
 }
 
 void index_set::record_arg(const int index) {
 
-	if (!is_numeric_constant(index)) {
+	if (is_numeric_constant(index)) {
 
-		current->insert(index);
+		return;
+	}
+
+	std::pair<Map::iterator,bool> res = current.insert(Pair(index, 0));
+
+	bool new_index = res.second;
+
+	if (!new_index) {
+
+		int& count = res.first->second;
+
+		++count;
 	}
 }
 
@@ -127,9 +162,7 @@ void index_set::record(const exponential* p) {
 
 void index_set::record(const equality_constraint* p) {
 
-	constraint_index_sets.push_back(current);
-
-	current = new Set;
+	push_back_current();
 }
 
 void index_set::print_constraint(const int k, std::ostream& out) const {
@@ -180,7 +213,8 @@ void index_set::check_for_common_subexpressions(const int i) {
 
 void index_set::collect_type2_common_subexpressions() {
 
-	ASSERT2(current==0,"recording not finished or not run");
+	ASSERT2(current.empty(),"recording not finished or not run");
+	ASSERT2(type2_cse.empty(),"this function has already been called");
 
 	for (int i=0; i<number_of_constraints(); ++i) {
 
@@ -191,6 +225,11 @@ void index_set::collect_type2_common_subexpressions() {
 const std::set<int>& index_set::type2_common_subexpressions() const {
 
 	return type2_cse;
+}
+
+const std::set<int>& index_set::type3_common_subexpressions() const {
+
+	return type3_cse;
 }
 
 }

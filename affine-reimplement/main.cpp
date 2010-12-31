@@ -399,7 +399,7 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T HL0 = H_Liq(y1);
 
-	const T Q = V1*(HV1 - HL0) + D*HL0;
+	const T Q = V1*(HV1 - HL0) + D*HL0; // HL0*(D - V1) + HV1*V1 is worse...
 
 	Q.mark_as_common_subexpression();
 
@@ -586,6 +586,7 @@ void dag_test(const problem<builder>* prob) {
 	//builder::print_index_set(std::cout);
 	builder::print_type1_common_subexpressions(std::cout);
 	builder::print_type2_common_subexpressions(std::cout);
+	builder::print_type3_common_subexpressions(std::cout);
 	builder::reset();
 
 	for (int i=0; i<40; ++i) {

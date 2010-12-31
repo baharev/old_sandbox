@@ -321,6 +321,21 @@ void builder::print_type2_common_subexpressions(ostream& out) {
 	delete rec;
 }
 
+void builder::print_type3_common_subexpressions(ostream& out) {
+
+	index_set* const rec = record_index_set();
+
+	out << "Type 3 common subexpressions:\n" << flush;
+
+	const Set& type3_cse = rec->type3_common_subexpressions();
+
+	copy(type3_cse.begin(), type3_cse.end(), ostream_iterator<int> (out, "\n"));
+
+	out.flush();
+
+	delete rec;
+}
+
 // TODO Make rec member and pass it to expression_graph when ready; solves:
 //      - transferring ownership
 //      - eliminates duplication

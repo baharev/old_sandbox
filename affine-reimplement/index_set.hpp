@@ -35,15 +35,16 @@ class index_set : public recorder {
 
 public:
 
-	typedef std::map<int,double> Map;
-
-	index_set(const int number_of_variables, const Map& numeric_constants);
+	index_set(const int number_of_variables,
+			  const std::map<int,double>& numeric_constants);
 
 	void print(std::ostream& out) const;
 
 	void collect_type2_common_subexpressions();
 
 	const std::set<int>& type2_common_subexpressions() const;
+
+	const std::set<int>& type3_common_subexpressions() const;
 
 	void finished();
 
@@ -74,16 +75,23 @@ private:
 
 	int number_of_constraints() const;
 	bool is_numeric_constant(const int index) const;
+	void push_back_current();
+	void push_back_type3_cse(const int index, const int count);
 
 	const int number_of_variables;
 
-	const Map& numeric_const;
+	const std::map<int,double>& numeric_const;
 
 	std::vector<Set*> constraint_index_sets;
 
-	Set* current;
+	typedef std::map<int,int> Map;
+	typedef std::pair<int,int> Pair;
+
+	Map current;
 
 	Set type2_cse;
+
+	Set type3_cse;
 };
 
 }
