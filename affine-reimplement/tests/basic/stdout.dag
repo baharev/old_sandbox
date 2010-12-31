@@ -1,0 +1,410 @@
+std::logic_error
+Assertion failed: !y.contains(0); y: [ -2, 5]; const asol::interval asol::operator/(const asol::interval&, const asol::interval&) at ../interval.cpp:127
+###############################################
+Hansen's example
+==============================
+Number of variables:   2
+Max used index (args): 15
+Common subexpressions: 1
+Number of constraints: 1
+Number of primitives:  12
+Numeric constants:     3
+==============================
+Primitives in plain text format
+
+0: v2 = v0 * v1
+1: v3 = sqr(v0)
+2: v4 = v3 + v1
+3: v5 = v4 + v2
+4: v7 = n6 * v2
+5: v8 = sqr(v1)
+6: v10 = n9 * v8
+7: v12 = n11 * v0
+8: v13 = v12 - v10
+9: v14 = v13 + v7
+10: v15 = v14 / v5
+11: Eq: v15 = rhs(0)
+
+Type 1 common subexpressions:
+Type 2 common subexpressions:
+Type 3 common subexpressions:
+2
+0: [ 1, 5.25321]
+1: [ 1, 9.96378]
+Last value: [ 14.5, 14.5]
+###############################################
+Neumaier's interval challange
+==============================
+Number of variables:   7
+Max used index (args): 28
+Common subexpressions: 2
+Number of constraints: 1
+Number of primitives:  22
+Numeric constants:     1
+==============================
+Primitives in plain text format
+
+0: v7 = sqr(v1)
+1: v8 = sqr(v0)
+2: v9 = v8 + v7
+3: v10 = sqr(v3)
+4: v11 = sqr(v2)
+5: v12 = v11 + v10
+6: v13 = v0 * v2
+7: v14 = v1 * v3
+8: v15 = v14 + v13
+9: v16 = v5 * v15
+10: v17 = v0 * v3
+11: v18 = v1 * v2
+12: v19 = v18 - v17
+13: v20 = v4 * v19
+14: v21 = v20 + v16
+15: v22 = v9 + v12
+16: v24 = n23 * v21
+17: v25 = v9 - v12
+18: v26 = v6 * v25
+19: v27 = v26 + v24
+20: v28 = v27 / v22
+21: Eq: v28 = rhs(0)
+
+Type 1 common subexpressions:
+Type 2 common subexpressions:
+Type 3 common subexpressions:
+9
+12
+0: [ -0.888808, -0.6]
+1: [ -0.1, 0.2]
+2: [ 0.3, 0.7]
+3: [ -0.2, 0.1]
+4: [ -1, 1]
+5: [ -1, 1]
+6: [ 7, 9]
+Last value: [ 0, 0]
+###############################################
+(x-1)/(x^2+2)
+==============================
+Number of variables:   1
+Max used index (args): 6
+Common subexpressions: 0
+Number of constraints: 0
+Number of primitives:  4
+Numeric constants:     2
+==============================
+Primitives in plain text format
+
+0: v1 = sqr(v0)
+1: v3 = v1 + n2
+2: v5 = v0 + n4
+3: v6 = v5 / v3
+Type 1 common subexpressions:
+Type 2 common subexpressions:
+Type 3 common subexpressions:
+0: [ 2, 4]
+Last value: [ 0.0555556, 0.5]
+###############################################
+(x^2+x)/(16*x-9)
+==============================
+Number of variables:   1
+Max used index (args): 7
+Common subexpressions: 0
+Number of constraints: 0
+Number of primitives:  5
+Numeric constants:     2
+==============================
+Primitives in plain text format
+
+0: v2 = n1 * v0
+1: v4 = v2 + n3
+2: v5 = sqr(v0)
+3: v6 = v5 + v0
+4: v7 = v6 / v4
+Type 1 common subexpressions:
+Type 2 common subexpressions:
+Type 3 common subexpressions:
+0: [ 1, 2]
+Last value: [ 0.0869565, 0.857143]
+###############################################
+x^2+y^2=1
+x^2-y  =0
+==============================
+Number of variables:   2
+Max used index (args): 5
+Common subexpressions: 1
+Number of constraints: 2
+Number of primitives:  6
+Numeric constants:     0
+==============================
+Primitives in plain text format
+
+0: v2 = sqr(v0)
+1: v3 = sqr(v1)
+2: v4 = v2 + v3
+3: Eq: v4 = rhs(0)
+
+4: v5 = v2 - v1
+5: Eq: v5 = rhs(1)
+
+Type 1 common subexpressions:
+Type 2 common subexpressions:
+2
+Type 3 common subexpressions:
+0: [ -0.78617, -0.786128]
+1: [ 0.61801, 0.618064]
+Last value: [ 0, 0]
+###############################################
+Jacobsen
+==============================
+Number of variables:   16
+Max used index (args): 276
+Common subexpressions: 2
+Number of constraints: 16
+Number of primitives:  197
+Numeric constants:     80
+==============================
+Primitives in plain text format
+
+0: v17 = n16 / v0
+1: v19 = v17 + n18
+2: v21 = n20 / v19
+3: v22 = v15 * v21
+4: v24 = n23 * v21
+5: v26 = n25 - v24
+6: v27 = v8 - v15
+7: v28 = v27 * v26
+8: Eq: v28 = rhs(0)
+
+9: v30 = n29 * v0
+10: v31 = exp(v30)
+11: v33 = n32 * v31
+12: v35 = n34 * v0
+13: v36 = exp(v35)
+14: v38 = n37 * v36
+15: v39 = v38 + v33
+16: v41 = n40 * v21
+17: v42 = exp(v41)
+18: v44 = n43 * v42
+19: v45 = v15 * v44
+20: v46 = v39 - v44
+21: v47 = v8 * v46
+22: v48 = v47 + v45
+23: v50 = n49 - v15
+24: v51 = v50 * v7
+25: v52 = v51 + v22
+26: Eq: v52 = rhs(1)
+
+27: v54 = n53 - v15
+28: v56 = n55 / v7
+29: v58 = v56 + n57
+30: v60 = n59 / v58
+31: v61 = v54 * v6
+32: v63 = n62 * v60
+33: v64 = v63 - v61
+34: v65 = v64 - v22
+35: Eq: v65 = rhs(2)
+
+36: v67 = n66 * v7
+37: v68 = exp(v67)
+38: v70 = n69 * v68
+39: v72 = n71 * v7
+40: v73 = exp(v72)
+41: v75 = n74 * v73
+42: v76 = v75 + v70
+43: v78 = n77 * v6
+44: v79 = exp(v78)
+45: v81 = n80 * v79
+46: v82 = v54 * v81
+47: v84 = n83 * v76
+48: v85 = v84 - v82
+49: v86 = v85 - v48
+50: Eq: v86 = rhs(3)
+
+51: v88 = n87 / v1
+52: v90 = v88 + n89
+53: v92 = n91 / v90
+54: v93 = v9 - v15
+55: v94 = v93 * v0
+56: v95 = v9 * v92
+57: v96 = v95 - v94
+58: v97 = v96 - v22
+59: Eq: v97 = rhs(4)
+
+60: v99 = n98 * v1
+61: v100 = exp(v99)
+62: v102 = n101 * v100
+63: v104 = n103 * v1
+64: v105 = exp(v104)
+65: v107 = n106 * v105
+66: v108 = v107 + v102
+67: v110 = n109 * v0
+68: v111 = exp(v110)
+69: v113 = n112 * v111
+70: v114 = v93 * v113
+71: v115 = v9 * v108
+72: v116 = v115 - v114
+73: v117 = v116 - v48
+74: Eq: v117 = rhs(5)
+
+75: v119 = n118 / v6
+76: v121 = v119 + n120
+77: v123 = n122 / v121
+78: v125 = v14 + n124
+79: v126 = v125 - v15
+80: v127 = v126 * v5
+81: v128 = v14 * v123
+82: v129 = v128 - v127
+83: v130 = v129 - v22
+84: Eq: v130 = rhs(6)
+
+85: v132 = n131 * v6
+86: v133 = exp(v132)
+87: v135 = n134 * v133
+88: v137 = n136 * v6
+89: v138 = exp(v137)
+90: v140 = n139 * v138
+91: v141 = v140 + v135
+92: v143 = n142 * v5
+93: v144 = exp(v143)
+94: v146 = n145 * v144
+95: v147 = v126 * v146
+96: v148 = v14 * v141
+97: v149 = v148 - v147
+98: v150 = v149 - v48
+99: Eq: v150 = rhs(7)
+
+100: v152 = n151 / v2
+101: v154 = v152 + n153
+102: v156 = n155 / v154
+103: v157 = v10 - v15
+104: v158 = v157 * v1
+105: v159 = v10 * v156
+106: v160 = v159 - v158
+107: v161 = v160 - v22
+108: Eq: v161 = rhs(8)
+
+109: v163 = n162 * v2
+110: v164 = exp(v163)
+111: v166 = n165 * v164
+112: v168 = n167 * v2
+113: v169 = exp(v168)
+114: v171 = n170 * v169
+115: v172 = v171 + v166
+116: v174 = n173 * v1
+117: v175 = exp(v174)
+118: v177 = n176 * v175
+119: v178 = v157 * v177
+120: v179 = v10 * v172
+121: v180 = v179 - v178
+122: v181 = v180 - v48
+123: Eq: v181 = rhs(9)
+
+124: v183 = n182 / v5
+125: v185 = v183 + n184
+126: v187 = n186 / v185
+127: v189 = v13 + n188
+128: v190 = v189 - v15
+129: v191 = v190 * v4
+130: v192 = v13 * v187
+131: v193 = v192 - v191
+132: v194 = v193 - v22
+133: Eq: v194 = rhs(10)
+
+134: v196 = n195 * v5
+135: v197 = exp(v196)
+136: v199 = n198 * v197
+137: v201 = n200 * v5
+138: v202 = exp(v201)
+139: v204 = n203 * v202
+140: v205 = v204 + v199
+141: v207 = n206 * v4
+142: v208 = exp(v207)
+143: v210 = n209 * v208
+144: v211 = v190 * v210
+145: v212 = v13 * v205
+146: v213 = v212 - v211
+147: v214 = v213 - v48
+148: Eq: v214 = rhs(11)
+
+149: v216 = n215 / v3
+150: v218 = v216 + n217
+151: v220 = n219 / v218
+152: v221 = v11 - v15
+153: v222 = v221 * v2
+154: v223 = v11 * v220
+155: v224 = v223 - v222
+156: v225 = v224 - v22
+157: Eq: v225 = rhs(12)
+
+158: v227 = n226 * v3
+159: v228 = exp(v227)
+160: v230 = n229 * v228
+161: v232 = n231 * v3
+162: v233 = exp(v232)
+163: v235 = n234 * v233
+164: v236 = v235 + v230
+165: v238 = n237 * v2
+166: v239 = exp(v238)
+167: v241 = n240 * v239
+168: v242 = v221 * v241
+169: v243 = v11 * v236
+170: v244 = v243 - v242
+171: v245 = v244 - v48
+172: Eq: v245 = rhs(13)
+
+173: v247 = n246 / v4
+174: v249 = v247 + n248
+175: v251 = n250 / v249
+176: v252 = v12 - v15
+177: v253 = v252 * v3
+178: v254 = v12 * v251
+179: v255 = v254 - v253
+180: v256 = v255 - v22
+181: Eq: v256 = rhs(14)
+
+182: v258 = n257 * v4
+183: v259 = exp(v258)
+184: v261 = n260 * v259
+185: v263 = n262 * v4
+186: v264 = exp(v263)
+187: v266 = n265 * v264
+188: v267 = v266 + v261
+189: v269 = n268 * v3
+190: v270 = exp(v269)
+191: v272 = n271 * v270
+192: v273 = v252 * v272
+193: v274 = v12 * v267
+194: v275 = v274 - v273
+195: v276 = v275 - v48
+196: Eq: v276 = rhs(15)
+
+Type 1 common subexpressions:
+Type 2 common subexpressions:
+21
+22
+48
+54
+93
+126
+157
+190
+221
+252
+Type 3 common subexpressions:
+21
+44
+0: [ 0.93, 0.94]
+1: [ 0.669156, 1]
+2: [ 0.261374, 1]
+3: [ 0.0879461, 1]
+4: [ 0.0528187, 0.589253]
+5: [ 0.0115242, 0.201279]
+6: [ 0.00233218, 0.0643115]
+7: [ 0.0001, 0.021186]
+8: [ 3.44275, 3.46061]
+9: [ 3.31004, 3.52452]
+10: [ 2.86508, 3.70978]
+11: [ 2.53947, 4]
+12: [ 2.45868, 4]
+13: [ 2.46028, 3.65975]
+14: [ 2.74091, 3.26263]
+15: [ 0.5, 0.51]
+Last value: [ 0, 0]
