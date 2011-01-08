@@ -20,43 +20,44 @@
 //
 //==============================================================================
 
-#include <vector>
-#include "interval.hpp"
-#include "primitives.hpp"
+#ifndef PRINTER_HPP_
+#define PRINTER_HPP_
 
-using namespace std;
+#include <iosfwd>
+#include <map>
+#include <string>
+#include "recorder.hpp"
 
-using namespace asol;
+namespace asol {
 
-void Main() {
+class printer : public recorder {
 
-	vector<interval> v;
+public:
 
-	v.push_back(interval(1, 2));
-	v.push_back(interval(0, 1));
-	v.push_back(interval(1, 3));
-	v.push_back(interval(1, 9));
+	printer(std::ostream& os, const std::map<int,double>& numeric_const);
 
-	primitive<interval>::set_vector(&v);
+private:
 
-	primitive<interval>* p = new addition<interval>(2, 0, 1);
+	virtual void record(const addition*            );
+	virtual void record(const substraction*        );
+	virtual void record(const multiplication*      );
+	virtual void record(const division*            );
+	virtual void record(const square*              );
+	virtual void record(const exponential*         );
+	virtual void record(const equality_constraint* );
 
-	primitive<interval>* q = new square<interval>(3, 2);
+	void record_unary_primitive(const unary_primitive* p, const char* op);
+	void record_binary_primitive(const binary_primitive* p, const char* op);
 
-	p->evaluate();
-	q->evaluate();
+	const std::string arg(const int index) const;
+	char type(const int index) const;
 
-	p->revise();
-	q->revise();
+	typedef std::map<int,double> Map;
 
-	delete p;
-	delete q;
+	std::ostream& out;
+	const Map& numeric_const;
+};
 
 }
 
-int main() {
-
-	Main();
-
-	return 0;
-}
+#endif // PRINTER_HPP_

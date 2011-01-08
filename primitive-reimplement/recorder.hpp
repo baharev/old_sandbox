@@ -20,43 +20,28 @@
 //
 //==============================================================================
 
-#include <vector>
-#include "interval.hpp"
+#ifndef RECORDER_HPP_
+#define RECORDER_HPP_
+
 #include "primitives.hpp"
 
-using namespace std;
+namespace asol {
 
-using namespace asol;
+class recorder {
 
-void Main() {
+public:
 
-	vector<interval> v;
+	virtual void addition(int z, int x, int y) = 0;
+	virtual void substraction(int z, int x, int y) = 0;
+	virtual void multiplication(int z, int x, int y) = 0;
+	virtual void division(int z, int x, int y) = 0;
+	virtual void square(int z, int x) = 0;
+	virtual void exponential(int z, int x) = 0;
+	virtual void equality_constraint(int z, int x) = 0;
 
-	v.push_back(interval(1, 2));
-	v.push_back(interval(0, 1));
-	v.push_back(interval(1, 3));
-	v.push_back(interval(1, 9));
-
-	primitive<interval>::set_vector(&v);
-
-	primitive<interval>* p = new addition<interval>(2, 0, 1);
-
-	primitive<interval>* q = new square<interval>(3, 2);
-
-	p->evaluate();
-	q->evaluate();
-
-	p->revise();
-	q->revise();
-
-	delete p;
-	delete q;
+	virtual ~recorder() { }
+};
 
 }
 
-int main() {
-
-	Main();
-
-	return 0;
-}
+#endif // RECORDER_HPP_
