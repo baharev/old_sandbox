@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Rigorous bounds in LP</title>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon" />
+</head>
+<body>
+    <div id="page-container">
+        <div id="bme">
+        </div>
+        <div id="content">
+            <h1>
+                Rigorous lower and upper bounds in linear programming</h1>
+            <p>
+                Download source code: <a href="rigorousLP.c" onclick="pageTracker._trackPageview('/rigorousLP.c');">
+                    rigorousLP.c</a>
+                <br />
+                Output: <a href="output_gcc.txt" onclick="pageTracker._trackPageview('/output_gcc.txt');">
+                    output_gcc.txt</a> <a href="output_win32.txt" onclick="pageTracker._trackPageview('/output_win32.txt');">
+                        output_win32.txt</a>
+            </p>
+            <p>
+                My aim is to have an efficient implementation which does not depend on any interval
+                library, yet works on many platforms. The implementation should use the sparse data
+                structures of the LP solver.
+            </p>
+            <p>
+                Considering these aims, I have implemented a demo program of the algorithm of <a
+                    href="http://www.mat.univie.ac.at/~neum/papers.html#mip">Neumaier and Shcherbina</a>
+                using <a href="http://www.gnu.org/software/glpk/">GNU GLPK</a> as LP solver. The
+                implementation is very rough, currently only two compilers are supported (gcc on
+                Linux and M$ VC on Win32), suggestions and help are welcome. I would like to extend
+                my source code: if GLPK is used as an MILP solver then every node of the search
+                tree should be checked with directed rounding. I also plan to implement this procedure
+                for <a href="http://www.ilog.com/products/cplex/">ILOG CPLEX</a>. However, due to
+                my various occupations it is not likely I will deal with it in the foreseeable future.
+            </p>
+            <p>
+                Far more advanced codes exist than mine, <i>e. g.</i>: <a href="http://www.ti3.tu-harburg.de/jansson/vsdp/">
+                    Verified SemiDefinite Programming in Matlab-toolbox INTLAB</a> (Prof. Jansson),
+                <a href="http://www.ti3.tu-harburg.de/~keil/#software">Lurupa in C++</a> (Dr. Keil)
+                or <a href="http://uivtx.cs.cas.cz/~rohn/matlab/index.html">Verification software in
+                    MATLAB / INTLAB</a> (Prof. Rohn).
+            </p>
+            <p>
+                It is important to mention here that the bound swapping dual algorithm, a variant
+                of the dual simplex method, is very efficient if all variables have lower and upper
+                bounds (box constrained variables, in case of interval methods it is always true).
+                This method is also referred to as the bound flipping ratio test (BFRT, see also
+                <a href="http://ubdata.uni-paderborn.de/ediss/05/2005/koberste/">A. Koberstein</a>,
+                <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.23.8648">I. Maros a</a>,
+                <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.4.9070">I. Maros b</a>,
+                <a href="http://www.iwr.uni-heidelberg.de/organization/sfb359/PP/Preprint2000-28.ps.gz">
+                    E. Kostina</a>, <a href="http://users.iems.northwestern.edu/~4er/WRITINGS/dual.pdf">
+                        R. Fourer</a>, <a href="pivot_selection_tactics.txt">H. J. Greenberg</a>).
+                An open-source implementation of this method as available in the <a href="https://projects.coin-or.org/Clp">
+                    Coin-Or Clp</a> solver. Unfortunately, I could not figure out the proper configuration
+                of this LP solver, GLPK proved to be more stable with the its default settings.</p>
+        </div>
+        <div id="sidebar">
+            <a href="index.html">Homepage</a>
+            <br />
+            <a href="publications.html">Publications</a>
+            <br />
+            <a href="software.html">Software</a>
+            <br />
+            <a href="search.html">Site search</a>
+            <br />
+            <a href="links.html">Links</a>
+            <br />
+            <a href="aliases.html">Aliases</a>
+            <br />
+            <a href="contact.html">Contact</a>
+        </div>
+        <div id="footer">
+            <br />
+            Last updated on 23 Aug 2009
+        </div>
+    </div>
+
+    <script type="text/javascript">
+           var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+    <script type="text/javascript">
+        try{
+            var pageTracker = _gat._getTracker("UA-3711808-1");
+            pageTracker._trackPageview();
+        }
+        catch(err) {
+        }
+    </script>
+
+</body>
+</html>

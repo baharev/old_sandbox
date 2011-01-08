@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /projects.html
+Disallow: /preprints.html

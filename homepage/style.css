@@ -1,0 +1,108 @@
+body {
+  text-align: center;
+  font-family: georgia,palatino,times,serif;
+  font-size: medium;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: 1.25em;  
+  color: #dddddd;
+  background-color: black;
+}
+
+a:link {
+  font-weight: normal;
+  text-decoration: none;
+  
+  color: #bbccff;
+}
+
+a:visited {
+  font-weight: normal;
+  text-decoration: none;
+
+  color: #bbddee;
+}
+
+a:hover, a:active {
+  text-decoration: underline;
+
+  color: #ffffff;
+}
+
+li {
+  list-style-type: none;
+  padding-left: 5em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}
+
+p { 
+	padding-left: 1.5em;
+}
+
+h1 {
+	font-size: x-large;
+	font-weight: bold;
+}
+
+h2 {
+	font-size: large;
+	font-weight: bold;
+}
+
+#page-container {
+	width: 750px;
+	margin: auto;
+	text-align: left;
+}
+
+#diner {
+  background: url(route66.jpg) no-repeat scroll center top;
+  height: 500px;
+}
+
+#diner-explanation {
+  position: absolute;
+  /*width: 100px;*/
+  top: 455px;
+  /*left: 650px;*/
+  padding-left: 650px;
+  text-align: right;
+  font-size: x-small;
+  color: gray;
+}
+
+#bme {
+  background: url(bme_night.jpg) no-repeat scroll center top;
+  height: 279px;
+}
+
+#content {
+  float: right;
+  width: 82%;
+  display: table;
+  padding-bottom: 1em;
+}
+
+#sidebar {
+  background-color: #000080;
+  float: left;
+  width: 16%;
+  padding-left: 0.25em;
+  padding-top: 0.5em;  
+  padding-bottom: 0.5em; 
+}
+
+#footer {
+  border-top: 1px dotted #000080;
+  padding-top: 1em;
+  text-align: center;
+  clear: both;
+  padding-bottom: 1em;
+}
+
+#noscript {
+  background: red;
+  color: white;
+}

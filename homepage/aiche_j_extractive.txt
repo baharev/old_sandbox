@@ -1,0 +1,26 @@
+﻿Ali Baharev, Tobias Achterberg, Endre Rév
+
+Computation of an extractive distillation column with affine arithmetic
+
+Abstract
+
+The need of reliably solving non-linear systems of equations often arises in 
+the everyday practice of chemical engineering. In general, standard methods 
+cannot provide theoretical guarantee for convergence to a solution, cannot 
+reliably find multiple solutions, and cannot prove non-existence of solutions. 
+Interval methods provide tools to overcome these problems, thus achieving 
+reliability. To the authors' best knowledge, computation of distillation 
+columns with interval methods have not yet been considered in the literature.
+
+This paper presents significant enhancements compared to a previously published 
+interval method of the authors. The proposed branch-and-prune algorithm is 
+guaranteed to converge, and is fairly general at the same time. If no solution 
+exists than this information is provided by the method as a result. Power of 
+the suggested method is demonstrated by solving, with guaranteed convergence, 
+even the MESH equations of a 22 stage extractive distillation column with a 
+ternary mixture.
+
+Topical heading: Separations
+
+Keywords: separation, MESH equations, root finding, affine arithmetic, 
+interval arithmetic

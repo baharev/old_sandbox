@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /projects.html
+Disallow: /preprints.html
+Disallow: /affine.html
+Disallow: /ncbeta.svb
+Disallow: /aliases.html
+Disallow: /contact.html
+Disallow: /*.txt$
+Disallow: /*.mod$
+Disallow: /*.c$

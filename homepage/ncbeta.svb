@@ -1,0 +1,296 @@
+' Program for calculating minimal detectable differences for general ANOVA models
+' Copyright (C) 2008  Ali Baharev, All rights reserved.
+'
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either Version 3 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program.  If not, see <http://www.gnu.org/licenses/>.
+' ===========================================================================
+'
+' This program is documented in the paper of A. Baharev, S. Kemeny,
+' On the computation of the noncentral F and noncentral beta distribution;
+' Statistics and Computing, 2008, 18 (3), 333-340.
+' http://dx.doi.org/10.1007/s11222-008-9061-3
+'
+' Preprint of this paper is available at http://reliablecomputing.eu
+'
+' My e-mail address is: (my first name) dot (my last name) at gmail dot com
+'
+' A C implementation is also available, using the R Project, from the above URL
+'
+
+Option Explicit
+Option Base 1
+
+Private u   As Double
+Private eps As Double
+
+'Returns the noncentrality parameter lambda for a given x, a, b and prob(ability)
+
+Private Function ncbeta(prob As Double, x As Double, a As Double, b As Double) As Double
+
+	Dim ql As Double
+	Dim qu As Double
+	Dim c  As Double
+	Dim d  As Double
+	Dim p  As Double
+	Dim lambda     As Double
+	Dim lambda_new As Double
+	Dim k  As Double
+	Dim f  As Double
+	Dim g  As Double
+	Dim mu As Double
+
+	lambda_new=guess(prob,x,2.0*a,2.0*b)
+
+	Do
+
+		lambda=lambda_new
+
+		mu = lambda/2.0
+		'A messy method to find the quantiles of the Poisson distribution
+		'I could not find the corresponding functions in Statistica
+		ql=kl(mu)
+		qu=ku(mu)
+
+		k=qu
+
+		c=IBeta(x,a+k,b)
+
+		d=x*(1-x)/(a+k-1)*Beta(x,a+k-1,b)
+
+		p=Poisson(k,mu)
+
+		f=p*c
+
+		p = k/mu*p
+
+		g = p*d
+
+		For k=qu-1 To ql Step -1
+
+			c=c+d
+
+			d=(a+k)/(x*(a+k+b-1))*d
+
+			f=f+p*c
+
+			p=k/mu*p
+
+			g=g+p*d
+
+		Next k
+
+		lambda_new=lambda+2.0*(f-prob)/g
+
+	Loop Until (Abs(lambda_new-lambda) < 1.0E-8*lambda_new)
+
+	ncbeta=lambda_new
+
+End Function
+
+Private Function kl(lambda As Double) As Double
+
+	Dim k   As Long
+	Dim i   As Integer
+	Dim fk0 As Double
+	Dim fk1 As Double
+
+	k=Int(lambda-u*Sqrt(lambda))
+
+	If k<1 Then
+		kl=0
+		Exit Function
+	End If
+
+	fk0=IPoisson(k,lambda)-eps
+
+	If fk0 > 0.0 Then
+		i=-1
+	Else
+		i= 1
+	End If
+
+	k=k+i
+
+	fk1=IPoisson(k,lambda)-eps
+
+	Do While fk0*fk1>0.0
+		fk0=fk1
+		k  =k+i
+		fk1=IPoisson(k,lambda)-eps
+	Loop
+
+	If i=1 Then
+		k=k-1
+	End If
+
+	kl=k+1
+
+End Function
+
+Private Function ku(lambda As Double) As Double
+
+	Dim k   As Long
+	Dim i   As Integer
+	Dim fk0 As Double
+	Dim fk1 As Double
+
+	k=Int(lambda+u*Sqrt(lambda))
+
+	fk0=1-IPoisson(k,lambda)-eps
+
+	If fk0 > 0.0 Then
+		i= 1
+	Else
+		i=-1
+	End If
+
+	k=k+i
+
+	fk1=1-IPoisson(k,lambda)-eps
+
+	Do While fk0*fk1 > 0.0
+		fk0=fk1
+		k  =k+i
+		fk1=1-IPoisson(k,lambda)-eps
+	Loop
+
+	If i=-1 Then
+		k=k+1
+	End If
+
+	ku=k
+
+End Function
+
+Private Function guess(prob As Double, y As Double, nu1 As Double, nu2 As Double) As Double
+
+	Dim x       As Double
+	Dim lambdal As Double
+	Dim lambdam As Double
+	Dim lambdau As Double
+	Dim fl      As Double
+	Dim fm      As Double
+	Dim fu      As Double
+
+	x=nu2*y/(nu1*(1.0-y))
+	lambdal=0.0
+	lambdau=1.0
+
+	fl= IFDistr(x,nu1,nu2)
+	fu=patnaik2(x,nu1,nu2,lambdau)
+
+	Do While (fl-prob)*(fu-prob) > 0.0
+		fl=fu
+		lambdal=lambdau
+		lambdau=2.0*lambdau
+		fu=patnaik2(x,nu1,nu2,lambdau)
+	Loop
+
+	lambdam=(lambdal+lambdau)/2.0
+
+	Do While (lambdau-lambdal) > 1.0E-4*lambdau
+
+		fm=patnaik2(x,nu1,nu2,lambdam)
+
+		If (fm-prob)*(fu-prob) < 0.0 Then
+			fl=fm
+			lambdal=lambdam
+		Else
+			fu=fm
+			lambdau=lambdam
+		End If
+
+		lambdam=(lambdal+lambdau)/2.0
+
+	Loop
+
+	guess=lambdam
+
+End Function
+
+Private Function patnaik2(x As Double, nu1 As Double, nu2 As Double, lambda As Double) As Double
+
+	patnaik2=IFDistr(x/(1+lambda/nu1),(nu1+lambda)^2/(nu1+2*lambda),nu2)
+
+End Function
+
+'The output of this program is the corrected table of Lorenzen and Anderson
+'(1993) Appendix 12, p. 374
+Sub Main
+
+	Dim s As New Spreadsheet
+	Dim x As Double
+	Dim a As Double
+	Dim b As Double
+	Dim nu1(9)  As Integer
+	Dim nu2(26) As Integer
+	Dim i As Integer
+	Dim j As Integer
+
+	eps=1.0E-8
+
+	u=-VNormal(eps/2.0,0,1)
+
+	s.SetSize(27,10)
+
+	For i=1 To 6
+		nu1(i) = i
+	Next i
+
+	nu1(7) = 10
+	nu1(8) = 20
+	nu1(9) = 50
+
+	For i=1 To 8
+		nu2(i) = i
+	Next i
+
+	For i=9 To 19
+		nu2(i) = 2*i-8
+	Next i
+
+	For i=20 To 23
+		nu2(i) = 20*(i-18)
+	Next i
+
+	nu2(24) = 200
+	nu2(25) = 500
+	nu2(26) = 1000
+
+	For i=1 To 9
+		s.Cells(1, i+1) = nu1(i)
+	Next i
+
+	For j=1 To 26
+		s.Cells(j+1, 1) = nu2(j)
+	Next j
+
+	For i=1 To 9
+
+		For j=1 To 26
+
+			a=nu1(i)/2.0
+
+			b=nu2(j)/2.0
+			'Type  I error probability 0.05
+			x=VBeta(0.95,a,b)
+			'Type II error probability 0.10
+			s.Cells(j+1,i+1)=Sqrt(ncbeta(0.10,x,a,b)/nu1(i))
+
+		Next j
+
+	Next i
+
+	s.Visible=True
+
+End Sub

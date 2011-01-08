@@ -1,0 +1,32 @@
+No.     Time        Source                Destination           Protocol Info
+      3 0.000466    192.168.1.120         62.77.196.1           DNS      Standard query A mirror.reliablecomputing.eu
+      4 0.030925    62.77.196.1           192.168.1.120         DNS      Standard query response A 217.173.42.69
+      5 0.032870    192.168.1.120         217.173.42.69         TCP      1817 > http [SYN] Seq=0 Len=0 MSS=1460
+      6 0.043309    217.173.42.69         192.168.1.120         TCP      http > 1817 [SYN, ACK] Seq=0 Ack=1 Win=5840 Len=0 MSS=1460
+      7 0.043447    192.168.1.120         217.173.42.69         TCP      1817 > http [ACK] Seq=1 Ack=1 Win=26280 [TCP CHECKSUM INCORRECT] Len=0
+      8 0.043575    192.168.1.120         217.173.42.69         HTTP     GET / HTTP/1.1
+      9 0.069036    217.173.42.69         192.168.1.120         TCP      http > 1817 [ACK] Seq=1 Ack=378 Win=6432 Len=0
+     10 0.085034    217.173.42.69         192.168.1.120         HTTP     HTTP/1.1 302 Found (text/html)
+
+Frame 10 (606 bytes on wire, 606 bytes captured)
+Internet Protocol, Src: 217.173.42.69 (217.173.42.69), Dst: 192.168.1.120 (192.168.1.120)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1817 (1817), Seq: 1, Ack: 378, Len: 552
+Hypertext Transfer Protocol
+    HTTP/1.1 302 Found\r\n
+    Date: Sun, 01 Jun 2008 14:29:01 GMT\r\n
+    Server: Apache/2.0.54 (Debian GNU/Linux) mod_jk2/2.0.4 PHP/4.3.10-15\r\n
+    Location: http://www.lsi.upc.edu/~robert/mirror/interval-comp/\r\n
+    Content-Length: 236
+    Keep-Alive: timeout=15, max=100\r\n
+    Connection: Keep-Alive\r\n
+    Content-Type: text/html; charset=iso-8859-1\r\n
+    \r\n
+
+No.     Time        Source                Destination           Protocol Info
+     11 0.087056    192.168.1.120         62.77.196.1           DNS      Standard query A www.lsi.upc.edu
+     12 0.253355    192.168.1.120         217.173.42.69         TCP      1817 > http [ACK] Seq=378 Ack=553 Win=25728 [TCP CHECKSUM INCORRECT] Len=0
+     13 0.542898    62.77.196.1           192.168.1.120         DNS      Standard query response CNAME zhora.lsi.upc.edu A 147.83.20.10
+     14 0.545750    192.168.1.120         147.83.20.10          TCP      1818 > http [SYN] Seq=0 Len=0 MSS=1460
+     15 0.623275    147.83.20.10          192.168.1.120         TCP      http > 1818 [SYN, ACK] Seq=0 Ack=1 Win=49640 Len=0 MSS=1460
+     16 0.623409    192.168.1.120         147.83.20.10          TCP      1818 > http [ACK] Seq=1 Ack=1 Win=26280 [TCP CHECKSUM INCORRECT] Len=0
+     17 0.623543    192.168.1.120         147.83.20.10          HTTP     GET /~robert/mirror/interval-comp/ HTTP/1.1

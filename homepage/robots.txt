@@ -1,0 +1,14 @@
+User-agent: *
+Disallow: /projects.html
+Disallow: /preprints.html
+Disallow: /benchmarks.html
+Disallow: /affine.html
+Disallow: /solver.html
+Disallow: /ncbeta.svb
+Disallow: /aliases.html
+Disallow: /contact.html
+Disallow: /*.txt$
+Disallow: /*.mod$
+Disallow: /*.c$
+Disallow: /glpk/
+Disallow: /ipopt/

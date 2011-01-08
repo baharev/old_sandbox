@@ -1,0 +1,65 @@
+$ gcc -Wall -frounding-math rigorousLP.c -lm -lglpk -o rigorousLP
+$ ./rigorousLP
+
+This program calculates rigorous lower bound on the objective value of an
+LP problem if all rows and columns are double-bounded or fixed.
+For details, see
+Neumaier and Shcherbina, Math. Programming A 99 (2004), 283-296.
+Preprint of this paper is available at
+http://www.mat.univie.ac.at/~neum/papers.html
+
+--------------------------------------------------------------
+
+Checking rounding mode...
+Textbook example: 0.1 is not exactly representable
+Lower bound on 0.1 in hexadecimal format:
+0:3fb:9999999999999
+Upper bound on 0.1 in hexadecimal format:
+0:3fb:999999999999a
+The bounds differ, rounding seems to be OK!
+
+--------------------------------------------------------------
+
+The following LP problem has been built:
+Minimize:
+  z =   -   x_1 +   x_2 + 2 x_3 -   x_4
+Subject To
+  -2 <= - 2 x_1 + 2 x_2 - 2 x_3 + 2 x_4 <=  1
+  -3 <= - 3 x_1 + 4 x_2                 <=  2
+                          2 x_3 + 4 x_4  = -1
+Bounds
+ -1 <= x_1 <= 1
+ -2 <= x_2 <= 2
+ -1 <= x_3 <= 3
+ -3 <= x_4 <= 1
+
+--------------------------------------------------------------
+
+Solving the LP problem:
+
+      0:   objval =  -4.000000000e+00   infeas =   1.000000000e+00 (0)
+      3:   objval =  -2.333333333e+00   infeas =   0.000000000e+00 (0)
+*     3:   objval =  -2.333333333e+00   infeas =   0.000000000e+00 (0)
+*     5:   objval =  -3.250000000e+00   infeas =   0.000000000e+00 (0)
+OPTIMAL SOLUTION FOUND
+
+The objective value calculated by glp_simplex in hexadecimal format is: 
+1:400:a000000000000 (decimal: -3.250000000000000)
+Rigorous lower bound on the objective value in hexadecimal format is: 
+1:400:a000000000000 (decimal: -3.250000000000000)
+
+--------------------------------------------------------------
+
+Column x_1 is removed from the objective, re-solving the LP problem:
+
+*     5:   objval =  -2.250000000e+00   infeas =   0.000000000e+00 (0)
+*     7:   objval =  -3.333333333e+00   infeas =   0.000000000e+00 (0)
+OPTIMAL SOLUTION FOUND
+
+The objective value calculated by glp_simplex in hexadecimal format is: 
+1:400:aaaaaaaaaaaac (decimal: -3.333333333333334)
+Rigorous lower bound on the objective value in hexadecimal format is: 
+1:400:aaaaaaaaaaaad (decimal: -3.333333333333334)
+
+
+Successfully finished!
