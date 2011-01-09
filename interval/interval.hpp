@@ -108,7 +108,7 @@ void sqr_inverse(interval& z, interval& x);
 
 void exp_inverse(interval& z, interval& x);
 
-void equality_constraint_inverse(interval& z, interval& x);
+void equality_constraint_inverse(interval& z, double rhs);
 
 void propagate_mult(interval& z, interval& x, interval& y);
 

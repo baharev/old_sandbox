@@ -23,7 +23,6 @@
 #ifndef PRIMITIVES_HPP_
 #define PRIMITIVES_HPP_
 
-#include <stdexcept>
 #include <vector>
 
 namespace asol {
@@ -39,29 +38,24 @@ public:
 
 	virtual void revise() const = 0;
 
-	// TODO Is there a way to do it without the cast?
+	// TODO Is there a way to do it without the downcast?
 	virtual bool common_subexpressions(const primitive<T>* other) const = 0;
 
 	virtual void record(recorder* rec) const = 0;
 
 	virtual ~primitive();
 
-	static void set_vector(std::vector<T>* vec) { v = vec; }
+	static void set_vector(const std::vector<T>& vec) { v = vec; }
 
 protected:
 
-	explicit primitive(int value_offset, int first_arg);
+	explicit primitive(int lhs);
+
+	T& val() const { return v.at(z); }
 
 	const int z;
 
-	const int x;
-
-	static std::vector<T>* v;
-
-private:
-
-	// Unused in all subclasses, just to eliminate compiler warning C4512
-	primitive& operator=(const primitive& );
+	static std::vector<T> v;
 };
 
 template <typename T>
@@ -75,13 +69,9 @@ protected:
 
 	virtual const unary_primitive<T>* downcast(const primitive<T>* other) const = 0;
 
-	T& val() const { return primitive<T>::v->at(this->z); }
+	T& arg() const { return primitive<T>::v.at(x); }
 
-	T& arg() const { return primitive<T>::v->at(this->x); }
-
-private:
-
-	unary_primitive& operator=(const unary_primitive& );
+	const int x;
 };
 
 template <typename T>
@@ -95,17 +85,13 @@ protected:
 
 	virtual const binary_primitive<T>* downcast(const primitive<T>* other) const = 0;
 
-	T& val()  const { return primitive<T>::v->at(this->z); }
+	T& arg1() const { return primitive<T>::v.at(x); }
 
-	T& arg1() const { return primitive<T>::v->at(this->x); }
+	T& arg2() const { return primitive<T>::v.at(y); }
 
-	T& arg2() const { return primitive<T>::v->at(this->y); }
+	const int x;
 
 	const int y;
-
-private:
-
-	binary_primitive& operator=(const binary_primitive& );
 };
 
 template <typename T>
@@ -124,113 +110,61 @@ private:
 	virtual const binary_primitive<T>* downcast(const primitive<T>* p) const;
 
 	virtual void record(recorder* rec) const;
-
-	addition& operator=(const addition& );
 };
-/*
-class substraction : public binary_primitive {
+
+template <typename T>
+class substraction : public binary_primitive<T> {
 
 public:
 
-	substraction(int value, int arg1, int arg2)
-	: binary_primitive(value, arg1, arg2) { }
+	substraction(int value, int arg1, int arg2);
 
 private:
 
-	virtual void evaluate(operations* op) const {
-		op->substraction(z, x, y);
-	}
+	virtual void evaluate() const;
 
-	virtual void revise(operations* op) const {
-		op->substraction_revise(z, x, y);
-	}
+	virtual void revise() const;
 
-	virtual bool common_subexpressions(const primitive* p) const {
+	virtual const binary_primitive<T>* downcast(const primitive<T>* p) const;
 
-		bool ret_val = false;
-
-		if (const substraction* other=dynamic_cast<const substraction*>(p)) {
-			ret_val = args_equal(other);
-		}
-		return ret_val;
-	}
-
-	virtual void record(recorder* rec) const {
-		rec->record(this);
-	}
-
-	substraction& operator=(const substraction& );
+	virtual void record(recorder* rec) const;
 };
 
-class multiplication : public binary_primitive {
+template <typename T>
+class multiplication : public binary_primitive<T> {
 
 public:
 
-	multiplication(int value, int arg1, int arg2)
-	: binary_primitive(value, arg1, arg2) { }
+	multiplication(int value, int arg1, int arg2);
 
 private:
 
-	virtual void evaluate(operations* op) const {
-		op->multiplication(z, x, y);
-	}
+	virtual void evaluate() const;
 
-	virtual void revise(operations* op) const {
-		op->multiplication_revise(z, x, y);
-	}
+	virtual void revise() const;
 
-	virtual bool common_subexpressions(const primitive* p) const {
+	virtual const binary_primitive<T>* downcast(const primitive<T>* p) const;
 
-		bool ret_val = false;
-
-		if (const multiplication* other=dynamic_cast<const multiplication*>(p)){
-			ret_val = args_equal(other);
-		}
-		return ret_val;
-	}
-
-	virtual void record(recorder* rec) const {
-		rec->record(this);
-	}
-
-	multiplication& operator=(const multiplication& );
+	virtual void record(recorder* rec) const;
 };
 
-class division : public binary_primitive {
+template <typename T>
+class division : public binary_primitive<T> {
 
 public:
 
-	division(int value, int arg1, int arg2)
-	: binary_primitive(value, arg1, arg2) { }
+	division(int value, int arg1, int arg2);
 
 private:
 
-	virtual void evaluate(operations* op) const {
-		op->division(z, x, y);
-	}
+	virtual void evaluate() const;
 
-	virtual void revise(operations* op) const {
-		op->division_revise(z, x, y);
-	}
+	virtual void revise() const;
 
-	virtual bool common_subexpressions(const primitive* p) const {
+	virtual const binary_primitive<T>* downcast(const primitive<T>* p) const;
 
-		bool ret_val = false;
-
-		if (const division* other=dynamic_cast<const division*>(p)) {
-			ret_val = args_equal(other);
-		}
-		return ret_val;
-	}
-
-	virtual void record(recorder* rec) const {
-		rec->record(this);
-	}
-
-	division& operator=(const division& );
+	virtual void record(recorder* rec) const;
 };
-*/
-
 
 template <typename T>
 class square : public unary_primitive<T> {
@@ -248,84 +182,47 @@ private:
 	virtual const unary_primitive<T>* downcast(const primitive<T>* other) const;
 
 	virtual void record(recorder* rec) const;
-
-	square& operator=(const square& );
 };
-/*
-class exponential : public unary_primitive {
+
+template <typename T>
+class exponential : public unary_primitive<T> {
 
 public:
 
-	exponential(int value, int arg)
-	: unary_primitive(value, arg) { }
+	exponential(int value, int arg);
 
 private:
 
-	virtual void evaluate(operations* op) const {
-		op->exponential(z, x);
-	}
+	virtual void evaluate() const;
 
-	virtual void revise(operations* op) const {
-		op->exponential_revise(z, x);
-	}
+	virtual void revise() const;
 
-	virtual bool common_subexpressions(const primitive* p) const {
+	virtual const unary_primitive<T>* downcast(const primitive<T>* other) const;
 
-		bool ret_val = false;
-
-		if (const exponential* other=dynamic_cast<const exponential*>(p)) {
-			ret_val = args_equal(other);
-		}
-		return ret_val;
-	}
-
-	virtual void record(recorder* rec) const {
-		rec->record(this);
-	}
-
-	exponential& operator=(const exponential& );
+	virtual void record(recorder* rec) const;
 };
 
-class equality_constraint : public primitive {
+template <typename T>
+class equality_constraint : public primitive<T> {
 
 public:
 
-	equality_constraint(int body, int rhs)
-	: primitive(body, rhs) { }
+	equality_constraint(int body, int index, double rhs);
 
 private:
 
-	virtual void evaluate(operations* op) const {
-		op->equality_constraint(z, x);
-	}
+	virtual void evaluate() const;
 
-	virtual void revise(operations* op) const {
-		op->equality_constraint_revise(z, x);
-	}
+	virtual void revise() const;
 
-	virtual void record_indices(std::set<int>& ) const {
-		// TODO Figure out what and how to do
-		throw std::logic_error("record_indices called on a constraint");
-	}
+	virtual bool common_subexpressions(const primitive<T>* p) const;
 
-	virtual bool common_subexpressions(const primitive* p) const {
+	virtual void record(recorder* rec) const;
 
-		bool ret_val = false;
+	const int x;
 
-		if (const equality_constraint* other=dynamic_cast<const equality_constraint*>(p)) {
-			ret_val = (x == other->x);
-		}
-		return ret_val;
-	}
-
-	virtual void record(recorder* rec) const {
-		rec->record(this);
-	}
-
-	equality_constraint& operator=(const equality_constraint& );
+	const double rhs;
 };
-
-*/
 
 }
 

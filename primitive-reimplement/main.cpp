@@ -37,7 +37,9 @@ void Main() {
 	v.push_back(interval(1, 3));
 	v.push_back(interval(1, 9));
 
-	primitive<interval>::set_vector(&v);
+	primitive<interval>::set_vector(v);
+
+	v.clear();
 
 	primitive<interval>* p = new addition<interval>(2, 0, 1);
 

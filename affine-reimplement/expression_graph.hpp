@@ -293,9 +293,7 @@ void expression_graph<T>::equality_constraint_revise(int body, int rhs) {
 
 	const double rhs_value = rhs_constraints.at(rhs).second;
 
-	T rhs_val(rhs_value);
-
-	equality_constraint_inverse(v.at(body), rhs_val);
+	equality_constraint_inverse(v.at(body), rhs_value);
 }
 
 };

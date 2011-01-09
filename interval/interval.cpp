@@ -294,12 +294,10 @@ void exp_inverse(interval& z, interval& x) {
 	z.intersect(exp(x));
 }
 
-// TODO Does this make sense?
-void equality_constraint_inverse(interval& z, interval& x) {
+// TODO Is it the best we can do?
+void equality_constraint_inverse(interval& z, double rhs) {
 
-	x.intersect(z);
-
-	z.intersect(x);
+	z.equals(rhs);
 }
 
 void copy_array(const interval src[], interval dstn[], int size) {
