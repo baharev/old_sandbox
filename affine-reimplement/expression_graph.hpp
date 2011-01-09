@@ -23,11 +23,11 @@
 #ifndef EXPRESSION_GRAPH_HPP_
 #define EXPRESSION_GRAPH_HPP_
 
+#include <algorithm>
 #include <iosfwd>
 #include <limits>
 #include <map>
 #include <vector>
-#include "operations.hpp"
 #include "diagnostics.hpp"
 #include "primitives.hpp"
 #include "typedefs.hpp"
@@ -35,9 +35,11 @@
 namespace asol {
 
 template <typename T>
-class expression_graph : private operations {
+class expression_graph {
 
 public:
+
+	typedef std::vector<primitive<T>*> PrimVector;
 
 	expression_graph(int number_of_arguments,
 			const PrimVector& primitives,
@@ -59,9 +61,6 @@ public:
 
 private:
 
-	typedef PrimVector::const_iterator itr;
-	typedef PrimVector::const_reverse_iterator ritr;
-
 	expression_graph(const expression_graph& );
 	expression_graph& operator=(const expression_graph& );
 
@@ -69,22 +68,6 @@ private:
 	void set_variables();
 	void set_non_variables(const int length);
 	void set_numeric_consts(const int length);
-
-	virtual void addition(int z, int x, int y);
-	virtual void substraction(int z, int x, int y);
-	virtual void multiplication(int z, int x, int y);
-	virtual void division(int z, int x, int y);
-	virtual void square(int z, int x);
-	virtual void exponential(int z, int x);
-	virtual void equality_constraint(int body, int rhs);
-
-	virtual void addition_revise(int z, int x, int y);
-	virtual void substraction_revise(int z, int x, int y);
-	virtual void multiplication_revise(int z, int x, int y);
-	virtual void division_revise(int z, int x, int y);
-	virtual void square_revise(int z, int x);
-	virtual void exponential_revise(int z, int x);
-	virtual void equality_constraint_revise(int body, int rhs);
 
 	std::vector<T> v;
 	const PrimVector primitives;
@@ -111,10 +94,7 @@ expression_graph<T>::expression_graph(int number_of_arguments,
 template <typename T>
 expression_graph<T>::~expression_graph() {
 
-	for (itr i = primitives.begin(); i!=primitives.end(); ++i) {
-
-		delete *i;
-	}
+	std::for_each(primitives.begin(), primitives.end(), Delete());
 }
 
 template <typename T>
@@ -166,10 +146,12 @@ void expression_graph<T>::set_numeric_consts(const int length) {
 
 template <typename T>
 void expression_graph<T>::evaluate_all() {
+	// TODO Replace with for_each
+	typename PrimVector::const_iterator i = primitives.begin();
 
-	for (itr i=primitives.begin(); i!=primitives.end(); ++i) {
+	for (; i!=primitives.end(); ++i) {
 
-		(*i)->evaluate(this);
+		(*i)->evaluate();
 	}
 }
 
@@ -178,9 +160,11 @@ void expression_graph<T>::revise_all() {
 
 	evaluate_all();
 
-	for (ritr i=primitives.rbegin(); i!=primitives.rend(); ++i) {
+	typename PrimVector::const_reverse_iterator i = primitives.rbegin();
 
-		(*i)->revise(this);
+	for (; i!=primitives.rend(); ++i) {
+
+		(*i)->revise();
 	}
 }
 
@@ -204,96 +188,7 @@ const T& expression_graph<T>::last_value() const {
 template <typename T>
 void expression_graph<T>::evaluate_primitive(int i) {
 
-	primitives.at(i)->evaluate(this);
-}
-
-template <typename T>
-void expression_graph<T>::addition(int z, int x, int y) {
-
-	v.at(z).assign( v.at(x)+v.at(y) );
-}
-
-template <typename T>
-void expression_graph<T>::substraction(int z, int x, int y) {
-
-	v.at(z).assign( v.at(x)-v.at(y) );
-}
-
-template <typename T>
-void expression_graph<T>::multiplication(int z, int x, int y) {
-
-	v.at(z).assign( v.at(x)*v.at(y) );
-}
-
-template <typename T>
-void expression_graph<T>::division(int z, int x, int y) {
-
-	v.at(z).assign( v.at(x)/v.at(y) );
-}
-
-template <typename T>
-void expression_graph<T>::square(int z, int x) {
-
-	v.at(z).assign( sqr(v.at(x)) );
-}
-
-template <typename T>
-void expression_graph<T>::exponential(int z, int x) {
-
-	v.at(z).assign( exp(v.at(x)) );
-}
-
-template <typename T>
-void expression_graph<T>::equality_constraint(int body, int rhs) {
-
-	const double rhs_value = rhs_constraints.at(rhs).second;
-
-	v.at(body).equals(rhs_value);
-}
-
-template <typename T>
-void expression_graph<T>::addition_revise(int z, int x, int y) {
-
-	addition_inverse(v.at(z), v.at(x), v.at(y));
-}
-
-template <typename T>
-void expression_graph<T>::substraction_revise(int z, int x, int y) {
-
-	substraction_inverse(v.at(z), v.at(x), v.at(y));
-}
-
-template <typename T>
-void expression_graph<T>::multiplication_revise(int z, int x, int y) {
-
-	multiplication_inverse(v.at(z), v.at(x), v.at(y));
-}
-
-template <typename T>
-void expression_graph<T>::division_revise(int z, int x, int y) {
-
-	division_inverse(v.at(z), v.at(x), v.at(y));
-}
-
-template <typename T>
-void expression_graph<T>::square_revise(int z, int x) {
-
-	sqr_inverse(v.at(z), v.at(x));
-}
-
-template <typename T>
-void expression_graph<T>::exponential_revise(int z, int x) {
-
-	exp_inverse(v.at(z), v.at(x));
-}
-
-// TODO Not yet clear how to invert a constraint
-template <typename T>
-void expression_graph<T>::equality_constraint_revise(int body, int rhs) {
-
-	const double rhs_value = rhs_constraints.at(rhs).second;
-
-	equality_constraint_inverse(v.at(body), rhs_value);
+	primitives.at(i)->evaluate();
 }
 
 };

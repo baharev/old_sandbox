@@ -26,11 +26,11 @@
 #include <iosfwd>
 #include <map>
 #include <vector>
+#include "primitives.hpp"
 #include "typedefs.hpp"
 
 namespace asol {
 
-class primitive;
 class index_set;
 
 class builder {
@@ -69,7 +69,9 @@ public:
 
 	static int number_of_variables();
 
-	static const PrimVector& get_primitives();
+	// FIXME Not implemented
+	template <typename T>
+	static const std::vector<primitive<T>*> get_primitives();
 
 	static const std::map<int,double>& get_numeric_constants();
 
@@ -114,7 +116,8 @@ private:
 
 	static int unused_index;
 
-	static PrimVector primitives;
+	// FIXME Delete in dtor
+	static std::vector<primitive<builder>*> primitives;
 
 	static std::map<int,double> numeric_constants;
 

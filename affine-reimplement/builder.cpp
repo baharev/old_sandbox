@@ -26,7 +26,6 @@
 #include <set>
 #include "builder.hpp"
 #include "diagnostics.hpp"
-#include "primitives.hpp"
 #include "printer.hpp"
 #include "index_set.hpp"
 
@@ -36,11 +35,21 @@ namespace asol {
 
 typedef set<int> Set;
 
+typedef primitive<builder> Primitive;
+typedef addition<builder> Addition;
+typedef substraction<builder> Substraction;
+typedef multiplication<builder> Multiplication;
+typedef division<builder> Division;
+typedef square<builder> Square;
+typedef exponential<builder> Exponential;
+typedef equality_constraint<builder> Equality_constraint;
+
+
 int builder::unused_index = 0;
 
 int builder::number_of_vars = 0;
 
-PrimVector builder::primitives = PrimVector();
+vector<Primitive*> builder::primitives = vector<Primitive*> ();
 
 map<int,double> builder::numeric_constants = map<int,double> ();
 
@@ -59,11 +68,6 @@ int builder::number_of_variables() {
 
 	ASSERT(number_of_vars == static_cast<int> (initial_box.size()))
 	return number_of_vars;
-}
-
-const PrimVector& builder::get_primitives() {
-
-	return primitives;
 }
 
 const map<int,double>& builder::get_numeric_constants() {
@@ -145,7 +149,7 @@ const builder operator+(const builder& x, const builder& y) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new addition(z.index, x.index, y.index));
+	builder::primitives.push_back(new Addition(z.index, x.index, y.index));
 
 	return z;
 }
@@ -156,7 +160,7 @@ const builder operator-(const builder& x, const builder& y) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new substraction(z.index, x.index, y.index));
+	builder::primitives.push_back(new Substraction(z.index, x.index, y.index));
 
 	return z;
 }
@@ -167,7 +171,7 @@ const builder operator*(const builder& x, const builder& y) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new multiplication(z.index, x.index, y.index));
+	builder::primitives.push_back(new Multiplication(z.index, x.index, y.index));
 
 	return z;
 }
@@ -178,7 +182,7 @@ const builder operator/(const builder& x, const builder& y) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new division(z.index, x.index, y.index));
+	builder::primitives.push_back(new Division(z.index, x.index, y.index));
 
 	return z;
 }
@@ -189,7 +193,7 @@ const builder sqr(const builder& x) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new square(z.index, x.index));
+	builder::primitives.push_back(new Square(z.index, x.index));
 
 	return z;
 }
@@ -200,7 +204,7 @@ const builder exp(const builder& x) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new exponential(z.index, x.index));
+	builder::primitives.push_back(new Exponential(z.index, x.index));
 
 	return z;
 }
@@ -283,7 +287,7 @@ void builder::equals(double value) const {
 
 	constraints_rhs.push_back(Pair(primitive_index, value));
 
-	primitives.push_back(new equality_constraint(index, last_constraint_offset()));
+	primitives.push_back(new Equality_constraint(index, last_constraint_offset(), value));
 }
 
 void builder::print_primitives(ostream& out) {
@@ -368,11 +372,11 @@ void builder::common_subexpressions_type1(const int i, ostream& out) {
 
 	const int n = primitives_size();
 
-	const primitive* const p1 = primitives.at(i);
+	const Primitive* const p1 = primitives.at(i);
 
 	for (int j=i+1; j<n; ++j) {
 
-		const primitive* const p2 = primitives.at(j);
+		const Primitive* const p2 = primitives.at(j);
 
 		if (p1->common_subexpressions(p2)) {
 

@@ -25,7 +25,6 @@
 #include <ostream>
 #include "index_set.hpp"
 #include "diagnostics.hpp"
-#include "primitives.hpp"
 
 namespace asol {
 
@@ -88,13 +87,13 @@ index_set::~index_set() {
 	}
 }
 
-void index_set::record_primitive(const primitive* p) {
+void index_set::record_unary_primitive(int z, int x) {
 
-	std::pair<Map::iterator,bool> res = current.insert(Pair(p->z, 0));
+	std::pair<Map::iterator,bool> res = current.insert(Pair(z, 0));
 
 	ASSERT2(res.second, "index already inserted: "<<res.first->first);
 
-	record_arg(p->x);
+	record_arg(x);
 }
 
 bool index_set::is_numeric_constant(const int index) const {
@@ -123,44 +122,44 @@ void index_set::record_arg(const int index) {
 	}
 }
 
-void index_set::record_binary_primitive(const binary_primitive* p) {
+void index_set::record_binary_primitive(int z, int x, int y) {
 
-	record_primitive(p);
+	record_unary_primitive(z, x);
 
-	record_arg(p->y);
+	record_arg(y);
 }
 
-void index_set::record(const addition* p) {
+void index_set::addition(int z, int x, int y) {
 
-	record_binary_primitive(p);
+	record_binary_primitive(z, x, y);
 }
 
-void index_set::record(const substraction* p) {
+void index_set::substraction(int z, int x, int y) {
 
-	record_binary_primitive(p);
+	record_binary_primitive(z, x, y);
 }
 
-void index_set::record(const multiplication* p) {
+void index_set::multiplication(int z, int x, int y) {
 
-	record_binary_primitive(p);
+	record_binary_primitive(z, x, y);
 }
 
-void index_set::record(const division* p) {
+void index_set::division(int z, int x, int y) {
 
-	record_binary_primitive(p);
+	record_binary_primitive(z, x, y);
 }
 
-void index_set::record(const square* p) {
+void index_set::square(int z, int x) {
 
-	record_primitive(p);
+	record_unary_primitive(z, x);
 }
 
-void index_set::record(const exponential* p) {
+void index_set::exponential(int z, int x) {
 
-	record_primitive(p);
+	record_unary_primitive(z, x);
 }
 
-void index_set::record(const equality_constraint* p) {
+void index_set::equality_constraint(int z, int x) {
 
 	push_back_current();
 }

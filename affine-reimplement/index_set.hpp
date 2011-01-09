@@ -57,17 +57,19 @@ private:
 	index_set(const index_set& );
 	index_set& operator=(const index_set& );
 
-	virtual void record(const addition*            );
-	virtual void record(const substraction*        );
-	virtual void record(const multiplication*      );
-	virtual void record(const division*            );
-	virtual void record(const square*              );
-	virtual void record(const exponential*         );
-	virtual void record(const equality_constraint* );
+	virtual void addition      (int z, int x, int y);
+	virtual void substraction  (int z, int x, int y);
+	virtual void multiplication(int z, int x, int y);
+	virtual void division      (int z, int x, int y);
 
-	void record_primitive(const primitive* p);
+	virtual void square     (int z, int x);
+	virtual void exponential(int z, int x);
+
+	virtual void equality_constraint(int z, int x);
+
+	void record_unary_primitive(int z, int x);
 	void record_arg(const int index);
-	void record_binary_primitive(const binary_primitive* p);
+	void record_binary_primitive(int z, int x, int y);
 
 	void print_constraint(const int i, std::ostream& out) const;
 	const Set non_variables(const int from_constraint_i) const;

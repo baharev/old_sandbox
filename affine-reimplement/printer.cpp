@@ -23,7 +23,6 @@
 #include <ostream>
 #include <sstream>
 #include "printer.hpp"
-#include "primitives.hpp"
 #include "diagnostics.hpp"
 
 using std::endl;
@@ -52,49 +51,49 @@ const std::string printer::arg(const int index) const {
 	return os.str();
 }
 
-void printer::record_unary_primitive(const unary_primitive* p, const char* op) {
+void printer::record_unary_primitive(int z, int x, const char* op) {
 
-	out << 'v' << p->z << " = " << op << '(' << arg(p->x) << ')' << endl;
+	out << 'v' << z << " = " << op << '(' << arg(x) << ')' << endl;
 }
 
-void printer::record_binary_primitive(const binary_primitive* p, const char* op) {
+void printer::record_binary_primitive(int z, int x, int y, const char* op) {
 
-	out << 'v' << p->z << " = " << arg(p->x) << ' ' << op << ' ' << arg(p->y) << endl;
+	out << 'v' << z << " = " << arg(x) << ' ' << op << ' ' << arg(y) << endl;
 }
 
-void printer::record(const addition* p) {
+void printer::addition(int z, int x, int y) {
 
-	record_binary_primitive(p, "+");
+	record_binary_primitive(z, x, y, "+");
 }
 
-void printer::record(const substraction* p) {
+void printer::substraction(int z, int x, int y) {
 
-	record_binary_primitive(p, "-");
+	record_binary_primitive(z, x, y, "-");
 }
 
-void printer::record(const multiplication* p) {
+void printer::multiplication(int z, int x, int y) {
 
-	record_binary_primitive(p, "*");
+	record_binary_primitive(z, x, y, "*");
 }
 
-void printer::record(const division* p) {
+void printer::division(int z, int x, int y) {
 
-	record_binary_primitive(p, "/");
+	record_binary_primitive(z, x, y, "/");
 }
 
-void printer::record(const square* p) {
+void printer::square(int z, int x) {
 
-	record_unary_primitive(p, "sqr");
+	record_unary_primitive(z, x, "sqr");
 }
 
-void printer::record(const exponential* p) {
+void printer::exponential(int z, int x) {
 
-	record_unary_primitive(p, "exp");
+	record_unary_primitive(z, x, "exp");
 }
 
-void printer::record(const equality_constraint* p) {
+void printer::equality_constraint(int z, int x) {
 
-	out << "Eq: v" << p->z << " = rhs(" << p->x << ")" << endl << endl;
+	out << "Eq: v" << z << " = rhs(" << x << ")" << endl << endl;
 }
 
 }

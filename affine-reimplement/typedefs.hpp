@@ -28,10 +28,6 @@
 
 namespace asol {
 
-class primitive;
-
-typedef std::vector<primitive*> PrimVector;
-
 typedef std::pair<int, double> Pair;
 
 typedef std::vector<Pair> PairVector;
@@ -41,6 +37,14 @@ typedef std::vector<int> IntVector;
 typedef std::pair<double,double> Bounds;
 
 typedef std::vector<Bounds> BoundVector;
+
+struct Delete {
+
+	template <typename T>
+	void operator()(const T* ptr) const {
+		delete ptr;
+	}
+};
 
 }
 

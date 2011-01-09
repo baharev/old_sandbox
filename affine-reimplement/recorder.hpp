@@ -23,7 +23,7 @@
 #ifndef RECORDER_HPP_
 #define RECORDER_HPP_
 
-#include "primitives_fwd.hpp"
+#include "primitives.hpp"
 
 namespace asol {
 
@@ -31,13 +31,15 @@ class recorder {
 
 public:
 
-	virtual void record(const addition*            ) = 0;
-	virtual void record(const substraction*        ) = 0;
-	virtual void record(const multiplication*      ) = 0;
-	virtual void record(const division*            ) = 0;
-	virtual void record(const square*              ) = 0;
-	virtual void record(const exponential*         ) = 0;
-	virtual void record(const equality_constraint* ) = 0;
+	virtual void addition      (int z, int x, int y) = 0;
+	virtual void substraction  (int z, int x, int y) = 0;
+	virtual void multiplication(int z, int x, int y) = 0;
+	virtual void division      (int z, int x, int y) = 0;
+
+	virtual void square     (int z, int x) = 0;
+	virtual void exponential(int z, int x) = 0;
+
+	virtual void equality_constraint(int z, int x) = 0;
 
 	virtual ~recorder() { }
 };
