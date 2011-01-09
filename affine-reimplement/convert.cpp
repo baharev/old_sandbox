@@ -47,9 +47,7 @@ public:
 
 	converter(const Vector& vec) {
 
-		const_mem_fun1_t<void,Primitive,recorder*> func(&Primitive::record);
-
-		for_each(vec.begin(), vec.end(), bind2nd(func, this));
+		for_each(vec.begin(), vec.end(), bind2nd(mem_fun(&Primitive::record), this));
 	}
 
 	const vector<primitive<T>*>& result() const {

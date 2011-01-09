@@ -565,7 +565,7 @@ void build(const problem<builder>* prob) {
 
 	delete[] box;
 
-	ASSERT(builder::number_of_variables() == prob->number_of_variables())
+	ASSERT(builder::number_of_variables() == prob->number_of_variables());
 
 	delete prob;
 
@@ -649,9 +649,9 @@ void assert_tests() {
 
 	double lb(0), ub(2), x(1);
 
-	ASSERT2(lb<=x && x<=ub, "lb, x, ub: "<<lb<<", "<<x<<", "<<ub)
+	ASSERT2(lb<=x && x<=ub, "lb, x, ub: "<<lb<<", "<<x<<", "<<ub);
 
-	ASSERT(lb<=x && x<=ub)
+	ASSERT(lb<=x && x<=ub);
 
 	interval a(1, 3), b(-2, 5);
 

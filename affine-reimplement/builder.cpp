@@ -21,10 +21,12 @@
 //==============================================================================
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <ostream>
 #include <set>
 #include "builder.hpp"
+#include "delete_struct.hpp"
 #include "diagnostics.hpp"
 #include "printer.hpp"
 #include "index_set.hpp"
@@ -66,7 +68,7 @@ int builder::number_of_arguments() {
 
 int builder::number_of_variables() {
 
-	ASSERT(number_of_vars == static_cast<int> (initial_box.size()))
+	ASSERT(number_of_vars == static_cast<int> (initial_box.size()));
 	return number_of_vars;
 }
 
@@ -312,6 +314,8 @@ void builder::print_primitives(ostream& out) {
 		primitives.at(i)->record(rec);
 	}
 
+	out << flush;
+
 	delete rec;
 }
 
@@ -354,12 +358,7 @@ index_set* builder::record_index_set() {
 
 	index_set* const rec = new index_set(number_of_variables(), numeric_constants);
 
-	const int n = primitives_size();
-
-	for (int i=0; i<n; ++i) {
-
-		primitives.at(i)->record(rec);
-	}
+	for_each(primitives.begin(), primitives.end(), bind2nd(mem_fun(&Primitive::record), rec));
 
 	rec->finished();
 
@@ -406,7 +405,7 @@ void builder::print_type1_common_subexpressions(ostream& out) {
 
 void builder::dbg_consistency() const {
 
-	ASSERT2(0<=index && index<unused_index, "index, unused_index: "<<index<<", "<<unused_index)
+	ASSERT2(0<=index && index<unused_index, "index, unused_index: "<<index<<", "<<unused_index);
 }
 
 void dbg_consistency(const builder& x, const builder& y) {

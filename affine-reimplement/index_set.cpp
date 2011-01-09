@@ -21,9 +21,11 @@
 //==============================================================================
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <ostream>
 #include "index_set.hpp"
+#include "delete_struct.hpp"
 #include "diagnostics.hpp"
 
 namespace asol {
@@ -74,17 +76,12 @@ void index_set::push_back_type3_cse(const int index, const int count) {
 
 int index_set::number_of_constraints() const {
 
-	return static_cast<int> (constraint_index_sets.size());;
+	return static_cast<int> (constraint_index_sets.size());
 }
 
 index_set::~index_set() {
 
-	const int n = number_of_constraints();
-
-	for (int i=0; i<n; ++i) {
-
-		delete constraint_index_sets.at(i);
-	}
+	std::for_each(constraint_index_sets.begin(), constraint_index_sets.end(), Delete());
 }
 
 void index_set::record_unary_primitive(int z, int x) {

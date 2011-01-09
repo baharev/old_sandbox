@@ -20,25 +20,19 @@
 //
 //==============================================================================
 
-#ifndef TYPEDEFS_HPP_
-#define TYPEDEFS_HPP_
-
-#include <vector>
-#include <utility>
+#ifndef DELETE_STRUCT_HPP_
+#define DELETE_STRUCT_HPP_
 
 namespace asol {
 
-typedef std::pair<int, double> Pair;
+struct Delete {
 
-typedef std::vector<Pair> PairVector;
-
-typedef std::vector<int> IntVector;
-
-typedef std::pair<double,double> Bounds;
-
-typedef std::vector<Bounds> BoundVector;
+	template <typename T>
+	void operator()(const T* ptr) const {
+		delete ptr;
+	}
+};
 
 }
 
-
-#endif // TYPEDEFS_HPP_
+#endif // DELETE_STRUCT_HPP_

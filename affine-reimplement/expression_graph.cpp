@@ -21,8 +21,10 @@
 //==============================================================================
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 #include "expression_graph.hpp"
+#include "delete_struct.hpp"
 #include "diagnostics.hpp"
 #include "interval.hpp"
 #include "primitives.hpp"
@@ -100,13 +102,8 @@ void expression_graph<T>::set_numeric_consts(const int length) {
 
 template <typename T>
 void expression_graph<T>::evaluate_all() {
-	// TODO Replace with for_each
-	typename PrimVector::const_iterator i = primitives.begin();
 
-	for (; i!=primitives.end(); ++i) {
-
-		(*i)->evaluate();
-	}
+	for_each(primitives.begin(), primitives.end(), mem_fun(&primitive<T>::evaluate));
 }
 
 template <typename T>
@@ -114,12 +111,7 @@ void expression_graph<T>::revise_all() {
 
 	evaluate_all();
 
-	typename PrimVector::const_reverse_iterator i = primitives.rbegin();
-
-	for (; i!=primitives.rend(); ++i) {
-
-		(*i)->revise();
-	}
+	for_each(primitives.rbegin(), primitives.rend(), mem_fun(&primitive<T>::revise));
 }
 
 template <typename T>
