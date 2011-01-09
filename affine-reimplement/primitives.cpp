@@ -274,7 +274,7 @@ void equality_constraint<T>::revise() const {
 }
 
 template <typename T>
-bool equality_constraint<T>::common_subexpressions(const primitive<T>* p) const {
+bool equality_constraint<T>::common_subexpressions(const primitive<T>* ) const {
 
 	return false;
 }
