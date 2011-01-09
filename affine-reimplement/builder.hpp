@@ -65,6 +65,8 @@ public:
 
 	void equals(double value) const;
 
+	void assign(const builder& ) const { }
+
 	static int number_of_arguments();
 
 	static int number_of_variables();
@@ -135,6 +137,20 @@ const builder operator+(double x, const builder& y);
 const builder operator-(const builder& x, double y);
 
 void dbg_consistency(const builder& x, const builder& y);
+
+void addition_inverse(builder& , builder& , builder& );
+
+void substraction_inverse(builder& , builder& , builder& );
+
+void multiplication_inverse(builder& , builder& , builder& );
+
+void division_inverse(builder& , builder& , builder& );
+
+void sqr_inverse(builder& , builder& );
+
+void exp_inverse(builder& , builder& );
+
+void equality_constraint_inverse(builder& , double );
 
 }
 

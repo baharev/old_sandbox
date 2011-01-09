@@ -21,6 +21,7 @@
 //==============================================================================
 
 #include "primitives.hpp"
+#include "builder.hpp"
 #include "interval.hpp"
 #include "recorder.hpp"
 
@@ -291,5 +292,13 @@ template class division<interval>;
 template class square<interval>;
 template class exponential<interval>;
 template class equality_constraint<interval>;
+
+template class addition<builder>;
+template class substraction<builder>;
+template class multiplication<builder>;
+template class division<builder>;
+template class square<builder>;
+template class exponential<builder>;
+template class equality_constraint<builder>;
 
 }
