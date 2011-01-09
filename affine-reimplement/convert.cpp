@@ -111,5 +111,4 @@ const vector<primitive<T>*> convert(const Vector& vec) {
 template
 const vector<primitive<interval>*> convert(const Vector& );
 
-
 }

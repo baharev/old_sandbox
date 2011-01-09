@@ -578,7 +578,6 @@ void dag_test(const problem<builder>* prob) {
 	expression_graph<interval> dag( builder::number_of_arguments(),
 									convert<interval>(builder::get_primitives()),
 									builder::get_numeric_constants(),
-									builder::get_rhs_of_constraints(),
 									builder::get_initial_box());
 
 	builder::print_info(std::cout);
