@@ -45,17 +45,17 @@ public:
 
 	virtual ~primitive();
 
-	static void set_vector(const std::vector<T>& vec) { v = vec; }
+	static void set_vector(std::vector<T>* vec) { v = vec; }
 
 protected:
 
 	explicit primitive(int lhs);
 
-	T& val() const { return v.at(z); }
+	T& val() const { return v->at(z); }
 
 	const int z;
 
-	static std::vector<T> v;
+	static std::vector<T>* v;
 };
 
 template <typename T>
@@ -69,7 +69,7 @@ protected:
 
 	virtual const unary_primitive<T>* downcast(const primitive<T>* other) const = 0;
 
-	T& arg() const { return primitive<T>::v.at(x); }
+	T& arg() const { return primitive<T>::v->at(x); }
 
 	const int x;
 };
@@ -85,9 +85,9 @@ protected:
 
 	virtual const binary_primitive<T>* downcast(const primitive<T>* other) const = 0;
 
-	T& arg1() const { return primitive<T>::v.at(x); }
+	T& arg1() const { return primitive<T>::v->at(x); }
 
-	T& arg2() const { return primitive<T>::v.at(y); }
+	T& arg2() const { return primitive<T>::v->at(y); }
 
 	const int x;
 

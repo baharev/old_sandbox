@@ -71,9 +71,7 @@ public:
 
 	static int number_of_variables();
 
-	// FIXME Not implemented
-	template <typename T>
-	static const std::vector<primitive<T>*> get_primitives();
+	static const std::vector<primitive<builder>*>& get_primitives();
 
 	static const std::map<int,double>& get_numeric_constants();
 
@@ -118,7 +116,6 @@ private:
 
 	static int unused_index;
 
-	// FIXME Delete in dtor
 	static std::vector<primitive<builder>*> primitives;
 
 	static std::map<int,double> numeric_constants;
@@ -131,6 +128,9 @@ private:
 
 	int index;
 };
+
+template <typename T>
+extern const std::vector<primitive<T>*> convert(const std::vector<primitive<builder>*>& v);
 
 const builder operator+(double x, const builder& y);
 

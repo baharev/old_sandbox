@@ -39,7 +39,7 @@ public:
 	virtual void square     (int z, int x) = 0;
 	virtual void exponential(int z, int x) = 0;
 
-	virtual void equality_constraint(int z, int x) = 0;
+	virtual void equality_constraint(int z, int x, double val) = 0;
 
 	virtual ~recorder() { }
 };

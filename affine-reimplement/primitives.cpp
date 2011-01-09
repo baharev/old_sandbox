@@ -28,7 +28,7 @@
 namespace asol {
 
 template <typename T>
-std::vector<T> primitive<T>::v = std::vector<T>();
+std::vector<T>* primitive<T>::v = 0;
 
 template <typename T>
 primitive<T>::primitive(int lhs) : z(lhs) { }
@@ -282,7 +282,7 @@ bool equality_constraint<T>::common_subexpressions(const primitive<T>* p) const 
 template <typename T>
 void equality_constraint<T>::record(recorder* rec) const {
 
-	rec->equality_constraint(this->z, this->x);
+	rec->equality_constraint(this->z, x, rhs);
 }
 
 template class addition<interval>;

@@ -89,6 +89,7 @@ expression_graph<T>::expression_graph(int number_of_arguments,
   initial_box(initialbox)
 {
 	set_variables();
+	primitive<T>::set_vector(&v);
 }
 
 template <typename T>

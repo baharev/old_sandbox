@@ -70,6 +70,11 @@ int builder::number_of_variables() {
 	return number_of_vars;
 }
 
+const vector<primitive<builder>*>& builder::get_primitives() {
+
+	return primitives;
+}
+
 const map<int,double>& builder::get_numeric_constants() {
 
 	return numeric_constants;
@@ -100,6 +105,8 @@ void builder::reset() {
 	unused_index = 0;
 
 	number_of_vars = 0;
+
+	for_each(primitives.begin(), primitives.end(), Delete());
 
 	primitives.clear();
 

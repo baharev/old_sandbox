@@ -91,7 +91,7 @@ void printer::exponential(int z, int x) {
 	record_unary_primitive(z, x, "exp");
 }
 
-void printer::equality_constraint(int z, int x) {
+void printer::equality_constraint(int z, int x, double val) {
 
 	out << "Eq: v" << z << " = rhs(" << x << ")" << endl << endl;
 }
