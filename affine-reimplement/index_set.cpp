@@ -107,16 +107,11 @@ void index_set::record_arg(const int index) {
 		return;
 	}
 
-	std::pair<Map::iterator,bool> res = current.insert(Pair(index, 0));
+	std::pair<Map::iterator,bool> res = current.insert(Pair(index, -1));
 
-	bool new_index = res.second;
+	int& count = res.first->second;
 
-	if (!new_index) {
-
-		int& count = res.first->second;
-
-		++count;
-	}
+	++count;
 }
 
 void index_set::record_binary_primitive(int z, int x, int y) {
