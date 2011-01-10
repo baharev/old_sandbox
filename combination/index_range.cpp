@@ -20,44 +20,24 @@
 //
 //==============================================================================
 
-#ifndef COMBINATION_HPP_
-#define COMBINATION_HPP_
-
-#include <vector>
 #include "index_range.hpp"
 
 namespace asol {
 
-class combination {
-
-public:
-
-	typedef std::vector<index_range> Vector;
-
-	combination(const Vector& index_bound, int equal_parts);
-
-	~combination();
-
-private:
-
-	combination(const combination& );
-	combination& operator=(const combination& );
-
-	void copy_if_not_narrow(const index_range ir);
-
-	int* const index;
-
-	int* const max_part;
-
-	int* const counter;
-
-	interval* const part;
-
-	int length;
-
-	int pos;
-};
+index_range::index_range(int index, interval* range) :
+offset(index), bounds(range)
+{
 
 }
 
-#endif // COMBINATION_HPP_
+int index_range::index() const {
+
+	return offset;
+}
+
+const interval& index_range::range() const {
+
+	return *bounds;
+}
+
+}

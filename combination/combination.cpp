@@ -20,9 +20,50 @@
 //
 //==============================================================================
 
+#include <algorithm>
+#include <functional>
 #include "combination.hpp"
+#include "interval.hpp"
+
+using namespace std;
 
 namespace asol {
 
+combination::combination(const Vector& index_bound, int equal_parts) :
+index(   new int[index_bound.size()]),
+max_part(new int[index_bound.size()]),
+counter( new int[index_bound.size()]),
+part   ( new interval[index_bound.size()]),
+length(0)
+{
+	for_each(index_bound.begin(), index_bound.end(), bind1st(mem_fun(&combination::copy_if_not_narrow),this));
+}
+
+combination::~combination() {
+
+	delete[] index;
+	delete[] max_part;
+	delete[] counter;
+	delete[] part;
+}
+
+// TODO Implement it for intervals
+bool is_narrow(const interval& ) {
+
+	return false;
+}
+
+void combination::copy_if_not_narrow(const index_range ir) {
+
+	if (is_narrow(ir.range())) {
+
+		return;
+	}
+
+	index[length] = ir.index();
+	part [length] = ir.range();
+
+	++length;
+}
 
 }

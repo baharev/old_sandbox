@@ -22,13 +22,28 @@
 
 #include <iostream>
 #include "combination.hpp"
+#include "interval.hpp"
 
 using namespace std;
 using namespace asol;
 
+void Main() {
+
+	std::vector<index_range> var;
+
+	interval v[] = { interval(0,1), interval(2,3), interval(-3,1)};
+
+	var.push_back(index_range(23,v  ));
+	var.push_back(index_range( 4,v+1));
+	var.push_back(index_range( 5,v+2));
+
+	combination c(var, 3);
+
+}
+
 int main() {
 
-	combination c;
+	Main();
 
 	return 0;
 }
