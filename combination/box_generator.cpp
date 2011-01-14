@@ -118,19 +118,25 @@ bool box_generator::set_next() {
 		return false;
 	}
 
-	// TODO Set box here
-
-	const IntVector& counters = index_generator->counters();
-
-	for (int i=0; i<counters.size(); ++i) {
-
-		cout << parts.at(i).at(counters.at(i)) << '\t';
-	}
-
-	cout << endl;
+	set_box();
 
 	return true;
 }
 
+void box_generator::set_box() {
+
+	const IntVector& counters = index_generator->counters();
+
+	const int n = static_cast<int>(counters.size());
+
+	ASSERT(n==static_cast<int>(parts.size()));
+
+	for (int i=0; i<n; ++i) {
+
+		const int j = counters.at(i);
+
+		v.at(index.at(i)) = parts.at(i).at(j);
+	}
 }
 
+}

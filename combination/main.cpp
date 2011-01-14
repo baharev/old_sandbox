@@ -21,6 +21,7 @@
 //==============================================================================
 
 #include <iostream>
+#include <iterator>
 #include "box_generator.hpp"
 
 using namespace std;
@@ -44,9 +45,10 @@ void Main() {
 
 	while (generator.set_next()) {
 
-		;
-	}
+		copy(vars.begin(), vars.end(), ostream_iterator<interval>(cout,"\t"));
 
+		cout << endl;
+	}
 }
 
 int main() {

@@ -57,6 +57,8 @@ private:
 	void generate_parts(int i);
 	void cut_into_equal_parts(const double LB, const double UB);
 
+	void set_box();
+
 	IVector& v;
 	const int parts_to_generate;
 
