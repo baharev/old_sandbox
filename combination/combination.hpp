@@ -20,38 +20,44 @@
 //
 //==============================================================================
 
-#include <iostream>
-#include "box_generator.hpp"
+#ifndef COMBINATION_HPP_
+#define COMBINATION_HPP_
 
-using namespace std;
-using namespace asol;
+#include <vector>
 
-void Main() {
+namespace asol {
 
-	box_generator::IVector vars;
+class combination {
 
-	vars.push_back( interval( 0, 3) );
-	vars.push_back( interval( 2, 5) );
-	vars.push_back( interval( 1, 4) );
+public:
 
-	box_generator::IntVector index_set;
+	typedef std::vector<int> IntVector;
 
-	index_set.push_back(0);
-	index_set.push_back(1);
-	index_set.push_back(2);
+	combination();
 
-	box_generator generator(vars, index_set, 3);
+	explicit combination(int size, int parts_to_generate);
 
-	while (generator.set_next()) {
+	bool step_counters();
 
-		;
-	}
+	const IntVector& counters() const;
+
+private:
+
+	combination(const combination& );
+	combination& operator=(const combination& );
+
+	bool has_more_counters() const;
+	bool counter_at_max() const;
+	void next(const bool overflow);
+	void handle_overflow();
+
+	IntVector counter;
+	int high_water_mark;
+	int position;
+	int counter_max;
+	int size;
+};
 
 }
 
-int main() {
-
-	Main();
-
-	return 0;
-}
+#endif // COMBINATION_HPP_

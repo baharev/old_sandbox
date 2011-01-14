@@ -112,6 +112,11 @@ void equality_constraint_inverse(interval& z, double rhs);
 
 void propagate_mult(interval& z, interval& x, interval& y);
 
+// TODO Make a constants.hpp and move NARROW to there
+const double NARROW = 1.0e-4;
+
+bool is_narrow(const interval& x);
+
 }
 
 #endif

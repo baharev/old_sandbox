@@ -23,10 +23,13 @@
 #ifndef BOX_GENERATOR_HPP_
 #define BOX_GENERATOR_HPP_
 
+#include <memory>
 #include <vector>
 #include "interval.hpp"
 
 namespace asol {
+
+class combination;
 
 class box_generator {
 
@@ -37,22 +40,29 @@ public:
 
 	box_generator(IVector& v, const IntVector& index_set, int equal_parts);
 
+	bool empty() const;
+
+	bool set_next();
+
+	~box_generator();
+
 private:
 
-
-	typedef std::vector<IVector> IVector2D;
+	typedef std::vector<IVector> IArray2D;
 
 	box_generator(const box_generator& );
 	box_generator& operator=(const box_generator& );
 
+	void reserve(int index_set_size);
+	void generate_parts(int i);
+	void cut_into_equal_parts(const double LB, const double UB);
+
 	IVector& v;
-	const IntVector& indices;
+	const int parts_to_generate;
 
 	IntVector index;
-	IVector2D part;
-	IntVector counter;
-	IntVector max_part;
-
+	IArray2D parts;
+	std::auto_ptr<combination> index_generator;
 };
 
 }

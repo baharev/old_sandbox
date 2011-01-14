@@ -343,6 +343,11 @@ double interval::sup() const {
 	return ub;
 }
 
+bool is_narrow(const interval& x) {
+
+	return x.diameter() < NARROW;
+}
+
 std::ostream& operator<<(std::ostream& os, const interval& x) {
 
 	return os << "[ " << x.lb << ", " << x.ub << "]";
