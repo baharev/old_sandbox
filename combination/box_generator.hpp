@@ -20,44 +20,41 @@
 //
 //==============================================================================
 
-#ifndef COMBINATION_HPP_
-#define COMBINATION_HPP_
+#ifndef BOX_GENERATOR_HPP_
+#define BOX_GENERATOR_HPP_
 
 #include <vector>
-#include "index_range.hpp"
+#include "interval.hpp"
 
 namespace asol {
 
-class combination {
+class box_generator {
 
 public:
 
-	typedef std::vector<index_range> Vector;
+	typedef std::vector<interval> IVector;
+	typedef std::vector<int> IntVector;
 
-	combination(const Vector& index_bound, int equal_parts);
-
-	~combination();
+	box_generator(IVector& v, const IntVector& index_set, int equal_parts);
 
 private:
 
-	combination(const combination& );
-	combination& operator=(const combination& );
 
-	void copy_if_not_narrow(const index_range ir);
+	typedef std::vector<IVector> IVector2D;
 
-	int* const index;
+	box_generator(const box_generator& );
+	box_generator& operator=(const box_generator& );
 
-	int* const max_part;
+	IVector& v;
+	const IntVector& indices;
 
-	int* const counter;
+	IntVector index;
+	IVector2D part;
+	IntVector counter;
+	IntVector max_part;
 
-	interval* const part;
-
-	int length;
-
-	int pos;
 };
 
 }
 
-#endif // COMBINATION_HPP_
+#endif // BOX_GENERATOR_HPP_

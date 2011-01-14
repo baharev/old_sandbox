@@ -20,29 +20,14 @@
 //
 //==============================================================================
 
-#ifndef INDEX_RANGE_HPP_
-#define INDEX_RANGE_HPP_
+#include "box_generator.hpp"
 
 namespace asol {
 
-class interval;
-
-class index_range {
-
-public:
-
-	index_range(int index, interval* range);
-
-	int index() const;
-
-	const interval& range() const;
-
-private:
-
-	int offset;
-	interval* bounds;
-};
+box_generator::box_generator(IVector& vec, const IntVector& index_set, int equal_parts) :
+v(vec), indices(index_set)
+{
 
 }
 
-#endif // INDEX_RANGE_HPP_
+}

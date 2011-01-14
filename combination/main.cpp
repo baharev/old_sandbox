@@ -21,23 +21,24 @@
 //==============================================================================
 
 #include <iostream>
-#include "combination.hpp"
-#include "interval.hpp"
+#include "box_generator.hpp"
 
 using namespace std;
 using namespace asol;
 
 void Main() {
 
-	std::vector<index_range> var;
+	box_generator::IVector vars;
 
-	interval v[] = { interval(0,1), interval(2,3), interval(-3,1)};
+	vars.push_back( interval(0, 1) );
+	vars.push_back( interval(2, 5) );
 
-	var.push_back(index_range(23,v  ));
-	var.push_back(index_range( 4,v+1));
-	var.push_back(index_range( 5,v+2));
+	box_generator::IntVector index_set;
 
-	combination c(var, 3);
+	index_set.push_back(0);
+	index_set.push_back(1);
+
+	box_generator generator(vars, index_set, 3);
 
 }
 
