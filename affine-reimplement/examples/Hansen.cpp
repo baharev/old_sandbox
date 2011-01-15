@@ -20,16 +20,50 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#include "Hansen.hpp"
+#include "builder.hpp"
 
-using namespace asol;
+namespace asol {
 
-int main() {
+template <typename T>
+int Hansen_example<T>::number_of_variables() const {
 
-	run_assert_test();
+	return SIZE;
+}
 
-	run_examples();
+template <typename T>
+T* Hansen_example<T>::initial_box() const {
 
-	return 0;
+	T* box = new T[SIZE];
+
+	//box[X] = T(1.33073);
+	//box[Y] = T(1);
+
+	//box[X] = T(1);
+	//box[Y] = T(10);
+
+	box[X] = T(1, 10);
+	box[Y] = T(1, 10);
+
+	return box;
+}
+
+template <typename T>
+void Hansen_example<T>::evaluate(const T v[]) const {
+
+	const T& x = v[X];
+	const T& y = v[Y];
+
+	const T xy = x*y;
+
+	// FIXME Expression graph does not call common subexpression on interval
+	xy.mark_as_common_subexpression();
+
+	const T z = (5*x-4*sqr(y)+14*xy)/(sqr(x)+y+xy);
+
+	z.equals(14.5);
+}
+
+template class Hansen_example<builder>;
+
 }

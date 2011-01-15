@@ -20,16 +20,45 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#include <iostream>
+#include <exception>
+#include <typeinfo>
+#include "diagnostics.hpp"
+#include "demangle.hpp"
+#include "interval.hpp"
 
-using namespace asol;
+using namespace std;
 
-int main() {
+namespace asol {
 
-	run_assert_test();
+void assert_tests() {
 
-	run_examples();
+	double lb(0), ub(2), x(1);
 
-	return 0;
+	ASSERT2(lb<=x && x<=ub, "lb, x, ub: "<<lb<<", "<<x<<", "<<ub);
+
+	ASSERT(lb<=x && x<=ub);
+
+	interval a(1, 3), b(-2, 5);
+
+	interval c;
+
+	//c.diameter();
+
+	a/b;
+}
+
+void run_assert_test() {
+
+	try {
+
+		assert_tests();
+	}
+	catch (exception& e) {
+
+		cout << demangle(typeid(e).name()) << endl;
+		cout << e.what() << endl;
+	}
+}
+
 }

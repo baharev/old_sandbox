@@ -20,16 +20,28 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#ifndef EXAMPLE_2_HPP_
+#define EXAMPLE_2_HPP_
 
-using namespace asol;
+#include "problem.hpp"
 
-int main() {
+namespace asol {
 
-	run_assert_test();
+template <typename T>
+class Example_2 : public problem<T> {
 
-	run_examples();
+private:
 
-	return 0;
+	virtual int number_of_variables() const;
+
+	virtual T* initial_box() const;
+
+	virtual void evaluate(const T x[]) const;
+
+	enum { X, SIZE };
+
+};
+
 }
+
+#endif // EXAMPLE_2_HPP_

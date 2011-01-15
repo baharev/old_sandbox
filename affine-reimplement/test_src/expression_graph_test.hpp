@@ -20,16 +20,16 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#ifndef EXPRESSION_GRAPH_TEST_HPP_
+#define EXPRESSION_GRAPH_TEST_HPP_
 
-using namespace asol;
+namespace asol {
 
-int main() {
+template <typename T> class problem;
+class builder;
 
-	run_assert_test();
+void dag_test(const problem<builder>* prob);
 
-	run_examples();
-
-	return 0;
 }
+
+#endif // EXPRESSION_GRAPH_TEST_HPP_

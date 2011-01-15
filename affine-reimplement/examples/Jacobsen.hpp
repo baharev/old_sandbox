@@ -20,16 +20,31 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#ifndef JACOBSEN_HPP_
+#define JACOBSEN_HPP_
 
-using namespace asol;
+#include "problem.hpp"
 
-int main() {
+namespace asol {
 
-	run_assert_test();
+template <typename T>
+class Jacobsen : public problem<T> {
 
-	run_examples();
+private:
 
-	return 0;
+	virtual int number_of_variables() const;
+
+	virtual T* initial_box() const;
+
+	virtual void evaluate(const T x[]) const;
+
+	enum {
+		X1, X2, X3, X4, X5, X6, X7, X8,
+		v1, v2, v3, v4, v5, v6, v7, C, SIZE
+	};
+
+};
+
 }
+
+#endif // JACOBSEN_HPP_

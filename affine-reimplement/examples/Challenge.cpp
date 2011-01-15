@@ -20,16 +20,65 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#include "Challenge.hpp"
+#include "builder.hpp"
 
-using namespace asol;
+namespace asol {
 
-int main() {
+template <typename T>
+int Example_challange<T>::number_of_variables() const {
 
-	run_assert_test();
+	return SIZE;
+}
 
-	run_examples();
+template <typename T>
+T* Example_challange<T>::initial_box() const {
 
-	return 0;
+	T* box = new T[SIZE];
+
+	box[W] = T(-0.9, -0.6);
+	box[X] = T(-0.1,  0.2);
+
+	box[Y] = T( 0.3,  0.7);
+	box[Z] = T(-0.2,  0.1);
+
+	box[B] = T(-1, 1);
+	box[C] = T(-1, 1);
+
+	box[A] = T(7.0, 9.0);
+
+	return box;
+}
+
+template <typename T>
+void Example_challange<T>::evaluate(const T var[]) const {
+
+	const T& w = var[W];
+	const T& x = var[X];
+
+	const T& y = var[Y];
+	const T& z = var[Z];
+
+	const T& b = var[B];
+	const T& c = var[C];
+
+	const T& a = var[A];
+
+	const T u = sqr(w) + sqr(x);
+
+	u.mark_as_common_subexpression();
+
+	const T v = sqr(y) + sqr(z);
+
+	v.mark_as_common_subexpression();
+
+	const T d = b*(x*y - w*z) + c*(x*z + w*y);
+
+	const T f = (a*(u-v)+2*d)/(u+v);
+
+	f.equals(0);
+}
+
+template class Example_challange<builder>;
+
 }

@@ -20,16 +20,35 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#include "Example_2.hpp"
+#include "builder.hpp"
 
-using namespace asol;
+namespace asol {
 
-int main() {
+template <typename T>
+int Example_2<T>::number_of_variables() const {
 
-	run_assert_test();
+	return SIZE;
+}
 
-	run_examples();
+template <typename T>
+T* Example_2<T>::initial_box() const {
 
-	return 0;
+	T* box = new T[SIZE];
+
+	box[X] = T(1.0, 2.0);
+
+	return box;
+}
+
+template <typename T>
+void Example_2<T>::evaluate(const T v[]) const {
+
+	const T& x = v[X];
+
+	const T  y = (sqr(x)+x)/(16*x-9);
+}
+
+template class Example_2<builder>;
+
 }

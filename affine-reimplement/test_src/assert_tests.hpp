@@ -20,16 +20,13 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#ifndef ASSERT_TESTS_HPP_
+#define ASSERT_TESTS_HPP_
 
-using namespace asol;
+namespace asol {
 
-int main() {
+void run_assert_test();
 
-	run_assert_test();
-
-	run_examples();
-
-	return 0;
 }
+
+#endif // ASSERT_TESTS_HPP_

@@ -20,16 +20,28 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "examples.hpp"
+#ifndef HANSEN_HPP_
+#define HANSEN_HPP_
 
-using namespace asol;
+#include "problem.hpp"
 
-int main() {
+namespace asol {
 
-	run_assert_test();
+template <typename T>
+class Hansen_example : public problem<T> {
 
-	run_examples();
+private:
 
-	return 0;
+	virtual int number_of_variables() const;
+
+	virtual T* initial_box() const;
+
+	virtual void evaluate(const T x[]) const;
+
+	enum { X, Y, SIZE };
+
+};
+
 }
+
+#endif // HANSEN_HPP_
