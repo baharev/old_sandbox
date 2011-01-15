@@ -44,17 +44,19 @@ public:
 
 	~problem_data();
 
-	void increment_index_counter();
+	int next_index();
+
+	int peek_index() const;
 
 	void add_variable(double lb, double ub);
 
-	void add_primitive(const Primitive* p);
+	void add_primitive(Primitive* p);
 
 	void add_numeric_constant(int index, double value);
 
 	void add_common_subexpression(int index);
 
-	void add_constraint_rhs(double value);
+	int add_constraint_rhs(double value);
 
 	int number_of_arguments() const;
 
@@ -93,15 +95,17 @@ private:
 
 	problem_data& operator=(const problem_data& );
 
+	void insert_numeric_constant(const int index, const double value);
+
 	int last_constraint_offset() const;
 
 	void common_subexpressions_type1(const int i, std::ostream& out) const;
 
-	void insert_numeric_constant(const int index, const double value);
-
 	index_set* record_index_set() const;
 
 	int primitives_size() const;
+
+	int unused_index;
 
 	int number_of_vars;
 

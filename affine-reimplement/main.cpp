@@ -29,6 +29,7 @@
 #include "expression_graph.hpp"
 #include "interval.hpp"
 #include "problem.hpp"
+#include "problem_data.hpp"
 
 using namespace asol;
 
@@ -565,7 +566,8 @@ void build(const problem<builder>* prob) {
 
 	delete[] box;
 
-	ASSERT(builder::number_of_variables() == prob->number_of_variables());
+	// FIXME Reintroduce this check
+	//ASSERT(builder::number_of_variables() == prob->number_of_variables());
 
 	delete prob;
 
@@ -575,17 +577,16 @@ void dag_test(const problem<builder>* prob) {
 
 	build(prob);
 
-	expression_graph<interval> dag( builder::number_of_arguments(),
-									convert<interval>(builder::get_primitives()),
-									builder::get_numeric_constants(),
-									builder::get_initial_box());
+	const problem_data* const representation = builder::get_problem_data();
 
-	builder::print_info(std::cout);
-	builder::print_primitives(std::cout);
-	//builder::print_index_set(std::cout);
-	builder::print_type1_common_subexpressions(std::cout);
-	builder::print_type2_common_subexpressions(std::cout);
-	builder::print_type3_common_subexpressions(std::cout);
+	expression_graph<interval> dag(representation);
+
+	representation->print_info(std::cout);
+	representation->print_primitives(std::cout);
+	//representation->print_index_set(std::cout);
+	representation->print_type1_common_subexpressions(std::cout);
+	representation->print_type2_common_subexpressions(std::cout);
+	representation->print_type3_common_subexpressions(std::cout);
 	builder::reset();
 
 	for (int i=0; i<40; ++i) {
@@ -685,6 +686,8 @@ int main() {
 	example_3();
 
 	example_Jacobsen();
+
+	builder::release();
 
 	return 0;
 }

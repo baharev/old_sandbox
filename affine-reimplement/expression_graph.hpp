@@ -30,20 +30,15 @@
 
 namespace asol {
 
-template<typename T> class primitive;
+template <typename T> class primitive;
+class problem_data;
 
 template <typename T>
 class expression_graph {
 
 public:
 
-	typedef std::vector<primitive<T>*> PrimVector;
-	typedef std::map<int,double> Map;
-
-	expression_graph(int number_of_arguments,
-			const PrimVector& primitives,
-			const Map& numeric_constants,
-			const BoundVector& initialbox);
+	expression_graph(const problem_data* problem);
 
 	void evaluate_all();
 
@@ -66,6 +61,9 @@ private:
 	void set_variables();
 	void set_non_variables(const int length);
 	void set_numeric_consts(const int length);
+
+	typedef std::vector<primitive<T>*> PrimVector;
+	typedef std::map<int,double> Map;
 
 	std::vector<T> v;
 	const PrimVector primitives;

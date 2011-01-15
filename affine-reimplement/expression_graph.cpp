@@ -27,21 +27,23 @@
 #include "delete_struct.hpp"
 #include "diagnostics.hpp"
 #include "interval.hpp"
-#include "primitives.hpp"
+#include "problem_data.hpp"
 
 using namespace std;
 
 namespace asol {
 
 template <typename T>
-expression_graph<T>::expression_graph(int number_of_arguments,
-									  const PrimVector& p,
-									  const Map& numeric_const,
-									  const BoundVector& initialbox)
-: v(number_of_arguments),
-  primitives(p),
-  constants(numeric_const),
-  initial_box(initialbox)
+extern const std::vector<primitive<T>*> convert(const std::vector<primitive<builder>*>& v);
+
+template <typename T>
+expression_graph<T>::expression_graph(const problem_data* problem) :
+
+v          (problem->peek_index()),
+primitives (convert<T>(problem->get_primitives())),
+constants  (problem->get_numeric_constants()),
+initial_box(problem->get_initial_box())
+
 {
 	set_variables();
 	primitive<T>::set_vector(&v);

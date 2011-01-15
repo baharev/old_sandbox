@@ -43,7 +43,58 @@ namespace asol {
 
 problem_data::problem_data() {
 
-	number_of_vars = 0;
+	number_of_vars = unused_index = 0;
+}
+
+int problem_data::next_index() {
+
+	return unused_index++;
+}
+
+int problem_data::peek_index() const {
+
+	return unused_index;
+}
+
+void problem_data::add_variable(double lb, double ub) {
+
+	++number_of_vars;
+	initial_box.push_back(Bounds(lb, ub));;
+}
+
+void problem_data::add_primitive(Primitive* p) {
+
+	primitives.push_back(p);
+}
+
+void problem_data::add_numeric_constant(int index, double value) {
+
+	typedef pair<map<int,double>::iterator,bool> Result;
+
+	Result r = numeric_constants.insert(Pair(index, value));
+
+	ASSERT2(r.second, "index "<<index<<" already inserted");
+}
+
+void problem_data::add_common_subexpression(int index) {
+
+	common_subexpressions.push_back(index);
+}
+
+int problem_data::last_constraint_offset() const {
+
+	const int n = static_cast<int> ( constraints_rhs.size() );
+
+	return n - 1;
+}
+
+int problem_data::add_constraint_rhs(double value) {
+
+	const int primitive_index = primitives_size();
+
+	constraints_rhs.push_back(Pair(primitive_index, value));
+
+	return last_constraint_offset();
 }
 
 int problem_data::number_of_variables() const {
@@ -93,7 +144,7 @@ void problem_data::print_info(ostream& out) const {
 
 	out << "=============================="                          << endl;
 	out << "Number of variables:   " << number_of_vars               << endl;
-	//out << "Max used index (args): " << unused_index-1               << endl; // FIXME
+	out << "Max used index (args): " << unused_index-1               << endl;
 	out << "Common subexpressions: " << common_subexpressions.size() << endl;
 	out << "Number of constraints: " << constraints_rhs.size()       << endl;
 	out << "Number of primitives:  " << primitives.size()            << endl;

@@ -20,24 +20,13 @@
 //
 //==============================================================================
 
-#include <algorithm>
 #include <functional>
-#include <iterator>
-#include <ostream>
-#include <set>
 #include "builder.hpp"
-#include "delete_struct.hpp"
+#include "problem_data.hpp"
 #include "diagnostics.hpp"
-#include "printer.hpp"
-#include "index_set.hpp"
-
-using namespace std;
 
 namespace asol {
 
-typedef set<int> Set;
-
-typedef primitive<builder> Primitive;
 typedef addition<builder> Addition;
 typedef substraction<builder> Substraction;
 typedef multiplication<builder> Multiplication;
@@ -46,119 +35,50 @@ typedef square<builder> Square;
 typedef exponential<builder> Exponential;
 typedef equality_constraint<builder> Equality_constraint;
 
-
-int builder::unused_index = 0;
-
-int builder::number_of_vars = 0;
-
-vector<Primitive*> builder::primitives = vector<Primitive*> ();
-
-map<int,double> builder::numeric_constants = map<int,double> ();
-
-IntVector builder::common_subexpressions = IntVector();
-
-PairVector builder::constraints_rhs = PairVector();
-
-BoundVector builder::initial_box = BoundVector();
-
-int builder::number_of_arguments() {
-
-	return unused_index;
-}
-
-int builder::number_of_variables() {
-
-	ASSERT(number_of_vars == static_cast<int> (initial_box.size()));
-	return number_of_vars;
-}
-
-const vector<primitive<builder>*>& builder::get_primitives() {
-
-	return primitives;
-}
-
-const map<int,double>& builder::get_numeric_constants() {
-
-	return numeric_constants;
-}
-
-const IntVector& builder::get_common_subexpressions() {
-
-	return common_subexpressions;
-}
-
-const PairVector& builder::get_rhs_of_constraints() {
-
-	return constraints_rhs;
-}
-
-const BoundVector& builder::get_initial_box() {
-
-	return initial_box;
-}
-
-int builder::primitives_size() {
-
-	return static_cast<int>(primitives.size());
-}
+problem_data* builder::problem = new problem_data;
 
 void builder::reset() {
 
-	unused_index = 0;
+	builder::release();
 
-	number_of_vars = 0;
-
-	for_each(primitives.begin(), primitives.end(), Delete());
-
-	primitives.clear();
-
-	numeric_constants.clear();
-
-	common_subexpressions.clear();
-
-	constraints_rhs.clear();
-
-	initial_box.clear();
+	problem = new problem_data;
 }
 
-void builder::print_info(ostream& out) {
+void builder::release() {
 
-	ASSERT(number_of_vars == static_cast<int> (initial_box.size()));
+	delete problem;
 
-	out << "=============================="                          << endl;
-	out << "Number of variables:   " << number_of_vars               << endl;
-	out << "Max used index (args): " << unused_index-1               << endl;
-	out << "Common subexpressions: " << common_subexpressions.size() << endl;
-	out << "Number of constraints: " << constraints_rhs.size()       << endl;
-	out << "Number of primitives:  " << primitives.size()            << endl;
-	out << "Numeric constants:     " << numeric_constants.size()     << endl;
-	out << "=============================="                          << endl;
+	problem = 0;
+}
+
+const problem_data* builder::get_problem_data() {
+
+	return problem;
 }
 
 builder::builder() : index(-1) {
 
 }
 
-builder::builder(double ) : index(unused_index++) {
+builder::builder(double ) : index(problem->next_index()) {
 
 }
 
-builder::builder(double lb, double ub) : index(unused_index++) {
+builder::builder(double lb, double ub) : index(problem->next_index()) {
 
 	ASSERT2(lb<=ub, "lb, ub: "<<lb<<", "<<ub);
 
-	++number_of_vars;
-	initial_box.push_back(Bounds(lb, ub));
+	problem->add_variable(lb, ub);
 }
 
-// FIXME Remove code duplication!
+// FIXME This duplication is difficult to remove
 const builder operator+(const builder& x, const builder& y) {
 
 	dbg_consistency(x, y);
 
 	const builder z(0);
 
-	builder::primitives.push_back(new Addition(z.index, x.index, y.index));
+	builder::problem->add_primitive(new Addition(z.index, x.index, y.index));
 
 	return z;
 }
@@ -169,7 +89,7 @@ const builder operator-(const builder& x, const builder& y) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new Substraction(z.index, x.index, y.index));
+	builder::problem->add_primitive(new Substraction(z.index, x.index, y.index));
 
 	return z;
 }
@@ -180,7 +100,7 @@ const builder operator*(const builder& x, const builder& y) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new Multiplication(z.index, x.index, y.index));
+	builder::problem->add_primitive(new Multiplication(z.index, x.index, y.index));
 
 	return z;
 }
@@ -191,7 +111,7 @@ const builder operator/(const builder& x, const builder& y) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new Division(z.index, x.index, y.index));
+	builder::problem->add_primitive(new Division(z.index, x.index, y.index));
 
 	return z;
 }
@@ -202,7 +122,7 @@ const builder sqr(const builder& x) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new Square(z.index, x.index));
+	builder::problem->add_primitive(new Square(z.index, x.index));
 
 	return z;
 }
@@ -213,25 +133,16 @@ const builder exp(const builder& x) {
 
 	const builder z(0);
 
-	builder::primitives.push_back(new Exponential(z.index, x.index));
+	builder::problem->add_primitive(new Exponential(z.index, x.index));
 
 	return z;
-}
-
-void builder::insert_numeric_constant(const int index, const double value) {
-
-	typedef pair<map<int,double>::iterator,bool> Result;
-
-	Result r = numeric_constants.insert(Pair(index, value));
-
-	ASSERT2(r.second, "index "<<index<<" already inserted");
 }
 
 const builder operator+(const builder& x, double y) {
 
 	const builder Y = builder(y);
 
-	builder::insert_numeric_constant(Y.index, y);
+	builder::problem->add_numeric_constant(Y.index, y);
 
 	return x+Y;
 }
@@ -250,7 +161,7 @@ const builder operator-(double x, const builder& y) {
 
 	const builder X = builder(x);
 
-	builder::insert_numeric_constant(X.index, x);
+	builder::problem->add_numeric_constant(X.index, x);
 
 	return X-y;
 }
@@ -259,7 +170,7 @@ const builder operator*(double x, const builder& y) {
 
 	const builder X = builder(x);
 
-	builder::insert_numeric_constant(X.index, x);
+	builder::problem->add_numeric_constant(X.index, x);
 
 	return X*y;
 }
@@ -268,7 +179,7 @@ const builder operator/(double x, const builder& y) {
 
 	const builder X = builder(x);
 
-	builder::insert_numeric_constant(X.index, x);
+	builder::problem->add_numeric_constant(X.index, x);
 
 	return X/y;
 }
@@ -278,134 +189,21 @@ void builder::mark_as_common_subexpression() const {
 
 	dbg_consistency();
 
-	common_subexpressions.push_back(index);
-}
-
-int builder::last_constraint_offset() {
-
-	const int n = static_cast<int> ( constraints_rhs.size() );
-
-	return n - 1;
+	problem->add_common_subexpression(index);
 }
 
 void builder::equals(double value) const {
 
 	dbg_consistency();
 
-	const int primitive_index = primitives_size();
+	int constraint_offset = problem->add_constraint_rhs(value);
 
-	constraints_rhs.push_back(Pair(primitive_index, value));
-
-	primitives.push_back(new Equality_constraint(index, last_constraint_offset(), value));
-}
-
-void builder::print_primitives(ostream& out) {
-
-	out << "Primitives in plain text format" << endl << endl;
-
-	recorder* const rec = new printer(out, numeric_constants);
-
-	const int n = primitives_size();
-
-	for (int i=0; i<n; ++i) {
-
-		out << i << ": ";
-
-		primitives.at(i)->record(rec);
-	}
-
-	out << flush;
-
-	delete rec;
-}
-
-void builder::print_type2_common_subexpressions(ostream& out) {
-
-	index_set* const rec = record_index_set();
-
-	rec->collect_type2_common_subexpressions();
-
-	out << "Type 2 common subexpressions:\n" << flush;
-
-	const Set& type2_cse = rec->type2_common_subexpressions();
-
-	copy(type2_cse.begin(), type2_cse.end(), ostream_iterator<int> (out, "\n"));
-
-	out.flush();
-
-	delete rec;
-}
-
-void builder::print_type3_common_subexpressions(ostream& out) {
-
-	index_set* const rec = record_index_set();
-
-	out << "Type 3 common subexpressions:\n" << flush;
-
-	const Set& type3_cse = rec->type3_common_subexpressions();
-
-	copy(type3_cse.begin(), type3_cse.end(), ostream_iterator<int> (out, "\n"));
-
-	out.flush();
-
-	delete rec;
-}
-
-// TODO Make rec member and pass it to expression_graph when ready; solves:
-//      - transferring ownership
-//      - eliminates duplication
-index_set* builder::record_index_set() {
-
-	index_set* const rec = new index_set(number_of_variables(), numeric_constants);
-
-	for_each(primitives.begin(), primitives.end(), bind2nd(mem_fun(&Primitive::record), rec));
-
-	rec->finished();
-
-	return rec;
-}
-
-void builder::print_index_set(ostream& out) {
-
-	index_set* const rec = record_index_set();
-
-	rec->print(out);
-
-	delete rec;
-}
-
-void builder::common_subexpressions_type1(const int i, ostream& out) {
-
-	const int n = primitives_size();
-
-	const Primitive* const p1 = primitives.at(i);
-
-	for (int j=i+1; j<n; ++j) {
-
-		const Primitive* const p2 = primitives.at(j);
-
-		if (p1->common_subexpressions(p2)) {
-
-			out << "Found in primitives: " << i << ", " << j << endl;
-		}
-	}
-}
-
-void builder::print_type1_common_subexpressions(ostream& out) {
-
-	out << "Type 1 common subexpressions:" << endl;
-
-	const int n = primitives_size();
-
-	for (int i=0; i<n; ++i) {
-
-		common_subexpressions_type1(i, out);
-	}
+	problem->add_primitive(new Equality_constraint(index, constraint_offset, value));
 }
 
 void builder::dbg_consistency() const {
 
-	ASSERT2(0<=index && index<unused_index, "index, unused_index: "<<index<<", "<<unused_index);
+	ASSERT2(0<=index && index<problem->peek_index(), "index, unused_index: "<<index<<", "<<problem->peek_index());
 }
 
 void dbg_consistency(const builder& x, const builder& y) {

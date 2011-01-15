@@ -23,15 +23,9 @@
 #ifndef BUILDER_HPP_
 #define BUILDER_HPP_
 
-#include <iosfwd>
-#include <map>
-#include <vector>
-#include "primitives.hpp"
-#include "typedefs.hpp"
-
 namespace asol {
 
-class index_set;
+class problem_data;
 
 class builder {
 
@@ -67,70 +61,22 @@ public:
 
 	void assign(const builder& ) const { }
 
-	static int number_of_arguments();
+	void dbg_consistency() const;
 
-	static int number_of_variables();
-
-	static const std::vector<primitive<builder>*>& get_primitives();
-
-	static const std::map<int,double>& get_numeric_constants();
-
-	// TODO Figure out how to use this info?
-	static const IntVector& get_common_subexpressions();
-
-	static const PairVector& get_rhs_of_constraints();
-
-	static const BoundVector& get_initial_box();
+	static const problem_data* get_problem_data();
 
 	static void reset();
 
-	static void print_primitives(std::ostream& out);
-
-	static void print_index_set(std::ostream& out);
-
-	static void print_type1_common_subexpressions(std::ostream& out);
-
-	static void print_type2_common_subexpressions(std::ostream& out);
-
-	static void print_type3_common_subexpressions(std::ostream& out);
-
-	static void print_info(std::ostream& out);
-
-	void dbg_consistency() const;
+	static void release();
 
 private:
 
-	explicit builder(double value);
+	explicit builder(double );
 
-	static int last_constraint_offset();
-
-	static void common_subexpressions_type1(const int i, std::ostream& out);
-
-	static void insert_numeric_constant(const int index, const double value);
-
-	static index_set* record_index_set();
-
-	static int primitives_size();
-
-	static int number_of_vars;
-
-	static int unused_index;
-
-	static std::vector<primitive<builder>*> primitives;
-
-	static std::map<int,double> numeric_constants;
-
-	static IntVector common_subexpressions;
-
-	static PairVector constraints_rhs;
-
-	static BoundVector initial_box;
+	static problem_data* problem;
 
 	int index;
 };
-
-template <typename T>
-extern const std::vector<primitive<T>*> convert(const std::vector<primitive<builder>*>& v);
 
 const builder operator+(double x, const builder& y);
 
