@@ -41,6 +41,8 @@ public:
 
 	virtual void equality_constraint(int z, int x, double val) = 0;
 
+	virtual void common_subexpression(int z, int x) = 0;
+
 	virtual ~recorder() { }
 };
 

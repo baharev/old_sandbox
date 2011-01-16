@@ -285,6 +285,35 @@ void equality_constraint<T>::record(recorder* rec) const {
 	rec->equality_constraint(this->z, x, rhs);
 }
 
+template <typename T>
+common_subexpression<T>::common_subexpression(int index, int ordinal) :
+primitive<T>(index), x(ordinal)
+{
+
+}
+
+template <typename T>
+void common_subexpression<T>::evaluate() const {
+	// TODO Not clear what to do
+}
+
+template <typename T>
+void common_subexpression<T>::revise() const {
+	// TODO Not clear what to do
+}
+
+template <typename T>
+bool common_subexpression<T>::common_subexpressions(const primitive<T>* ) const {
+
+	return false;
+}
+
+template <typename T>
+void common_subexpression<T>::record(recorder* rec) const {
+
+	rec->common_subexpression(this->z, x);
+}
+
 template class addition<interval>;
 template class substraction<interval>;
 template class multiplication<interval>;
@@ -292,6 +321,7 @@ template class division<interval>;
 template class square<interval>;
 template class exponential<interval>;
 template class equality_constraint<interval>;
+template class common_subexpression<interval>;
 
 template class addition<builder>;
 template class substraction<builder>;
@@ -300,5 +330,6 @@ template class division<builder>;
 template class square<builder>;
 template class exponential<builder>;
 template class equality_constraint<builder>;
+template class common_subexpression<builder>;
 
 }

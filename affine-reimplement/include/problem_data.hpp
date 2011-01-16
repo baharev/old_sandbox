@@ -56,7 +56,7 @@ public:
 
 	void add_numeric_constant(int index, double value);
 
-	void add_common_subexpression(int index);
+	int add_common_subexpression(int index);
 
 	int add_constraint_rhs(double value);
 

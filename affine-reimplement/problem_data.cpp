@@ -76,9 +76,13 @@ void problem_data::add_numeric_constant(int index, double value) {
 	ASSERT2(r.second, "index "<<index<<" already inserted");
 }
 
-void problem_data::add_common_subexpression(int index) {
+int problem_data::add_common_subexpression(int index) {
 
 	common_subexpressions.push_back(index);
+
+	const int n = static_cast<int> ( common_subexpressions.size() );
+
+	return n-1;
 }
 
 int problem_data::last_constraint_offset() const {

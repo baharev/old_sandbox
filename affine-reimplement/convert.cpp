@@ -95,6 +95,11 @@ private:
 		v.push_back(new asol::equality_constraint<T>(z, x, val));
 	}
 
+	virtual void common_subexpression(int z, int x) {
+
+		v.push_back(new asol::common_subexpression<T>(z, x));
+	}
+
 	vector<primitive<T>*> v;
 };
 

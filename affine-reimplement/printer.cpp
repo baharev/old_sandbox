@@ -96,4 +96,9 @@ void printer::equality_constraint(int z, int x, double ) {
 	out << "Eq: v" << z << " = rhs(" << x << ")" << endl << endl;
 }
 
+void printer::common_subexpression(int z, int x) {
+
+	out << "CSE: v" << z << " (" << x << ")" << endl << endl;
+}
+
 }

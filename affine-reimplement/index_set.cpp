@@ -158,6 +158,11 @@ void index_set::equality_constraint(int , int , double ) {
 	push_back_current();
 }
 
+void index_set::common_subexpression(int , int ) {
+
+	push_back_current();
+}
+
 void index_set::print_constraint(const int k, ostream& out) const {
 
 	out << "Constraint " << k << '\n';

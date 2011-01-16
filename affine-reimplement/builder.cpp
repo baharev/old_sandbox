@@ -34,6 +34,7 @@ typedef division<builder> Division;
 typedef square<builder> Square;
 typedef exponential<builder> Exponential;
 typedef equality_constraint<builder> Equality_constraint;
+typedef common_subexpression<builder> Common_subexpression;
 
 problem_data* builder::problem = new problem_data;
 
@@ -193,8 +194,10 @@ const builder operator/(double x, const builder& y) {
 void builder::mark_as_common_subexpression() const {
 
 	dbg_consistency();
+	// FIXME It is a sort of duplication
+	int ordinal = problem->add_common_subexpression(index);
 
-	problem->add_common_subexpression(index);
+	problem->add_primitive(new Common_subexpression(index, ordinal));
 }
 
 void builder::equals(double value) const {

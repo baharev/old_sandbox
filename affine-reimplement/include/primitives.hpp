@@ -224,6 +224,26 @@ private:
 	const double rhs;
 };
 
+template <typename T>
+class common_subexpression : public primitive<T> {
+
+public:
+
+	common_subexpression(int index, int ordinal);
+
+private:
+
+	virtual void evaluate() const;
+
+	virtual void revise() const;
+
+	virtual bool common_subexpressions(const primitive<T>* p) const;
+
+	virtual void record(recorder* rec) const;
+
+	const int x;
+};
+
 }
 
 #endif // PRIMITIVES_HPP_
