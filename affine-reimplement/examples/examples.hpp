@@ -27,6 +27,8 @@ namespace asol {
 
 void run_examples();
 
+void show_Jacobsen_sparsity();
+
 }
 
 #endif // EXAMPLES_HPP_

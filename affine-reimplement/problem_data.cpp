@@ -257,4 +257,43 @@ void problem_data::print_type1_common_subexpressions(ostream& out) const {
 	}
 }
 
+void problem_data::build_index_set() {
+
+	ASSERT(constraint_index_set.empty());
+
+	index_set* const rec = record_index_set();
+
+	rec->collect_variable_set(common_subexpressions);
+
+	constraint_index_set = IntArray2D(rec->variable_set());
+
+	delete rec;
+}
+
+const std::vector<std::vector<int> >& problem_data::get_index_sets() const {
+
+	ASSERT2(!constraint_index_set.empty(),"call build_index_set first");
+
+	return constraint_index_set;
+}
+
+class print : public unary_function<vector<int>,void> {
+
+	ostream& out;
+
+public:
+
+	print(ostream& os) : out(os) { }
+
+	void operator()(const vector<int>& v) const {
+		copy(v.begin(), v.end(), ostream_iterator<int>(out, "\t"));
+		out << endl;
+	}
+};
+
+void problem_data::print_variable_occurences(ostream& os) const {
+
+	for_each(constraint_index_set.begin(), constraint_index_set.end(), print(os));
+}
+
 }

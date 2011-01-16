@@ -56,6 +56,11 @@ const problem_data* builder::get_problem_data() {
 	return problem;
 }
 
+void builder::finished() {
+
+	problem->build_index_set();
+}
+
 builder::builder() : index(-1) {
 
 }

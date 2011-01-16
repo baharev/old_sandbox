@@ -82,6 +82,14 @@ void example_Jacobsen() {
 	dag_test(new Jacobsen<builder> ());
 }
 
+void show_Jacobsen_sparsity() {
+
+	cout << "###############################################" << endl;
+	cout << "Jacobsen sparsity" << endl;
+
+	print_sparsity(new Jacobsen<builder> ());
+}
+
 void run_examples() {
 
 	example_Hansen();

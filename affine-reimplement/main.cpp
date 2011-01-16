@@ -29,6 +29,8 @@ int main() {
 
 	run_assert_test();
 
+	show_Jacobsen_sparsity();
+
 	run_examples();
 
 	return 0;

@@ -42,9 +42,13 @@ public:
 
 	void collect_type2_common_subexpressions();
 
+	void collect_variable_set(const std::vector<int>& marked_common_subexpressions);
+
 	const std::set<int>& type2_common_subexpressions() const;
 
 	const std::set<int>& type3_common_subexpressions() const;
+
+	const std::vector<std::vector<int> >& variable_set() const;
 
 	void finished();
 
@@ -80,16 +84,24 @@ private:
 	void push_back_current();
 	void push_back_type3_cse(const int index, const int count);
 
+	bool not_variable(int index) const;
+	void copy_vars(const Set* indices);
+
 	const int number_of_variables;
 
 	const std::map<int,double>& numeric_const;
 
 	std::vector<Set*> constraint_index_sets;
 
+	typedef std::vector<std::vector<int> > IntArray2D;
 	typedef std::map<int,int> Map;
 	typedef std::pair<int,int> Pair;
 
+	IntArray2D constraint_variable_set;
+
 	Map current;
+
+	Set type1_cse;
 
 	Set type2_cse;
 

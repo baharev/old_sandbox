@@ -28,10 +28,12 @@
 #include "delete_struct.hpp"
 #include "diagnostics.hpp"
 
+using namespace std;
+
 namespace asol {
 
 index_set::index_set(const int num_of_vars,
-		             const std::map<int,double>& numeric_constants)
+		             const map<int,double>& numeric_constants)
 : number_of_variables(num_of_vars), numeric_const(numeric_constants)
 {
 
@@ -81,12 +83,12 @@ int index_set::number_of_constraints() const {
 
 index_set::~index_set() {
 
-	std::for_each(constraint_index_sets.begin(), constraint_index_sets.end(), Delete());
+	for_each(constraint_index_sets.begin(), constraint_index_sets.end(), Delete());
 }
 
 void index_set::record_unary_primitive(int z, int x) {
 
-	std::pair<Map::iterator,bool> res = current.insert(Pair(z, 0));
+	pair<Map::iterator,bool> res = current.insert(Pair(z, 0));
 
 	ASSERT2(res.second, "index already inserted: "<<res.first->first);
 
@@ -95,7 +97,7 @@ void index_set::record_unary_primitive(int z, int x) {
 
 bool index_set::is_numeric_constant(const int index) const {
 
-	std::map<int,double>::const_iterator i = numeric_const.find(index);
+	map<int,double>::const_iterator i = numeric_const.find(index);
 
 	return (i!=numeric_const.end()) ? true : false;
 }
@@ -107,7 +109,7 @@ void index_set::record_arg(const int index) {
 		return;
 	}
 
-	std::pair<Map::iterator,bool> res = current.insert(Pair(index, -1));
+	pair<Map::iterator,bool> res = current.insert(Pair(index, -1));
 
 	int& count = res.first->second;
 
@@ -156,18 +158,18 @@ void index_set::equality_constraint(int , int , double ) {
 	push_back_current();
 }
 
-void index_set::print_constraint(const int k, std::ostream& out) const {
+void index_set::print_constraint(const int k, ostream& out) const {
 
 	out << "Constraint " << k << '\n';
 
 	const Set* const idx = constraint_index_sets.at(k);
 
-	std::copy(idx->begin(), idx->end(), std::ostream_iterator<int>(out, "\n"));
+	copy(idx->begin(), idx->end(), ostream_iterator<int>(out, "\n"));
 
-	out << '\n' << std::flush;
+	out << '\n' << flush;
 }
 
-void index_set::print(std::ostream& out) const {
+void index_set::print(ostream& out) const {
 
 	const int n = number_of_constraints();
 
@@ -177,7 +179,7 @@ void index_set::print(std::ostream& out) const {
 	}
 }
 
-const std::set<int> index_set::non_variables(const int i) const {
+const set<int> index_set::non_variables(const int i) const {
 
 	const Set* s_i = constraint_index_sets.at(i);
 
@@ -194,9 +196,9 @@ void index_set::check_for_common_subexpressions(const int i) {
 
 		Set tmp;
 
-		std::set_intersection(si.begin(), si.end(),
+		set_intersection(si.begin(), si.end(),
 							  sj.begin(), sj.end(),
-							  std::inserter(tmp, tmp.begin()) );
+							  inserter(tmp, tmp.begin()) );
 
 		type2_cse.insert(tmp.begin(), tmp.end());
 	}
@@ -213,14 +215,49 @@ void index_set::collect_type2_common_subexpressions() {
 	}
 }
 
-const std::set<int>& index_set::type2_common_subexpressions() const {
+const set<int>& index_set::type2_common_subexpressions() const {
 
 	return type2_cse;
 }
 
-const std::set<int>& index_set::type3_common_subexpressions() const {
+const set<int>& index_set::type3_common_subexpressions() const {
 
 	return type3_cse;
+}
+
+bool index_set::not_variable(int index) const {
+
+	return index>=number_of_variables && type1_cse.find(index)==type1_cse.end();
+}
+
+void index_set::copy_vars(const Set* indices) {
+
+	vector<int> tmp;
+
+	// copy_if variable -> copy_if_not not variable
+
+	remove_copy_if(indices->begin(), indices->end(), inserter(tmp, tmp.begin()),
+			bind1st(mem_fun(&index_set::not_variable), this));
+
+	ASSERT(!tmp.empty());
+
+	constraint_variable_set.push_back(tmp);
+}
+
+void index_set::collect_variable_set(const std::vector<int>& marked_cse) {
+
+	ASSERT(constraint_variable_set.empty());
+
+	type1_cse = Set(marked_cse.begin(), marked_cse.end());
+
+	for_each(constraint_index_sets.begin(), constraint_index_sets.end(), bind1st(mem_fun(&index_set::copy_vars), this));
+}
+
+const std::vector<std::vector<int> >& index_set::variable_set() const {
+
+	ASSERT(!constraint_variable_set.empty());
+
+	return constraint_variable_set;
 }
 
 }

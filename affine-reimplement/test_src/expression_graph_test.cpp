@@ -33,7 +33,7 @@ using namespace std;
 
 namespace asol {
 
-void build(const problem<builder>* prob) {
+const problem_data* build(const problem<builder>* prob) {
 
 	builder::reset();
 
@@ -43,7 +43,15 @@ void build(const problem<builder>* prob) {
 
 	delete[] box;
 
-	ASSERT(builder::get_problem_data()->number_of_variables() == prob->number_of_variables());
+	builder::finished();
+
+	const problem_data* const representation = builder::get_problem_data();
+
+	ASSERT(representation->number_of_variables() == prob->number_of_variables());
+
+	delete prob;
+
+	return representation;
 }
 
 void print_data(const problem_data* representation) {
@@ -58,11 +66,7 @@ void print_data(const problem_data* representation) {
 
 void dag_test(const problem<builder>* prob) {
 
-	build(prob);
-
-	delete prob; prob = 0;
-
-	const problem_data* const representation = builder::get_problem_data();
+	const problem_data* const representation = build(prob);
 
 	expression_graph<interval> dag(representation);
 
@@ -77,6 +81,13 @@ void dag_test(const problem<builder>* prob) {
 	dag.show_variables(cout);
 
 	cout << "Last value: " << dag.last_value() << endl;
+}
+
+void print_sparsity(const problem<builder>* prob) {
+
+	const problem_data* const representation = build(prob);
+
+	representation->print_variable_occurences(cout);
 }
 
 }

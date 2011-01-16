@@ -65,6 +65,8 @@ public:
 
 	static const problem_data* get_problem_data();
 
+	static void finished();
+
 	static void reset();
 
 	static void release();

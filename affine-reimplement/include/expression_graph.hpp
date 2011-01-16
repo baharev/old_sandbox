@@ -62,6 +62,7 @@ private:
 	void set_non_variables(const int length);
 	void set_numeric_consts(const int length);
 
+	typedef std::vector<std::vector<int> > IntArray2D;
 	typedef std::vector<primitive<T>*> PrimVector;
 	typedef std::map<int,double> Map;
 
@@ -69,6 +70,7 @@ private:
 	const PrimVector primitives;
 	const Map constants;
 	const BoundVector initial_box;
+	const IntArray2D index_sets;
 };
 
 }

@@ -42,7 +42,8 @@ expression_graph<T>::expression_graph(const problem_data* problem) :
 v          (problem->peek_index()),
 primitives (convert<T>(problem->get_primitives())),
 constants  (problem->get_numeric_constants()),
-initial_box(problem->get_initial_box())
+initial_box(problem->get_initial_box()),
+index_sets (problem->get_index_sets())
 
 {
 	set_variables();

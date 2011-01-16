@@ -40,6 +40,8 @@ public:
 
 	typedef primitive<builder> Primitive;
 
+	typedef std::vector<std::vector<int> > IntArray2D;
+
 	problem_data();
 
 	~problem_data();
@@ -57,6 +59,8 @@ public:
 	void add_common_subexpression(int index);
 
 	int add_constraint_rhs(double value);
+
+	void build_index_set();
 
 	int number_of_arguments() const;
 
@@ -77,6 +81,8 @@ public:
 
 	const BoundVector& get_initial_box() const;
 
+	const IntArray2D& get_index_sets() const;
+
 	void print_primitives(std::ostream& out) const;
 
 	void print_index_set(std::ostream& out) const;
@@ -88,6 +94,8 @@ public:
 	void print_type3_common_subexpressions(std::ostream& out) const;
 
 	void print_info(std::ostream& out) const;
+
+	void print_variable_occurences(std::ostream& os) const;
 
 private:
 
@@ -118,6 +126,8 @@ private:
 	PairVector constraints_rhs;
 
 	BoundVector initial_box;
+
+	IntArray2D constraint_index_set;
 };
 
 }
