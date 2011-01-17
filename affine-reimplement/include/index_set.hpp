@@ -103,7 +103,7 @@ private:
 
 	Map current;
 
-	Set type1_cse;
+	Set marked_cse;
 
 	Set type2_cse;
 

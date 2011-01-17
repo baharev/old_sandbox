@@ -232,7 +232,7 @@ const set<int>& index_set::type3_common_subexpressions() const {
 
 bool index_set::not_variable(int index) const {
 
-	return index>=number_of_variables && type1_cse.find(index)==type1_cse.end();
+	return index>=number_of_variables && marked_cse.find(index)==marked_cse.end();
 }
 
 void index_set::copy_vars(const Set* indices) {
@@ -249,11 +249,11 @@ void index_set::copy_vars(const Set* indices) {
 	constraint_variable_set.push_back(tmp);
 }
 
-void index_set::collect_variable_set(const std::vector<int>& marked_cse) {
+void index_set::collect_variable_set(const std::vector<int>& marked_as_cse) {
 
 	ASSERT(constraint_variable_set.empty());
 
-	type1_cse = Set(marked_cse.begin(), marked_cse.end());
+	marked_cse = Set(marked_as_cse.begin(), marked_as_cse.end());
 
 	for_each(constraint_index_sets.begin(), constraint_index_sets.end(), bind1st(mem_fun(&index_set::copy_vars), this));
 }
