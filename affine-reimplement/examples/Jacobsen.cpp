@@ -93,6 +93,8 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T y1 = y_eq(x1);
 
+	y1.mark_as_common_subexpression();
+	
 	const T d = D*y1;
 
 	d.mark_as_common_subexpression();
@@ -121,6 +123,8 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	const T L7 = 4.0-D;
 
+	L7.mark_as_common_subexpression();
+
 	const T y8 = y_eq(x8);
 
 	const T M7 = 3.0*y8-L7*x7-d;
@@ -139,9 +143,11 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	//==========================================================================
 
-	const T y2 = y_eq(x2);
-
 	const T L1 = V2 - D;
+
+	L1.mark_as_common_subexpression();
+
+	const T y2 = y_eq(x2);
 
 	const T M1 = V2*y2 - L1*x1 - d;
 
@@ -159,9 +165,11 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	//==========================================================================
 
-	const T y7 = y_eq(x7);
-
 	const T L6 = 1 + V7 - D;
+
+	L6.mark_as_common_subexpression();
+
+	const T y7 = y_eq(x7);
 
 	const T M6 = V7* y7 - L6*x6 - d;
 
@@ -179,9 +187,11 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	//==========================================================================
 
-	const T y3 = y_eq(x3);
-
 	const T L2 = V3 - D;
+
+	L2.mark_as_common_subexpression();
+
+	const T y3 = y_eq(x3);
 
 	const T M2 = V3*y3 - L2*x2 - d;
 
@@ -199,9 +209,11 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	//==========================================================================
 
-	const T y6 = y_eq(x6);
-
 	const T L5 = 1 + V6 - D;
+
+	L5.mark_as_common_subexpression();
+
+	const T y6 = y_eq(x6);
 
 	const T M5 = V6*y6 - L5*x5 - d;
 
@@ -219,9 +231,11 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	//==========================================================================
 
-	const T y4 = y_eq(x4);
-
 	const T L3 = V4 - D;
+
+	L3.mark_as_common_subexpression();
+
+	const T y4 = y_eq(x4);
 
 	const T M3 = V4*y4 - L3*x3 - d;
 
@@ -239,9 +253,11 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	//==========================================================================
 
-	const T y5 = y_eq(x5);
-
 	const T L4 = V5 - D;
+
+	L4.mark_as_common_subexpression();
+
+	const T y5 = y_eq(x5);
 
 	const T M4 = V5*y5 - L4*x4 - d;
 
