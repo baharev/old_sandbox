@@ -88,6 +88,7 @@ private:
 
 	bool not_variable(int index) const;
 	void copy_vars(const Set* indices);
+	void look_for_cse_mismatch();
 
 	const int number_of_variables;
 

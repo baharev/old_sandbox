@@ -24,6 +24,7 @@
 #include <functional>
 #include <iterator>
 #include <ostream>
+#include <sstream>
 #include "index_set.hpp"
 #include "delete_struct.hpp"
 #include "diagnostics.hpp"
@@ -249,11 +250,31 @@ void index_set::copy_vars(const Set* indices) {
 	constraint_variable_set.push_back(tmp);
 }
 
+void index_set::look_for_cse_mismatch() {
+
+	collect_type2_common_subexpressions();
+
+	Set tmp;
+
+	set_difference(	type2_cse.begin(),  type2_cse.end(),
+					marked_cse.begin(), marked_cse.end(),
+					inserter(tmp, tmp.begin()) );
+
+	if (!tmp.empty()) {
+		ostringstream os;
+		os << "Indices not marked as CSE: ";
+		copy(tmp.begin(), tmp.end(), ostream_iterator<int>(os, "\t"));
+		ASSERT2(false, os.str());
+	}
+}
+
 void index_set::collect_variable_set(const std::vector<int>& marked_as_cse) {
 
 	ASSERT(constraint_variable_set.empty());
 
 	marked_cse = Set(marked_as_cse.begin(), marked_as_cse.end());
+
+	look_for_cse_mismatch();
 
 	for_each(constraint_index_sets.begin(), constraint_index_sets.end(), bind1st(mem_fun(&index_set::copy_vars), this));
 }
