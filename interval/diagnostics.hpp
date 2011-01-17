@@ -38,20 +38,20 @@
 
 #define ASSERT(condition) { \
 	if (!(condition)) { \
-		std::ostringstream os; \
-		os << "Assertion failed: " << #condition << ", "; \
-		os << FUNCTION_ << " at "<< __FILE__ << ':' << __LINE__ << std::flush; \
-		throw std::logic_error(os.str()); \
+		std::ostringstream os__; \
+		os__ << "Assertion failed: " << #condition << ", "; \
+		os__ << FUNCTION_ << " at "<< __FILE__ << ':' << __LINE__ << std::flush; \
+		throw std::logic_error(os__.str()); \
 	} \
 }
 
 #define ASSERT2(condition, message) { \
 	if (!(condition)) { \
-		std::ostringstream os; \
-		os << "Assertion failed: " << #condition << "; "; \
-		os << message << "; " ; \
-		os << FUNCTION_ << " at "<< __FILE__ << ':' << __LINE__ << std::flush; \
-		throw std::logic_error(os.str()); \
+		std::ostringstream os__; \
+		os__ << "Assertion failed: " << #condition << "; "; \
+		os__ << message << "; " ; \
+		os__ << FUNCTION_ << " at "<< __FILE__ << ':' << __LINE__ << std::flush; \
+		throw std::logic_error(os__.str()); \
 	} \
 }
 
