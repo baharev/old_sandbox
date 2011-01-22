@@ -118,12 +118,34 @@ void test_directed_revision(const problem<builder>* prob) {
 	cout << "Last value: " << dag.last_value() << endl;
 }
 
+void probing(expression_graph<interval>& dag, const interval box[], int size);
+
 void test_probing_Jacobsen(const problem<builder>* prob) {
 
 	expression_graph<interval> dag(build(prob));
 
 	builder::reset();
 
+	interval box[] = {
+			interval(1.0e-4, 1.0),
+			interval(1.0e-4, 1.0),
+			interval(1.0e-4, 1.0),
+			interval(1.0e-4, 1.0),
+			interval(1.0e-4, 1.0),
+			interval(1.0e-4, 1.0),
+			interval(1.0e-4, 1.0),
+			interval(1.0e-4, 1.0),
+			interval(2.0, 4.0),
+			interval(2.0, 4.0),
+			interval(2.0, 4.0),
+			interval(2.0, 4.0),
+			interval(2.0, 4.0),
+			interval(2.0, 4.0),
+			interval(2.0, 4.0),
+			interval(0.0, 1.12)
+	};
+
+	probing(dag, box, sizeof(box)/sizeof(box[0]));
 }
 
 }

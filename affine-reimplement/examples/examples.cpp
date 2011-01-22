@@ -101,9 +101,17 @@ void test_system_of_equations() {
 void test_directed_revision() {
 
 	cout << "###############################################" << endl;
-	cout << "Jacobsen probing" << endl;
+	cout << "Jacobsen directed revision" << endl;
 
 	test_directed_revision(new Jacobsen<builder> ());
+}
+
+void test_probing_Jacobsen() {
+
+	cout << "###############################################" << endl;
+	cout << "Jacobsen probing" << endl;
+
+	test_probing_Jacobsen(new Jacobsen<builder> ());
 }
 
 void run_examples() {
@@ -123,6 +131,8 @@ void run_examples() {
 	test_system_of_equations();
 
 	test_directed_revision();
+
+	test_probing_Jacobsen();
 
 	builder::release();
 }
