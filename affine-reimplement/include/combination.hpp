@@ -20,25 +20,44 @@
 //
 //==============================================================================
 
-#ifndef EXPRESSION_GRAPH_TEST_HPP_
-#define EXPRESSION_GRAPH_TEST_HPP_
+#ifndef COMBINATION_HPP_
+#define COMBINATION_HPP_
+
+#include <vector>
 
 namespace asol {
 
-template <typename T> class problem;
-class builder;
+class combination {
 
-void dag_test(const problem<builder>* prob);
+public:
 
-void print_sparsity(const problem<builder>* prob);
+	typedef std::vector<int> IntVector;
 
-void test_system_of_equations(const problem<builder>* prob);
+	combination();
 
-void test_directed_revision(const problem<builder>* prob);
+	explicit combination(int size, int parts_to_generate);
 
-void test_probing_Jacobsen(const problem<builder>* prob);
+	bool step_counters();
 
+	const IntVector& counters() const;
+
+private:
+
+	combination(const combination& );
+	combination& operator=(const combination& );
+
+	bool has_more_counters() const;
+	bool counter_at_max() const;
+	void next(const bool overflow);
+	void handle_overflow();
+
+	IntVector counter;
+	int high_water_mark;
+	int position;
+	int counter_max;
+	int size;
+};
 
 }
 
-#endif // EXPRESSION_GRAPH_TEST_HPP_
+#endif // COMBINATION_HPP_

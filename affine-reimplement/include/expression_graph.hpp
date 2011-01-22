@@ -40,6 +40,8 @@ public:
 
 	expression_graph(const problem_data* problem);
 
+	void set_box(const T* box, const int length);
+
 	void evaluate_all();
 
 	void revise_all();
@@ -54,13 +56,11 @@ public:
 
 	void revise_up_to(const int i);
 
-	void probing();
+	void directed_revision();
 
 	void show_variables(std::ostream& out) const;
 
 	const T& last_value() const;
-
-	void evaluate_primitive(int i);
 
 	~expression_graph();
 
@@ -74,8 +74,8 @@ private:
 	int primitives_size() const { return static_cast<int> (primitives.size()); }
 
 	void set_variables();
-	void set_non_variables(const int length);
-	void set_numeric_consts(const int length);
+	void set_non_variables();
+	void set_numeric_consts();
 
 	int constraint_begin(int i) const;
 	int constraint_end(int i) const;
@@ -85,6 +85,7 @@ private:
 	typedef std::map<int,double> Map;
 
 	std::vector<T> v;
+	const int n_vars;
 	const PrimVector primitives;
 	const Map constants;
 	const BoundVector initial_box;

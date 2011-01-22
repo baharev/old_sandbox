@@ -40,6 +40,7 @@ template <typename T>
 expression_graph<T>::expression_graph(const problem_data* problem) :
 
 v          (problem->peek_index()),
+n_vars     (problem->number_of_variables()),
 primitives (convert<T>(problem->get_primitives())),
 constants  (problem->get_numeric_constants()),
 initial_box(problem->get_initial_box()),
@@ -52,6 +53,22 @@ constraints(problem->get_constraints())
 }
 
 template <typename T>
+void expression_graph<T>::set_box(const T* box, const int length) {
+
+	ASSERT(length == n_vars);
+
+	for (int i=0; i<n_vars; ++i) {
+
+		v.at(i) = box[i];
+	}
+
+	set_non_variables();
+
+	// TODO Could save this if intersect would not create empty an interval
+	set_numeric_consts();
+}
+
+template <typename T>
 expression_graph<T>::~expression_graph() {
 
 	for_each(primitives.begin(), primitives.end(), Delete());
@@ -60,34 +77,34 @@ expression_graph<T>::~expression_graph() {
 template <typename T>
 void expression_graph<T>::set_variables() {
 
-	const int length = static_cast<int> (initial_box.size());
-
-	for (int i=0; i<length; ++i) {
+	for (int i=0; i<n_vars; ++i) {
 
 		const Bounds& bound = initial_box.at(i);
 
 		v.at(i) = T(bound.first, bound.second);
 	}
 
-	set_non_variables(length);
+	set_non_variables();
 
-	set_numeric_consts(length);
+	set_numeric_consts();
 }
 
 template <typename T>
-void expression_graph<T>::set_non_variables(const int length) {
+void expression_graph<T>::set_non_variables() {
 
 	const double DMAX =  numeric_limits<double>::max();
 	const double DMIN = -DMAX;
 
-	for (int i=length; i<v_size(); ++i) {
+	const int end = v_size();
+
+	for (int i=n_vars; i<end; ++i) {
 
 		v.at(i) = T(DMIN, DMAX);
 	}
 }
 
 template <typename T>
-void expression_graph<T>::set_numeric_consts(const int length) {
+void expression_graph<T>::set_numeric_consts() {
 
 	Map::const_iterator i = constants.begin();
 
@@ -96,7 +113,7 @@ void expression_graph<T>::set_numeric_consts(const int length) {
 		const int    index = i->first;
 		const double value = i->second;
 
-		ASSERT2(index>=length, "index, length: "<<index<<", "<<length);
+		ASSERT2(index>=n_vars, "index, n_vars: "<<index<<", "<<n_vars);
 
 		v.at(index) = T(value);
 
@@ -185,7 +202,7 @@ void expression_graph<T>::revise_all2() {
 }
 
 template <typename T>
-void expression_graph<T>::probing() {
+void expression_graph<T>::directed_revision() {
 
 	const int end = constraints_size();
 
@@ -212,12 +229,6 @@ template <typename T>
 const T& expression_graph<T>::last_value() const {
 
 	return v.at(v.size()-1);
-}
-
-template <typename T>
-void expression_graph<T>::evaluate_primitive(int i) {
-
-	primitives.at(i)->evaluate();
 }
 
 template class expression_graph<interval>;

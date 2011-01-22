@@ -20,25 +20,53 @@
 //
 //==============================================================================
 
-#ifndef EXPRESSION_GRAPH_TEST_HPP_
-#define EXPRESSION_GRAPH_TEST_HPP_
+#ifndef BOX_GENERATOR_HPP_
+#define BOX_GENERATOR_HPP_
+
+#include <memory>
+#include <vector>
+#include "interval.hpp"
 
 namespace asol {
 
-template <typename T> class problem;
-class builder;
+class combination;
 
-void dag_test(const problem<builder>* prob);
+class box_generator {
 
-void print_sparsity(const problem<builder>* prob);
+public:
 
-void test_system_of_equations(const problem<builder>* prob);
+	typedef std::vector<interval> IVector;
+	typedef std::vector<int> IntVector;
 
-void test_directed_revision(const problem<builder>* prob);
+	box_generator(IVector& v, const IntVector& index_set, int equal_parts);
 
-void test_probing_Jacobsen(const problem<builder>* prob);
+	bool empty() const;
 
+	bool get_next();
+
+	void set_box();
+
+	~box_generator();
+
+private:
+
+	typedef std::vector<IVector> IArray2D;
+
+	box_generator(const box_generator& );
+	box_generator& operator=(const box_generator& );
+
+	void reserve(int index_set_size);
+	void generate_parts(int i);
+	void cut_into_equal_parts(const double LB, const double UB);
+
+	IVector& v;
+	const int parts_to_generate;
+
+	IntVector index;
+	IArray2D parts;
+	std::auto_ptr<combination> index_generator;
+};
 
 }
 
-#endif // EXPRESSION_GRAPH_TEST_HPP_
+#endif // BOX_GENERATOR_HPP_
