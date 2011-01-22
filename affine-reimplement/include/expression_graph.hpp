@@ -44,6 +44,14 @@ public:
 
 	void revise_all();
 
+	void evaluate_constraint(int i);
+
+	void revise_constraint(int i);
+
+	void evaluate_all2();
+
+	void revise_all2();
+
 	void show_variables(std::ostream& out) const;
 
 	const T& last_value() const;
@@ -58,9 +66,15 @@ private:
 	expression_graph& operator=(const expression_graph& );
 
 	int v_size() const { return static_cast<int> (v.size()); }
+	int constraints_size() const { return static_cast<int> (constraints.size()); }
+	int primitives_size() const { return static_cast<int> (primitives.size()); }
+
 	void set_variables();
 	void set_non_variables(const int length);
 	void set_numeric_consts(const int length);
+
+	int constraint_begin(int i) const;
+	int constraint_end(int i) const;
 
 	typedef std::vector<std::vector<int> > IntArray2D;
 	typedef std::vector<primitive<T>*> PrimVector;

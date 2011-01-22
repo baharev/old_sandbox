@@ -32,6 +32,8 @@ void dag_test(const problem<builder>* prob);
 
 void print_sparsity(const problem<builder>* prob);
 
+void test_system_of_equations(const problem<builder>* prob);
+
 }
 
 #endif // EXPRESSION_GRAPH_TEST_HPP_

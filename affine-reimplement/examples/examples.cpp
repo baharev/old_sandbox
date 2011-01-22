@@ -90,6 +90,14 @@ void show_Jacobsen_sparsity() {
 	print_sparsity(new Jacobsen<builder> ());
 }
 
+void test_system_of_equations() {
+
+	cout << "###############################################" << endl;
+	cout << "Jacobsen system of equations" << endl;
+
+	test_system_of_equations(new Jacobsen<builder> ());
+}
+
 void run_examples() {
 
 	example_Hansen();
@@ -103,6 +111,8 @@ void run_examples() {
 	example_3();
 
 	example_Jacobsen();
+
+	test_system_of_equations();
 
 	builder::release();
 }

@@ -119,6 +119,68 @@ void expression_graph<T>::revise_all() {
 }
 
 template <typename T>
+int expression_graph<T>::constraint_begin(int i) const {
+
+	return (i!=0) ? constraints.at(i-1)+1 : 0;
+}
+
+template <typename T>
+int expression_graph<T>::constraint_end(int i) const {
+
+	return constraints.at(i);
+}
+
+template <typename T>
+void expression_graph<T>::evaluate_constraint(int k) {
+
+	const int begin = constraint_begin(k);
+
+	const int end   = constraint_end(k);
+
+	for (int i=begin; i<=end; ++i) {
+
+		primitives.at(i)->evaluate();
+	}
+}
+
+template <typename T>
+void expression_graph<T>::revise_constraint(int k) {
+
+	const int end   = constraint_end(k);
+
+	const int begin = constraint_begin(k);
+
+	for (int i=end; i>=begin; --i) {
+
+		primitives.at(i)->revise();
+	}
+}
+
+template <typename T>
+void expression_graph<T>::evaluate_all2() {
+
+	const int n_cons = constraints_size();
+
+	for (int i=0; i<n_cons; ++i) {
+
+		evaluate_constraint(i);
+	}
+}
+
+template <typename T>
+void expression_graph<T>::revise_all2() {
+
+	evaluate_all2();
+
+	const int n_cons = constraints_size();
+
+	for (int i=n_cons-1; i>=0; --i) {
+
+		revise_constraint(i);
+	}
+}
+
+template <typename T>
 void expression_graph<T>::show_variables(ostream& out) const {
 
 	const int length = static_cast<int> (initial_box.size());

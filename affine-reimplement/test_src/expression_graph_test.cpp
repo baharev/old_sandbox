@@ -90,4 +90,19 @@ void print_sparsity(const problem<builder>* prob) {
 	representation->print_variable_occurences(cout);
 }
 
+void test_system_of_equations(const problem<builder>* prob) {
+
+	expression_graph<interval> dag(build(prob));
+
+	builder::reset();
+
+	for (int i=0; i<40; ++i) {
+		dag.revise_all2();
+	}
+
+	dag.show_variables(cout);
+
+	cout << "Last value: " << dag.last_value() << endl;
+}
+
 }
