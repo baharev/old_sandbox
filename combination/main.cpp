@@ -43,7 +43,9 @@ void Main() {
 
 	box_generator generator(vars, index_set, 3);
 
-	while (generator.set_next()) {
+	while (generator.get_next()) {
+
+		generator.set_box();
 
 		copy(vars.begin(), vars.end(), ostream_iterator<interval>(cout,"\t"));
 

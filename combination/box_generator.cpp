@@ -107,20 +107,11 @@ bool box_generator::empty() const {
 	return parts.empty();
 }
 
-bool box_generator::set_next() {
+bool box_generator::get_next() {
 
 	ASSERT(!empty());
 
-	bool has_more = index_generator->step_counters();
-
-	if (!has_more) {
-
-		return false;
-	}
-
-	set_box();
-
-	return true;
+	return index_generator->step_counters();
 }
 
 void box_generator::set_box() {

@@ -42,7 +42,9 @@ public:
 
 	bool empty() const;
 
-	bool set_next();
+	bool get_next();
+
+	void set_box();
 
 	~box_generator();
 
@@ -56,8 +58,6 @@ private:
 	void reserve(int index_set_size);
 	void generate_parts(int i);
 	void cut_into_equal_parts(const double LB, const double UB);
-
-	void set_box();
 
 	IVector& v;
 	const int parts_to_generate;
