@@ -44,13 +44,17 @@ public:
 
 	void revise_all();
 
-	void evaluate_constraint(int i);
+	void evaluate_constraint(int i); // TODO Make it private?
 
-	void revise_constraint(int i);
+	void revise_constraint(int i); // TODO Make it private?
 
-	void evaluate_all2();
+	void revise_all2(); // TODO Remove
 
-	void revise_all2();
+	void evaluate_up_to(const int i);
+
+	void revise_up_to(const int i);
+
+	void probing();
 
 	void show_variables(std::ostream& out) const;
 

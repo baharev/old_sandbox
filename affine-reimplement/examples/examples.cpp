@@ -98,6 +98,14 @@ void test_system_of_equations() {
 	test_system_of_equations(new Jacobsen<builder> ());
 }
 
+void test_probing() {
+
+	cout << "###############################################" << endl;
+	cout << "Jacobsen probing" << endl;
+
+	test_probing(new Jacobsen<builder> ());
+}
+
 void run_examples() {
 
 	example_Hansen();
@@ -113,6 +121,8 @@ void run_examples() {
 	example_Jacobsen();
 
 	test_system_of_equations();
+
+	test_probing();
 
 	builder::release();
 }

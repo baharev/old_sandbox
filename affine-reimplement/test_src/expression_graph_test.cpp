@@ -105,4 +105,17 @@ void test_system_of_equations(const problem<builder>* prob) {
 	cout << "Last value: " << dag.last_value() << endl;
 }
 
+void test_probing(const problem<builder>* prob) {
+
+	expression_graph<interval> dag(build(prob));
+
+	builder::reset();
+
+	dag.probing();
+
+	dag.show_variables(cout);
+
+	cout << "Last value: " << dag.last_value() << endl;
+}
+
 }

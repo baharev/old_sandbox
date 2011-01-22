@@ -157,26 +157,43 @@ void expression_graph<T>::revise_constraint(int k) {
 }
 
 template <typename T>
-void expression_graph<T>::evaluate_all2() {
+void expression_graph<T>::evaluate_up_to(const int k) {
 
-	const int n_cons = constraints_size();
-
-	for (int i=0; i<n_cons; ++i) {
+	for (int i=0; i<=k; ++i) {
 
 		evaluate_constraint(i);
 	}
 }
 
 template <typename T>
-void expression_graph<T>::revise_all2() {
+void expression_graph<T>::revise_up_to(const int k) {
 
-	evaluate_all2();
-
-	const int n_cons = constraints_size();
-
-	for (int i=n_cons-1; i>=0; --i) {
+	for (int i=k; i>=0; --i) {
 
 		revise_constraint(i);
+	}
+}
+
+template <typename T>
+void expression_graph<T>::revise_all2() {
+
+	const int last = constraints_size()-1;
+
+	evaluate_up_to(last);
+
+	revise_up_to(last);
+}
+
+template <typename T>
+void expression_graph<T>::probing() {
+
+	const int end = constraints_size();
+
+	for (int pos=0; pos<end; ++pos) {
+
+		evaluate_up_to(pos);
+
+		revise_up_to(pos);
 	}
 }
 
