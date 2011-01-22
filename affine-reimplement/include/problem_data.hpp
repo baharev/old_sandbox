@@ -83,6 +83,8 @@ public:
 
 	const IntArray2D& get_index_sets() const;
 
+	const IntVector& get_constraints() const;
+
 	void print_primitives(std::ostream& out) const;
 
 	void print_index_set(std::ostream& out) const;
@@ -113,6 +115,8 @@ private:
 
 	int primitives_size() const;
 
+	void copy_constraint_position();
+
 	int unused_index;
 
 	int number_of_vars;
@@ -128,6 +132,8 @@ private:
 	BoundVector initial_box;
 
 	IntArray2D constraint_index_set;
+
+	IntVector constraints;
 };
 
 }

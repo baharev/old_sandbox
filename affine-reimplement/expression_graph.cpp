@@ -43,7 +43,8 @@ v          (problem->peek_index()),
 primitives (convert<T>(problem->get_primitives())),
 constants  (problem->get_numeric_constants()),
 initial_box(problem->get_initial_box()),
-index_sets (problem->get_index_sets())
+index_sets (problem->get_index_sets()),
+constraints(problem->get_constraints())
 
 {
 	set_variables();

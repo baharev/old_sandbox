@@ -261,6 +261,18 @@ void problem_data::print_type1_common_subexpressions(ostream& out) const {
 	}
 }
 
+void problem_data::copy_constraint_position() {
+
+	const int n = static_cast<int> ( constraints_rhs.size() );
+
+	constraints.resize(n, -1);
+
+	for (int i = 0; i<n; ++i) {
+
+		constraints.at(i) = constraints_rhs.at(i).first;
+	}
+}
+
 void problem_data::build_index_set() {
 
 	ASSERT(constraint_index_set.empty());
@@ -272,6 +284,8 @@ void problem_data::build_index_set() {
 	constraint_index_set = IntArray2D(rec->variable_set());
 
 	delete rec;
+
+	copy_constraint_position();
 }
 
 const std::vector<std::vector<int> >& problem_data::get_index_sets() const {
@@ -279,6 +293,14 @@ const std::vector<std::vector<int> >& problem_data::get_index_sets() const {
 	ASSERT2(!constraint_index_set.empty(),"call build_index_set first");
 
 	return constraint_index_set;
+}
+
+
+const IntVector& problem_data::get_constraints() const {
+
+	ASSERT2(!constraint_index_set.empty(),"call build_index_set first");
+
+	return constraints;
 }
 
 class print : public unary_function<vector<int>,void> {

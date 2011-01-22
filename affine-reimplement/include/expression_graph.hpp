@@ -71,6 +71,7 @@ private:
 	const Map constants;
 	const BoundVector initial_box;
 	const IntArray2D index_sets;
+	const IntVector constraints;
 };
 
 }
