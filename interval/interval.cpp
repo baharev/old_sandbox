@@ -169,6 +169,13 @@ const interval log(const interval& x) {
 	return interval(std::log(x.lb), std::log(x.ub));
 }
 
+const interval hull_of(const interval& x, const interval& y) {
+
+	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
+
+	return interval(std::min(x.lb, y.lb), std::max(x.ub, y.ub));
+}
+
 bool interval::subset_of(const interval& x) const {
 
 	ASSERT2(lb <= ub, *this);

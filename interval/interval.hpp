@@ -121,6 +121,8 @@ const double NARROW = 1.0e-4;
 
 bool is_narrow(const interval& x);
 
+const interval hull_of(const interval& x, const interval& y);
+
 }
 
 #endif

@@ -272,14 +272,6 @@ void expression_graph<T>::probe_one(const int k) {
 	save_hull();
 }
 
-// FIXME What is the problem of g++?
-const interval hull_of(const interval& x, const interval& y) {
-
-	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
-
-	return interval(std::min(x.lb, y.lb), std::max(x.ub, y.ub));
-}
-
 template <typename T>
 void expression_graph<T>::save_hull() {
 
