@@ -24,7 +24,6 @@
 #define EXPRESSION_GRAPH_HPP_
 
 #include <iosfwd>
-#include <map>
 #include <vector>
 #include "typedefs.hpp"
 
@@ -71,30 +70,35 @@ private:
 	expression_graph(const expression_graph& );
 	expression_graph& operator=(const expression_graph& );
 
-	int v_size() const { return static_cast<int> (v.size()); }
 	int constraints_size() const { return static_cast<int> (constraints.size()); }
-	int primitives_size() const { return static_cast<int> (primitives.size()); }
 
 	void set_variables();
 	void set_non_variables();
 	void set_numeric_consts();
+	void set_constant(const Pair p);
 
 	int constraint_begin(int i) const;
 	int constraint_end(int i) const;
 
 	void probe(const int k);
+	void save_orig_box();
+	void set_orig_box();
+	void save_hull();
+	void write_back_hull();
 
 	typedef std::vector<std::vector<int> > IntArray2D;
 	typedef std::vector<primitive<T>*> PrimVector;
-	typedef std::map<int,double> Map;
 
 	std::vector<T> v;
 	const int n_vars;
 	const PrimVector primitives;
-	const Map constants;
+	const PairVector constants;
 	const BoundVector initial_box;
 	const IntArray2D index_sets;
 	const IntVector constraints;
+
+	std::vector<T> orig_box;
+	std::vector<T> hull_box;
 };
 
 }

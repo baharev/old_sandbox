@@ -22,7 +22,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <limits>
 #include "expression_graph.hpp"
 #include "box_generator.hpp"
 #include "delete_struct.hpp"
@@ -44,7 +43,7 @@ expression_graph<T>::expression_graph(const problem_data* problem) :
 v          (problem->peek_index()),
 n_vars     (problem->number_of_variables()),
 primitives (convert<T>(problem->get_primitives())),
-constants  (problem->get_numeric_constants()),
+constants  (problem->get_numeric_constants().begin(), problem->get_numeric_constants().end()), // TODO Do it in problem_data
 initial_box(problem->get_initial_box()),
 index_sets (problem->get_index_sets()),
 constraints(problem->get_constraints())
@@ -52,22 +51,9 @@ constraints(problem->get_constraints())
 {
 	set_variables();
 	primitive<T>::set_vector(&v);
-}
 
-template <typename T>
-void expression_graph<T>::set_box(const T* box, const int length) {
-
-	ASSERT(length == n_vars);
-
-	for (int i=0; i<n_vars; ++i) {
-
-		v.at(i) = box[i];
-	}
-
-	set_non_variables();
-
-	// TODO Could save this if intersect would not create empty an interval
-	set_numeric_consts();
+	orig_box.resize(n_vars);
+	hull_box.resize(n_vars);
 }
 
 template <typename T>
@@ -94,33 +80,36 @@ void expression_graph<T>::set_variables() {
 template <typename T>
 void expression_graph<T>::set_non_variables() {
 
-	const double DMAX =  numeric_limits<double>::max();
-	const double DMIN = -DMAX;
+	const double DMAX(1.0e+150);
 
-	const int end = v_size();
-
-	for (int i=n_vars; i<end; ++i) {
-
-		v.at(i) = T(DMIN, DMAX);
-	}
+	fill(v.begin()+n_vars, v.end(), T(-DMAX, DMAX));
 }
 
 template <typename T>
 void expression_graph<T>::set_numeric_consts() {
 
-	Map::const_iterator i = constants.begin();
+	for_each(constants.begin(), constants.end(), bind1st(mem_fun(&expression_graph<T>::set_constant), this));
+}
 
-	while (i!=constants.end()) {
+template <typename T>
+void expression_graph<T>::set_constant(const Pair p) {
 
-		const int    index = i->first;
-		const double value = i->second;
+	ASSERT2(p.first>=n_vars, "index, n_vars: "<<p.first<<", "<<n_vars);
 
-		ASSERT2(index>=n_vars, "index, n_vars: "<<index<<", "<<n_vars);
+	v.at(p.first) = T(p.second);
+}
 
-		v.at(index) = T(value);
+template <typename T>
+void expression_graph<T>::set_box(const T* box, const int length) {
 
-		++i;
-	}
+	ASSERT(length == n_vars);
+
+	copy(box, box+n_vars, v.begin());
+
+	set_non_variables();
+
+	// TODO Could save this if intersect would not create empty an interval
+	set_numeric_consts();
 }
 
 template <typename T>
@@ -204,7 +193,7 @@ void expression_graph<T>::revise_all2() {
 }
 
 template <typename T>
-void expression_graph<T>::iterative_revision() { // TODO iterative_revision?
+void expression_graph<T>::iterative_revision() {
 
 	const int end = constraints_size();
 
@@ -215,24 +204,44 @@ void expression_graph<T>::iterative_revision() { // TODO iterative_revision?
 }
 
 template <typename T>
-void expression_graph<T>::probing(const int k) {
+void expression_graph<T>::probing(const int k) {  // TODO Where is the box set?
 
-	// TODO Where is the box set?
+	save_orig_box();
 
 	box_generator generator(v, index_sets.at(k), 3);
 
-	// TODO Check if not empty!
+	if (generator.empty()) {
+
+		return;
+	}
 
 	while (generator.get_next()) {
 
-		// set_orig_box();
+		set_orig_box();
 
 		generator.set_box();
 
 		probe(k);
 	}
 
-	// Intersect orig_box and hull -- must not become infeasible;
+	write_back_hull();
+	// TODO Intersect orig_box and hull -- must not become infeasible;
+}
+
+template <typename T>
+void expression_graph<T>::save_orig_box() {
+
+	copy(v.begin(), v.begin()+n_vars, orig_box.begin());
+}
+
+template <typename T>
+void expression_graph<T>::set_orig_box() { // TODO Could just call set_box
+
+	copy(orig_box.begin(), orig_box.end(), v.begin());
+
+	set_non_variables();
+
+	set_numeric_consts();
 }
 
 template <typename T>
@@ -250,7 +259,46 @@ void expression_graph<T>::probe(const int k) {
 		ASSERT2(false, "implementation not updated properly");
 	}
 
-	// TODO Compute hull -- interval::hull; needs a tmp box too.
+	save_hull();
+
+	// TODO call revise all if reduced the box;
+}
+
+// TODO
+const interval hull(const interval&, const interval & ) { }
+
+template <typename T>
+void expression_graph<T>::save_hull() {
+
+	if (hull_box.empty()) { // TODO Who guarantees emptiness and correct size?
+
+		copy(v.begin(), v.begin()+n_vars, hull_box.begin());
+	}
+	else {
+
+		transform(hull_box.begin(), hull_box.end(), v.begin(), hull_box.begin(), hull);
+	}
+}
+
+const interval intersect(const interval& , const interval& ) { }
+
+template <typename T>
+void expression_graph<T>::write_back_hull() {
+
+	if (hull_box.empty()) {
+
+		throw infeasible_problem();
+	}
+
+	try {
+
+		// TODO Replace it with a member function and a loop -> save if changed, do not change narrow components, etc
+		transform(hull_box.begin(), hull_box.end(), orig_box.begin(), orig_box.begin(), intersect);
+	}
+	catch (infeasible_problem& ) {
+
+		ASSERT(false);
+	}
 }
 
 template <typename T>
