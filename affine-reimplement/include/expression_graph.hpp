@@ -45,19 +45,11 @@ public:
 
 	void revise_all();
 
-	void evaluate_constraint(int i); // TODO Make it private?
-
-	void revise_constraint(int i); // TODO Make it private?
-
 	void revise_all2(); // TODO Remove
-
-	void evaluate_up_to(const int i);
-
-	void revise_up_to(const int i);
 
 	void iterative_revision();
 
-	void probing(const int i);
+	void probing();
 
 	void show_variables(std::ostream& out) const;
 
@@ -80,11 +72,20 @@ private:
 	int constraint_begin(int i) const;
 	int constraint_end(int i) const;
 
-	void probe(const int k);
-	void save_orig_box();
-	void set_orig_box();
+	void evaluate_up_to(const int i);
+	void evaluate_constraint(int i);
+
+	void revise_up_to(const int i);
+	void revise_constraint(int i);
+
+	void probing(const int i);
+	void probe_one(const int i);
+	void save_current_as_orig();
+	void set_orig_as_v();
 	void save_hull();
-	void write_back_hull();
+	void write_hull_to_orig();
+	bool intersect_hull_and_orig();
+	bool compute_intersection();
 
 	typedef std::vector<std::vector<int> > IntArray2D;
 	typedef std::vector<primitive<T>*> PrimVector;
@@ -97,8 +98,8 @@ private:
 	const IntArray2D index_sets;
 	const IntVector constraints;
 
-	std::vector<T> orig_box;
-	std::vector<T> hull_box;
+	std::vector<T> orig;
+	std::vector<T> hull;
 };
 
 }

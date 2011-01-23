@@ -52,8 +52,8 @@ constraints(problem->get_constraints())
 	set_variables();
 	primitive<T>::set_vector(&v);
 
-	orig_box.resize(n_vars);
-	hull_box.resize(n_vars);
+	orig.resize(v.size());
+	hull.resize(v.size());
 }
 
 template <typename T>
@@ -204,11 +204,26 @@ void expression_graph<T>::iterative_revision() {
 }
 
 template <typename T>
-void expression_graph<T>::probing(const int k) {  // TODO Where is the box set?
+void expression_graph<T>::probing() {
 
-	save_orig_box(); // TODO No need to touch v, could just use orig_box
+	save_current_as_orig();
 
-	box_generator generator(v, index_sets.at(k), 3); // TODO Assumes that the box is set
+	const int m = constraints_size();
+
+	for (int i=0; i<m; ++i) {
+
+		probing(i);
+	}
+}
+
+template <typename T>
+void expression_graph<T>::probing(const int k) {
+
+	hull.clear();
+
+	set_orig_as_v();
+
+	box_generator generator(v, index_sets.at(k), 3);
 
 	if (generator.empty()) {
 
@@ -217,35 +232,30 @@ void expression_graph<T>::probing(const int k) {  // TODO Where is the box set?
 
 	while (generator.get_next()) {
 
-		set_orig_box();
+		set_orig_as_v();
 
-		generator.set_box(); // TODO Check if part is in component
+		generator.set_box(); // TODO Check if part is in component -- subset
 
-		probe(k);
+		probe_one(k);
 	}
 
-	write_back_hull();
-	// TODO Intersect orig_box and hull -- must not become infeasible;
+	write_hull_to_orig();
 }
 
 template <typename T>
-void expression_graph<T>::save_orig_box() {
+void expression_graph<T>::save_current_as_orig() {
 
-	copy(v.begin(), v.begin()+n_vars, orig_box.begin());
+	copy(v.begin(), v.end(), orig.begin());
 }
 
 template <typename T>
-void expression_graph<T>::set_orig_box() { // TODO Could just call set_box
+void expression_graph<T>::set_orig_as_v() {
 
-	copy(orig_box.begin(), orig_box.end(), v.begin());
-
-	set_non_variables();
-
-	set_numeric_consts();
+	copy(orig.begin(), orig.end(), v.begin());
 }
 
 template <typename T>
-void expression_graph<T>::probe(const int k) {
+void expression_graph<T>::probe_one(const int k) {
 
 	try {
 
@@ -260,45 +270,78 @@ void expression_graph<T>::probe(const int k) {
 	}
 
 	save_hull();
-
-	// TODO call revise all if reduced the box;
 }
 
-// TODO
-const interval hull(const interval&, const interval & ) { }
+const interval hull_of(const interval&, const interval & ) { }
 
 template <typename T>
 void expression_graph<T>::save_hull() {
 
-	if (hull_box.empty()) { // TODO Who guarantees emptiness and correct size?
+	if (hull.empty()) { // TODO Who guarantees emptiness and correct size?
 
-		copy(v.begin(), v.begin()+n_vars, hull_box.begin());
+		copy(v.begin(), v.end(), hull.begin());
 	}
 	else {
 
-		transform(hull_box.begin(), hull_box.end(), v.begin(), hull_box.begin(), hull);
+		transform(hull.begin(), hull.end(), v.begin(), hull.begin(), hull_of);
 	}
 }
 
-const interval intersect(const interval& , const interval& ) { }
-
 template <typename T>
-void expression_graph<T>::write_back_hull() {
+void expression_graph<T>::write_hull_to_orig() {
 
-	if (hull_box.empty()) {
+	if (hull.empty()) {
 
 		throw infeasible_problem();
 	}
 
+	bool changed = intersect_hull_and_orig();
+
+	if (changed) {
+
+		set_orig_as_v();
+
+		revise_all();
+
+		save_current_as_orig();
+	}
+}
+
+template <typename T>
+bool expression_graph<T>::intersect_hull_and_orig() {
+
+	bool changed = false;
+
 	try {
 
-		// TODO Replace it with a member function and a loop -> save if changed, do not change narrow components, etc
-		transform(hull_box.begin(), hull_box.end(), orig_box.begin(), orig_box.begin(), intersect);
+		changed = compute_intersection();
 	}
 	catch (infeasible_problem& ) {
 
 		ASSERT(false);
 	}
+
+	return changed;
+}
+
+template <typename T>
+bool expression_graph<T>::compute_intersection() {
+
+	typename vector<T>::const_iterator end = hull.end();
+
+	typename vector<T>::iterator result = orig.begin();
+
+	bool changed = false;
+
+	for (typename vector<T>::const_iterator i=hull.begin(); i!=end; ++i, ++result) {
+
+		if (result->intersect(*i)) {
+
+			changed = true;
+		}
+	}
+
+	return changed;
 }
 
 template <typename T>
