@@ -206,9 +206,9 @@ void expression_graph<T>::iterative_revision() {
 template <typename T>
 void expression_graph<T>::probing(const int k) {  // TODO Where is the box set?
 
-	save_orig_box();
+	save_orig_box(); // TODO No need to touch v, could just use orig_box
 
-	box_generator generator(v, index_sets.at(k), 3);
+	box_generator generator(v, index_sets.at(k), 3); // TODO Assumes that the box is set
 
 	if (generator.empty()) {
 
@@ -219,7 +219,7 @@ void expression_graph<T>::probing(const int k) {  // TODO Where is the box set?
 
 		set_orig_box();
 
-		generator.set_box();
+		generator.set_box(); // TODO Check if part is in component
 
 		probe(k);
 	}
