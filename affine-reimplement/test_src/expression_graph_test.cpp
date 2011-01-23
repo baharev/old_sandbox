@@ -111,7 +111,7 @@ void test_directed_revision(const problem<builder>* prob) {
 
 	builder::reset();
 
-	dag.directed_revision();
+	dag.iterative_revision();
 
 	dag.show_variables(cout);
 

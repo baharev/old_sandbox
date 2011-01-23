@@ -30,7 +30,7 @@ void probing(expression_graph<interval>& dag, const interval box[], int size) {
 
 	dag.set_box(box, size);
 
-	dag.directed_revision();
+	dag.iterative_revision();
 
 	dag.show_variables(std::cout);
 

@@ -56,7 +56,9 @@ public:
 
 	void revise_up_to(const int i);
 
-	void directed_revision();
+	void iterative_revision();
+
+	void probing(const int i);
 
 	void show_variables(std::ostream& out) const;
 
@@ -79,6 +81,8 @@ private:
 
 	int constraint_begin(int i) const;
 	int constraint_end(int i) const;
+
+	void probe(const int k);
 
 	typedef std::vector<std::vector<int> > IntArray2D;
 	typedef std::vector<primitive<T>*> PrimVector;

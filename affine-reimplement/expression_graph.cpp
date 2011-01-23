@@ -24,8 +24,10 @@
 #include <functional>
 #include <limits>
 #include "expression_graph.hpp"
+#include "box_generator.hpp"
 #include "delete_struct.hpp"
 #include "diagnostics.hpp"
+#include "exceptions.hpp"
 #include "interval.hpp"
 #include "problem_data.hpp"
 
@@ -185,6 +187,8 @@ void expression_graph<T>::evaluate_up_to(const int k) {
 template <typename T>
 void expression_graph<T>::revise_up_to(const int k) {
 
+	evaluate_up_to(k);
+
 	for (int i=k; i>=0; --i) {
 
 		revise_constraint(i);
@@ -196,22 +200,57 @@ void expression_graph<T>::revise_all2() {
 
 	const int last = constraints_size()-1;
 
-	evaluate_up_to(last);
-
 	revise_up_to(last);
 }
 
 template <typename T>
-void expression_graph<T>::directed_revision() {
+void expression_graph<T>::iterative_revision() { // TODO iterative_revision?
 
 	const int end = constraints_size();
 
 	for (int pos=0; pos<end; ++pos) {
 
-		evaluate_up_to(pos);
-
 		revise_up_to(pos);
 	}
+}
+
+template <typename T>
+void expression_graph<T>::probing(const int k) {
+
+	// TODO Where is the box set?
+
+	box_generator generator(v, index_sets.at(k), 3);
+
+	// TODO Check if not empty!
+
+	while (generator.get_next()) {
+
+		// set_orig_box();
+
+		generator.set_box();
+
+		probe(k);
+	}
+
+	// Intersect orig_box and hull -- must not become infeasible;
+}
+
+template <typename T>
+void expression_graph<T>::probe(const int k) {
+
+	try {
+
+		revise_up_to(k);
+	}
+	catch (infeasible_problem& ) {
+		// Print something?
+		return;
+	}
+	catch (numerical_problems& ) {
+		ASSERT2(false, "implementation not updated properly");
+	}
+
+	// TODO Compute hull -- interval::hull; needs a tmp box too.
 }
 
 template <typename T>
