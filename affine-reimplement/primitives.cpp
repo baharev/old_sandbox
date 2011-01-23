@@ -323,6 +323,14 @@ template class exponential<interval>;
 template class equality_constraint<interval>;
 template class common_subexpression<interval>;
 
+template<> void addition<builder>::revise() const { }
+template<> void substraction<builder>::revise() const { }
+template<> void multiplication<builder>::revise() const { }
+template<> void division<builder>::revise() const { }
+template<> void square<builder>::revise() const { }
+template<> void exponential<builder>::revise() const { }
+template<> void equality_constraint<builder>::revise() const { }
+
 template class addition<builder>;
 template class substraction<builder>;
 template class multiplication<builder>;
