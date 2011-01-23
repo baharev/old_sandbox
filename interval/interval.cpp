@@ -169,6 +169,14 @@ const interval log(const interval& x) {
 	return interval(std::log(x.lb), std::log(x.ub));
 }
 
+bool interval::subset_of(const interval& x) const {
+
+	ASSERT2(lb <= ub, *this);
+	ASSERT2(x.lb <= x.ub, x);
+
+	return lb >= x.lb && ub <= x.ub && (lb!=x.lb || ub !=x.ub);
+}
+
 bool interval::degenerate() const {
 
 	ASSERT2(lb <= ub, *this);

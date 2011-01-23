@@ -105,7 +105,7 @@ void test_system_of_equations(const problem<builder>* prob) {
 	cout << "Last value: " << dag.last_value() << endl;
 }
 
-void test_directed_revision(const problem<builder>* prob) {
+void test_iterative_revision(const problem<builder>* prob) {
 
 	expression_graph<interval> dag(build(prob));
 
@@ -127,7 +127,7 @@ void test_probing_Jacobsen(const problem<builder>* prob) {
 	builder::reset();
 
 	interval box[] = {
-			interval(1.0e-4, 1.0),
+			interval(0.92, 0.95),
 			interval(1.0e-4, 1.0),
 			interval(1.0e-4, 1.0),
 			interval(1.0e-4, 1.0),
@@ -142,7 +142,7 @@ void test_probing_Jacobsen(const problem<builder>* prob) {
 			interval(2.0, 4.0),
 			interval(2.0, 4.0),
 			interval(2.0, 4.0),
-			interval(0.0, 1.12)
+			interval(0.49, 0.52)
 	};
 
 	probing(dag, box, sizeof(box)/sizeof(box[0]));

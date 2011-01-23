@@ -73,6 +73,10 @@ public:
 
 	friend const interval log(const interval& x);
 
+	friend const interval hull_of(const interval& x, const interval& y);
+
+	bool subset_of(const interval& other) const;
+
 	bool degenerate() const;
 
 	bool contains(double value) const;

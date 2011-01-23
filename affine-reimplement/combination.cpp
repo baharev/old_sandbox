@@ -20,8 +20,8 @@
 //
 //==============================================================================
 
-#include <iostream>
-#include <iterator>
+//#include <iostream>
+//#include <iterator>
 #include "combination.hpp"
 #include "diagnostics.hpp"
 
@@ -90,13 +90,13 @@ void combination::next(const bool overflow) {
 
 		++counter.at(position);
 	}
-
+/*
 	using namespace std;
 
 	copy(counter.begin(), counter.end(), ostream_iterator<int>(cout, "\t"));
 
 	cout << endl;
-
+*/
 	return;
 }
 

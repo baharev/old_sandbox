@@ -101,9 +101,9 @@ void test_system_of_equations() {
 void test_directed_revision() {
 
 	cout << "###############################################" << endl;
-	cout << "Jacobsen directed revision" << endl;
+	cout << "Jacobsen iterative revision" << endl;
 
-	test_directed_revision(new Jacobsen<builder> ());
+	test_iterative_revision(new Jacobsen<builder> ());
 }
 
 void test_probing_Jacobsen() {

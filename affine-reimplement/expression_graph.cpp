@@ -234,7 +234,7 @@ void expression_graph<T>::probing(const int k) {
 
 		set_orig_as_v();
 
-		generator.set_box(); // TODO Check if part is in component -- subset
+		generator.set_box();
 
 		probe_one(k);
 	}
@@ -245,13 +245,13 @@ void expression_graph<T>::probing(const int k) {
 template <typename T>
 void expression_graph<T>::save_current_as_orig() {
 
-	copy(v.begin(), v.end(), orig.begin());
+	orig.assign(v.begin(), v.end());
 }
 
 template <typename T>
 void expression_graph<T>::set_orig_as_v() {
 
-	copy(orig.begin(), orig.end(), v.begin());
+	v.assign(orig.begin(), orig.end());
 }
 
 template <typename T>
@@ -272,14 +272,20 @@ void expression_graph<T>::probe_one(const int k) {
 	save_hull();
 }
 
-const interval hull_of(const interval&, const interval & ) { }
+// FIXME What is the problem of g++?
+const interval hull_of(const interval& x, const interval& y) {
+
+	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
+
+	return interval(std::min(x.lb, y.lb), std::max(x.ub, y.ub));
+}
 
 template <typename T>
 void expression_graph<T>::save_hull() {
 
-	if (hull.empty()) { // TODO Who guarantees emptiness and correct size?
+	if (hull.empty()) {
 
-		copy(v.begin(), v.end(), hull.begin());
+		hull.assign(v.begin(), v.end());
 	}
 	else {
 

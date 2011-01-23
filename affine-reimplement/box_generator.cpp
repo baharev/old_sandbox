@@ -22,7 +22,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <iostream>
 #include "box_generator.hpp"
 #include "combination.hpp"
 #include "diagnostics.hpp"
@@ -126,7 +125,13 @@ void box_generator::set_box() {
 
 		const int j = counters.at(i);
 
-		v.at(index.at(i)) = parts.at(i).at(j);
+		const interval& part = parts.at(i).at(j);
+
+		interval& component = v.at(index.at(i));
+
+		ASSERT(part.subset_of(component));
+
+		component = part;
 	}
 }
 

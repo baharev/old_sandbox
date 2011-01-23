@@ -34,7 +34,7 @@ void print_sparsity(const problem<builder>* prob);
 
 void test_system_of_equations(const problem<builder>* prob);
 
-void test_directed_revision(const problem<builder>* prob);
+void test_iterative_revision(const problem<builder>* prob);
 
 void test_probing_Jacobsen(const problem<builder>* prob);
 
