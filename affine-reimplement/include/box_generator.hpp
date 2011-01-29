@@ -55,7 +55,6 @@ private:
 	box_generator(const box_generator& );
 	box_generator& operator=(const box_generator& );
 
-	void reserve(int index_set_size);
 	void generate_parts(int i);
 	void cut_into_equal_parts(const double LB, const double UB);
 

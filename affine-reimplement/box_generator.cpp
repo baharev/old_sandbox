@@ -34,8 +34,11 @@ box_generator::box_generator(IVector& vec, const IntVector& index_set, int equal
 v(vec), parts_to_generate(equal_parts)
 {
 	ASSERT2(equal_parts>=2,"minimum 2 parts should be generated, asked for "<<equal_parts);
+	ASSERT(index_set.size()>0);
 
-	reserve(index_set.size());
+	index.reserve(index_set.size());
+
+	parts.reserve(index_set.size());
 
 	for_each(index_set.begin(), index_set.end(), bind1st(mem_fun(&box_generator::generate_parts), this));
 
@@ -49,22 +52,6 @@ v(vec), parts_to_generate(equal_parts)
 
 box_generator::~box_generator() {
 	// Do NOT remove, needed to generate dtor of auto_ptr
-}
-
-void box_generator::reserve(int index_set_size) {
-
-	ASSERT(index_set_size>0);
-
-	int size = parts_to_generate;
-
-	while (--index_set_size) {
-
-		size*=parts_to_generate;
-	}
-
-	index.reserve(size);
-
-	parts.reserve(size);
 }
 
 void box_generator::generate_parts(int i) {
