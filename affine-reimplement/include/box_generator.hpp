@@ -64,6 +64,8 @@ private:
 	IntVector index;
 	IArray2D parts;
 	std::auto_ptr<combination> index_generator;
+
+	int dbg_counter;
 };
 
 }

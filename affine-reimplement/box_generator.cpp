@@ -21,6 +21,7 @@
 //==============================================================================
 
 #include <algorithm>
+#include <cmath>
 #include <functional>
 #include "box_generator.hpp"
 #include "combination.hpp"
@@ -31,7 +32,7 @@ using namespace std;
 namespace asol {
 
 box_generator::box_generator(IVector& vec, const IntVector& index_set, int equal_parts) :
-v(vec), parts_to_generate(equal_parts)
+v(vec), parts_to_generate(equal_parts), dbg_counter(0)
 {
 	ASSERT2(equal_parts>=2,"minimum 2 parts should be generated, asked for "<<equal_parts);
 	ASSERT(index_set.size()>0);
@@ -97,7 +98,20 @@ bool box_generator::get_next() {
 
 	ASSERT(!empty());
 
-	return index_generator->step_counters();
+	bool ret_val = index_generator->step_counters();
+
+	if (ret_val) {
+
+		++dbg_counter;
+	}
+	else {
+
+		const int expected = (int) (std::pow((double)parts_to_generate, parts.size())+0.001);
+
+		ASSERT2(dbg_counter==expected,"dbg_counter, expected: "<<dbg_counter<<", "<<expected);
+	}
+
+	return ret_val;
 }
 
 void box_generator::set_box() {
