@@ -52,7 +52,6 @@ private:
 	void handle_overflow();
 
 	IntVector counter;
-	int high_water_mark;
 	int position;
 	int counter_max;
 	int size;

@@ -29,7 +29,7 @@ namespace asol {
 
 combination::combination() {
 
-	counter_max = size = position = high_water_mark = -1;
+	counter_max = size = position = -1;
 }
 
 combination::combination(int index_size, int parts_to_generate) {
@@ -44,7 +44,7 @@ combination::combination(int index_size, int parts_to_generate) {
 
 	counter.at(0) = -1;
 
-	position = high_water_mark = 0;
+	position = 0;
 }
 
 bool combination::step_counters() {
@@ -72,12 +72,12 @@ bool combination::step_counters() {
 
 bool combination::has_more_counters() const {
 
-	return position<size;
+	return position < size;
 }
 
 bool combination::counter_at_max() const {
 
-	return counter.at(position)==counter_max;
+	return counter.at(position) == counter_max;
 }
 
 void combination::next(const bool overflow) {
@@ -108,11 +108,6 @@ void combination::handle_overflow() {
 	}
 
 	++counter.at(position);
-
-	if (position>high_water_mark) {
-
-		high_water_mark = position;
-	}
 
 	position = 0;
 }
