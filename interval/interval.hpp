@@ -77,6 +77,8 @@ public:
 
 	bool subset_of(const interval& other) const;
 
+	friend bool lessByLb(const interval& x, const interval& y);
+
 	bool degenerate() const;
 
 	bool contains(double value) const;
@@ -122,6 +124,8 @@ const double NARROW = 1.0e-4;
 bool is_narrow(const interval& x);
 
 const interval hull_of(const interval& x, const interval& y);
+
+bool lessByLb(const interval& x, const interval& y);
 
 }
 

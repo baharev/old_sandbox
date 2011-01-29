@@ -184,6 +184,13 @@ bool interval::subset_of(const interval& x) const {
 	return lb >= x.lb && ub <= x.ub && (lb!=x.lb || ub !=x.ub);
 }
 
+bool lessByLb(const interval& x, const interval& y) {
+
+	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
+
+	return x.lb < y.lb;
+}
+
 bool interval::degenerate() const {
 
 	ASSERT2(lb <= ub, *this);

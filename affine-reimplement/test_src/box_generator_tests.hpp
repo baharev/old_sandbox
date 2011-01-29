@@ -20,21 +20,13 @@
 //
 //==============================================================================
 
-#include "assert_tests.hpp"
-#include "box_generator_tests.hpp"
-#include "examples.hpp"
+#ifndef BOX_GENERATOR_TESTS_HPP_
+#define BOX_GENERATOR_TESTS_HPP_
 
-using namespace asol;
+namespace asol {
 
-int main() {
+void run_box_generator_test();
 
-	run_assert_test();
-
-	run_box_generator_test();
-
-	show_Jacobsen_sparsity();
-
-	run_examples();
-
-	return 0;
 }
+
+#endif // BOX_GENERATOR_TESTS_HPP_
