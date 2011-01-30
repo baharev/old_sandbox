@@ -26,9 +26,8 @@
 
 namespace asol {
 
-void probing(expression_graph<interval>& dag, const interval box[], int size) {
 
-	dag.set_box(box, size);
+void probing(expression_graph<interval>& dag) {
 
 	//dag.iterative_revision();
 
@@ -39,6 +38,13 @@ void probing(expression_graph<interval>& dag, const interval box[], int size) {
 	dag.probing();
 
 	dag.show_variables(std::cout);
+}
+
+void probing(expression_graph<interval>& dag, const interval box[], int size) {
+
+	dag.set_box(box, size);
+
+	probing(dag);
 }
 
 }

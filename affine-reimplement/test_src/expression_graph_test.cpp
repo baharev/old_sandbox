@@ -148,15 +148,15 @@ void test_probing_Jacobsen(const problem<builder>* prob) {
 	probing(dag, box, sizeof(box)/sizeof(box[0]));
 }
 
+void probing(expression_graph<interval>& dag);
+
 void test_Bratu(const problem<builder>* prob) {
 
 	expression_graph<interval> dag(build(prob));
 
 	builder::reset();
 
-	dag.probing();
-
-	dag.show_variables(std::cout);
+	probing(dag);
 }
 
 }
