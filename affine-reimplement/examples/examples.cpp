@@ -27,6 +27,7 @@
 #include "Example_3.hpp"
 #include "Hansen.hpp"
 #include "Jacobsen.hpp"
+#include "Bratu.hpp"
 #include "expression_graph_test.hpp"
 #include "builder.hpp"
 
@@ -114,6 +115,15 @@ void test_probing_Jacobsen() {
 	test_probing_Jacobsen(new Jacobsen<builder> ());
 }
 
+
+void example_Bratu() {
+
+	cout << "###############################################" << endl;
+	cout << "Bratu " << endl;
+
+	test_Bratu(new Bratu<builder> ());
+}
+
 void run_examples() {
 
 	example_Hansen();
@@ -133,6 +143,8 @@ void run_examples() {
 	test_directed_revision();
 
 	test_probing_Jacobsen();
+
+	example_Bratu();
 
 	builder::release();
 }

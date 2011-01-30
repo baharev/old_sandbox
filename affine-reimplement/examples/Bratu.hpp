@@ -20,26 +20,27 @@
 //
 //==============================================================================
 
-#ifndef EXPRESSION_GRAPH_TEST_HPP_
-#define EXPRESSION_GRAPH_TEST_HPP_
+#ifndef BRATU_HPP_
+#define BRATU_HPP_
+
+#include "problem.hpp"
 
 namespace asol {
 
-template <typename T> class problem;
-class builder;
+template <typename T>
+class Bratu : public problem<T> {
 
-void dag_test(const problem<builder>* prob);
+private:
 
-void print_sparsity(const problem<builder>* prob);
+	virtual int number_of_variables() const;
 
-void test_system_of_equations(const problem<builder>* prob);
+	virtual T* initial_box() const;
 
-void test_iterative_revision(const problem<builder>* prob);
+	virtual void evaluate(const T x[]) const;
 
-void test_probing_Jacobsen(const problem<builder>* prob);
-
-void test_Bratu(const problem<builder>* prob);
+	enum { SIZE = 30 };
+};
 
 }
 
-#endif // EXPRESSION_GRAPH_TEST_HPP_
+#endif // BRATU_HPP_

@@ -20,26 +20,53 @@
 //
 //==============================================================================
 
-#ifndef EXPRESSION_GRAPH_TEST_HPP_
-#define EXPRESSION_GRAPH_TEST_HPP_
+#include "Bratu.hpp"
+#include "builder.hpp"
 
 namespace asol {
 
-template <typename T> class problem;
-class builder;
+template <typename T>
+int Bratu<T>::number_of_variables() const {
 
-void dag_test(const problem<builder>* prob);
-
-void print_sparsity(const problem<builder>* prob);
-
-void test_system_of_equations(const problem<builder>* prob);
-
-void test_iterative_revision(const problem<builder>* prob);
-
-void test_probing_Jacobsen(const problem<builder>* prob);
-
-void test_Bratu(const problem<builder>* prob);
-
+	return SIZE;
 }
 
-#endif // EXPRESSION_GRAPH_TEST_HPP_
+template <typename T>
+T* Bratu<T>::initial_box() const {
+
+	T* x = new T[SIZE];
+
+	for (int i=0; i<SIZE; ++i) {
+
+		x[i] = T(-10.0, 10.0);
+	}
+
+	return x;
+}
+
+template <typename T>
+void Bratu<T>::evaluate(const T x[]) const {
+
+	const double c1 = -2.0, c2 = 1.04058273e-03;
+
+	T eq_0 = x[1] + c1*x[0] + c2*exp(x[0]);
+
+	eq_0.equals(0.0);
+
+	for (int i=1; i<SIZE-1; ++i) {
+
+		T eq_i = x[i+1] + c1*x[i] + c2*exp(x[i]) + x[i-1];
+
+		eq_i.equals(0.0);
+	}
+
+	const int N = SIZE-1;
+
+	T eq_N = x[N-1] + c1*x[N] + c2*exp(x[N]);
+
+	eq_N.equals(0.0);
+}
+
+template class Bratu<builder>;
+
+}
