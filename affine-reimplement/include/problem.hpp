@@ -36,6 +36,10 @@ public:
 
 	virtual void evaluate(const T x[]) const = 0;
 
+	virtual int number_of_stored_solutions() const { return 0; }
+
+	virtual const double* solution(int i) const { return 0; }
+
 	virtual ~problem() { }
 
 };

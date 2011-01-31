@@ -38,7 +38,11 @@ private:
 
 	virtual void evaluate(const T x[]) const;
 
-	enum { SIZE = 30 };
+	virtual int number_of_stored_solutions() const;
+
+	virtual const double* solution(int i) const;
+
+	enum { SOLS = 2, SIZE = 30 };
 };
 
 }

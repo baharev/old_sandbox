@@ -26,6 +26,7 @@
 #include <ostream>
 #include <set>
 #include "problem_data.hpp"
+#include "builder.hpp"
 #include "delete_struct.hpp"
 #include "diagnostics.hpp"
 #include "printer.hpp"
@@ -261,6 +262,13 @@ void problem_data::print_type1_common_subexpressions(ostream& out) const {
 	}
 }
 
+void problem_data::add_solution(const double* sol, const int length) {
+
+	ASSERT2(length==number_of_vars,"length, number_of_vars: "<<length<<number_of_vars);
+
+	solutions.push_back(vector<double>(sol, sol+length));
+}
+
 void problem_data::copy_constraint_position() {
 
 	const int n = static_cast<int> ( constraints_rhs.size() );
@@ -301,6 +309,11 @@ const IntVector& problem_data::get_constraints() const {
 	ASSERT2(!constraint_index_set.empty(),"call build_index_set first");
 
 	return constraints;
+}
+
+const vector<vector<double> >& problem_data::get_solutions() const {
+
+	return solutions;
 }
 
 class print : public unary_function<vector<int>,void> {

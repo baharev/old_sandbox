@@ -65,6 +65,8 @@ public:
 
 	static const problem_data* get_problem_data();
 
+	static void add_solution(const double* sol, const int length);
+
 	static void finished();
 
 	static void reset();

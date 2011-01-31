@@ -57,6 +57,11 @@ const problem_data* builder::get_problem_data() {
 	return problem;
 }
 
+void builder::add_solution(const double* sol, const int length) {
+
+	problem->add_solution(sol, length);
+}
+
 void builder::finished() {
 
 	problem->build_index_set();

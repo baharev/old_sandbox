@@ -33,7 +33,7 @@ using namespace std;
 
 namespace asol {
 
-const problem_data* build(const problem<builder>* prob) {
+void evaluate(const problem<builder>* prob) {
 
 	builder::reset();
 
@@ -44,6 +44,21 @@ const problem_data* build(const problem<builder>* prob) {
 	delete[] box;
 
 	builder::finished();
+}
+
+void copy_solutions(const problem<builder>* prob) {
+
+	for (int i=0; i<prob->number_of_stored_solutions(); ++i) {
+
+		builder::add_solution(prob->solution(i), prob->number_of_variables());
+	}
+}
+
+const problem_data* build(const problem<builder>* prob) {
+
+	evaluate(prob);
+
+	copy_solutions(prob);
 
 	const problem_data* const representation = builder::get_problem_data();
 

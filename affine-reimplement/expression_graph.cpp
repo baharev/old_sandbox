@@ -104,7 +104,7 @@ void expression_graph<T>::set_box(const T* box, const int length) {
 
 	ASSERT(length == n_vars);
 
-	copy(box, box+n_vars, v.begin());
+	copy(box, box+n_vars, v.begin()); // v.assign cannot be used here
 
 	set_non_variables();
 
