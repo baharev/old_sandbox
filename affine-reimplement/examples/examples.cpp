@@ -124,6 +124,14 @@ void example_Bratu() {
 	test_Bratu(new Bratu<builder> ());
 }
 
+void test_Bratu_solutions() {
+
+	cout << "###############################################" << endl;
+	cout << "Bratu solutions" << endl;
+
+	test_Bratu_solutions(new Bratu<builder> ());
+}
+
 void run_examples() {
 
 	example_Hansen();
@@ -145,6 +153,8 @@ void run_examples() {
 	test_probing_Jacobsen();
 
 	example_Bratu();
+
+	test_Bratu_solutions();
 
 	builder::release();
 }

@@ -40,6 +40,8 @@ void test_probing_Jacobsen(const problem<builder>* prob);
 
 void test_Bratu(const problem<builder>* prob);
 
+void test_Bratu_solutions(const problem<builder>* prob);
+
 }
 
 #endif // EXPRESSION_GRAPH_TEST_HPP_

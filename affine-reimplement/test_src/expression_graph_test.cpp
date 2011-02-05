@@ -210,5 +210,35 @@ void test_Bratu(const problem<builder>* prob) {
 	probing(dag);
 }
 
+void test_Bratu_solutions(expression_graph<interval>& dag, const int n_sol) {
+
+	for (int i=0; i<n_sol; ++i) {
+
+		cout << endl << "Testing solution " << (i+1) << " of " << n_sol << endl;
+
+		vector<interval>& box = solutions.at(i);
+
+		dag.set_box(&(box.at(0)), box.size());
+
+		dag.revise_all();
+
+		dag.show_variables(cout);
+
+	}
+}
+
+void test_Bratu_solutions(const problem<builder>* prob) {
+
+	const int n_sol = prob->number_of_stored_solutions();
+
+	expression_graph<interval> dag(build(prob)); // FIXME Eliminate duplication, auto_ptr?
+
+	builder::reset();
+
+	ASSERT(n_sol==static_cast<int>(solutions.size()));
+
+	test_Bratu_solutions(dag, n_sol);
+}
+
 }
 
