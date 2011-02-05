@@ -41,7 +41,7 @@ public:
 
 	bool intersect(const interval& other);
 
-	// Used by the expression graph
+	// Used by the primitives
 	void assign(const interval& other);
 	void equals(double value);
 
@@ -102,6 +102,8 @@ private:
 	double ub;
 };
 
+const interval operator*(const interval& x, double y);
+
 void addition_inverse(interval& z, interval& x, interval& y);
 
 void substraction_inverse(interval& z, interval& x, interval& y);
@@ -126,6 +128,8 @@ bool is_narrow(const interval& x);
 const interval hull_of(const interval& x, const interval& y);
 
 bool lessByLb(const interval& x, const interval& y);
+
+const interval intersection(const interval& x, const interval& y);
 
 }
 

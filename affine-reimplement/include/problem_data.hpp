@@ -40,8 +40,6 @@ public:
 
 	typedef primitive<builder> Primitive;
 
-	typedef std::vector<std::vector<double> > DoubleArray2D;
-
 	problem_data();
 
 	~problem_data();
@@ -59,8 +57,6 @@ public:
 	int add_common_subexpression(int index);
 
 	int add_constraint_rhs(double value);
-
-	void add_solution(const double* sol, const int length);
 
 	void build_index_set();
 
@@ -85,8 +81,6 @@ public:
 	const IntArray2D& get_index_sets() const;
 
 	const IntVector& get_constraints() const;
-
-	const DoubleArray2D& get_solutions() const;
 
 	void print_primitives(std::ostream& out) const;
 
@@ -138,7 +132,6 @@ private:
 
 	IntVector constraints;
 
-	DoubleArray2D solutions;
 };
 
 }

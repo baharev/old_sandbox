@@ -20,6 +20,8 @@
 //
 //==============================================================================
 
+#include <algorithm>
+#include <functional>
 #include <iostream>
 #include "expression_graph_test.hpp"
 #include "builder.hpp"
@@ -30,6 +32,14 @@
 #include "problem_data.hpp"
 
 using namespace std;
+
+namespace {
+
+vector<vector<asol::interval> > solutions;
+
+const double AMOUNT(0.01);
+
+}
 
 namespace asol {
 
@@ -46,11 +56,37 @@ void evaluate(const problem<builder>* prob) {
 	builder::finished();
 }
 
+class inflation {
+
+	const interval infl;
+
+public:
+
+	inflation(double amount) : infl(1-amount, 1+amount) { }
+
+	const interval operator()(const pair<double,double>& orig, const double sol) const {
+
+		return intersection(interval(orig.first, orig.second), infl*sol);
+	}
+};
+
 void copy_solutions(const problem<builder>* prob) {
 
-	for (int i=0; i<prob->number_of_stored_solutions(); ++i) {
+	const BoundVector& initial_box = builder::get_problem_data()->get_initial_box();
 
-		builder::add_solution(prob->solution(i), prob->number_of_variables());
+	const int n_sol = prob->number_of_stored_solutions();
+
+	solutions.resize(n_sol);
+
+	for (int i=0; i<n_sol; ++i) {
+
+		const double* const x = prob->solution(i);
+
+		vector<interval>& sol= solutions.at(i);
+
+		sol.resize(initial_box.size());
+
+		transform(initial_box.begin(), initial_box.end(), x, sol.begin(), inflation(AMOUNT));
 	}
 }
 

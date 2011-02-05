@@ -120,6 +120,11 @@ const interval operator*(double x, const interval& y) {
 	return interval(lb, ub);
 }
 
+const interval operator*(const interval& x, double y) {
+
+	return y*x;
+}
+
 const interval operator/(const interval& x, const interval& y) {
 
 	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
@@ -167,6 +172,15 @@ const interval log(const interval& x) {
 	ASSERT2(0<x.lb, "x.lb = "<<x.lb);
 
 	return interval(std::log(x.lb), std::log(x.ub));
+}
+
+const interval intersection(const interval& x, const interval& y) {
+
+	interval res(x);
+
+	res.intersect(y);
+
+	return res;
 }
 
 const interval hull_of(const interval& x, const interval& y) {
