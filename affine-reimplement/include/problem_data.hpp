@@ -40,10 +40,6 @@ public:
 
 	typedef primitive<builder> Primitive;
 
-	typedef std::vector<std::vector<int> > IntArray2D;
-
-	typedef std::vector<std::vector<double> > DoubleArray2D;
-
 	problem_data();
 
 	~problem_data();

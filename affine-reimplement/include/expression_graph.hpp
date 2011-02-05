@@ -87,16 +87,16 @@ private:
 	bool intersect_hull_and_orig();
 	bool compute_intersection();
 
-	typedef std::vector<std::vector<int> > IntArray2D;
 	typedef std::vector<primitive<T>*> PrimVector;
 
 	std::vector<T> v;
 	const int n_vars;
 	const PrimVector primitives;
 	const PairVector constants;
-	const BoundVector initial_box;
+	const std::vector<T> initial_box;
 	const IntArray2D index_sets;
 	const IntVector constraints;
+	const DoubleArray2D solutions;
 
 	std::vector<T> orig;
 	std::vector<T> hull;

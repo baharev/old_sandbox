@@ -44,16 +44,17 @@ v          (problem->peek_index()),
 n_vars     (problem->number_of_variables()),
 primitives (convert<T>(problem->get_primitives())),
 constants  (problem->get_numeric_constants().begin(), problem->get_numeric_constants().end()),
-initial_box(problem->get_initial_box()),
+initial_box(problem->get_initial_box().begin(), problem->get_initial_box().end()),
 index_sets (problem->get_index_sets()),
-constraints(problem->get_constraints())
+constraints(problem->get_constraints()),
+solutions  (problem->get_solutions()),
+orig       (v.size()),
+hull       (v.size())
 
 {
 	set_variables();
-	primitive<T>::set_vector(&v);
 
-	orig.resize(v.size());
-	hull.resize(v.size());
+	primitive<T>::set_vector(&v);
 }
 
 template <typename T>
@@ -65,12 +66,7 @@ expression_graph<T>::~expression_graph() {
 template <typename T>
 void expression_graph<T>::set_variables() {
 
-	for (int i=0; i<n_vars; ++i) {
-
-		const Bounds& bound = initial_box.at(i);
-
-		v.at(i) = T(bound.first, bound.second);
-	}
+	copy(initial_box.begin(), initial_box.end(), v.begin());
 
 	set_non_variables();
 

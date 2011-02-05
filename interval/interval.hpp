@@ -24,6 +24,7 @@
 #define INTERVAL_HPP_
 
 #include <iosfwd>
+#include <utility>
 
 namespace asol {
 
@@ -36,6 +37,8 @@ public:
 	explicit interval(double value);
 
 	interval(double lower_bound, double upper_bound);
+
+	interval(const std::pair<double, double>& p);
 
 	bool intersect(const double l, const double u);
 

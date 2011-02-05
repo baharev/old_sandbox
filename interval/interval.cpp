@@ -38,6 +38,8 @@ void swap_if_necessary(double& lb, double& ub) {
 	}
 }
 
+typedef std::pair<double, double> Pair;
+
 }
 
 namespace asol {
@@ -47,6 +49,11 @@ interval::interval() : lb(100), ub(-100) { }
 interval::interval(double value) : lb(value), ub(value) { }
 
 interval::interval(double lo, double up) : lb(lo), ub(up) {
+
+	ASSERT2(lb <= ub, *this);
+}
+
+interval::interval(const Pair& p) : lb(p.first), ub(p.second) {
 
 	ASSERT2(lb <= ub, *this);
 }

@@ -38,6 +38,10 @@ typedef std::pair<double,double> Bounds;
 
 typedef std::vector<Bounds> BoundVector;
 
+typedef std::vector<std::vector<int> > IntArray2D;
+
+typedef std::vector<std::vector<double> > DoubleArray2D;
+
 }
 
 
