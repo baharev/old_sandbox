@@ -78,7 +78,6 @@ public:
 
 	const Map& get_numeric_constants() const;
 
-	// TODO Figure out how to use this info?
 	const IntVector& get_common_subexpressions() const;
 
 	const PairVector& get_rhs_of_constraints() const;

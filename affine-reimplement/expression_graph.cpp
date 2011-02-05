@@ -43,7 +43,7 @@ expression_graph<T>::expression_graph(const problem_data* problem) :
 v          (problem->peek_index()),
 n_vars     (problem->number_of_variables()),
 primitives (convert<T>(problem->get_primitives())),
-constants  (problem->get_numeric_constants().begin(), problem->get_numeric_constants().end()), // TODO Do it in problem_data
+constants  (problem->get_numeric_constants().begin(), problem->get_numeric_constants().end()),
 initial_box(problem->get_initial_box()),
 index_sets (problem->get_index_sets()),
 constraints(problem->get_constraints())

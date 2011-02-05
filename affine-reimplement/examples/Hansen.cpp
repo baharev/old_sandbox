@@ -56,7 +56,6 @@ void Hansen_example<T>::evaluate(const T v[]) const {
 
 	const T xy = x*y;
 
-	// FIXME Expression graph does not call common subexpression on interval
 	xy.mark_as_common_subexpression();
 
 	const T z = (5*x-4*sqr(y)+14*xy)/(sqr(x)+y+xy);

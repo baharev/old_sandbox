@@ -195,7 +195,6 @@ const builder operator/(double x, const builder& y) {
 	return X/y;
 }
 
-// TODO Is there any benefit in saving this information?
 void builder::mark_as_common_subexpression() const {
 
 	dbg_consistency();
