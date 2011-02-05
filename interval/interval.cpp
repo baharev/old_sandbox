@@ -2,7 +2,7 @@
 //
 // This code is part of ASOL (nonlinear system solver using affine arithmetic)
 //
-// Copyright (C) 2010 Ali Baharev
+// Copyright (C) 2010, 2011 Ali Baharev
 // All rights reserved. E-mail: <my_first_name.my_last_name@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -38,8 +38,6 @@ void swap_if_necessary(double& lb, double& ub) {
 	}
 }
 
-typedef std::pair<double, double> Pair;
-
 }
 
 namespace asol {
@@ -49,11 +47,6 @@ interval::interval() : lb(100), ub(-100) { }
 interval::interval(double value) : lb(value), ub(value) { }
 
 interval::interval(double lo, double up) : lb(lo), ub(up) {
-
-	ASSERT2(lb <= ub, *this);
-}
-
-interval::interval(const Pair& p) : lb(p.first), ub(p.second) {
 
 	ASSERT2(lb <= ub, *this);
 }

@@ -93,10 +93,9 @@ private:
 	const int n_vars;
 	const PrimVector primitives;
 	const PairVector constants;
-	const std::vector<T> initial_box;
+	const BoundVector initial_box;
 	const IntArray2D index_sets;
 	const IntVector constraints;
-	const DoubleArray2D solutions;
 
 	std::vector<T> orig;
 	std::vector<T> hull;

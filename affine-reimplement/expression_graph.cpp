@@ -44,10 +44,9 @@ v          (problem->peek_index()),
 n_vars     (problem->number_of_variables()),
 primitives (convert<T>(problem->get_primitives())),
 constants  (problem->get_numeric_constants().begin(), problem->get_numeric_constants().end()),
-initial_box(problem->get_initial_box().begin(), problem->get_initial_box().end()),
+initial_box(problem->get_initial_box()),
 index_sets (problem->get_index_sets()),
 constraints(problem->get_constraints()),
-solutions  (problem->get_solutions()),
 orig       (v.size()),
 hull       (v.size())
 
@@ -66,7 +65,12 @@ expression_graph<T>::~expression_graph() {
 template <typename T>
 void expression_graph<T>::set_variables() {
 
-	copy(initial_box.begin(), initial_box.end(), v.begin());
+	for (int i=0; i<n_vars; ++i) { // Required by affine ctor
+
+		const Bounds& bound = initial_box.at(i);
+
+		v.at(i) = T(bound.first, bound.second);
+	}
 
 	set_non_variables();
 

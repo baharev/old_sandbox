@@ -2,7 +2,7 @@
 //
 // This code is part of ASOL (nonlinear system solver using affine arithmetic)
 //
-// Copyright (C) 2010 Ali Baharev
+// Copyright (C) 2010, 2011, Ali Baharev
 // All rights reserved. E-mail: <my_first_name.my_last_name@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,6 @@
 #define INTERVAL_HPP_
 
 #include <iosfwd>
-#include <utility>
 
 namespace asol {
 
@@ -37,8 +36,6 @@ public:
 	explicit interval(double value);
 
 	interval(double lower_bound, double upper_bound);
-
-	interval(const std::pair<double, double>& p);
 
 	bool intersect(const double l, const double u);
 
