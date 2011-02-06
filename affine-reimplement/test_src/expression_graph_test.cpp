@@ -100,7 +100,7 @@ const problem_data* build(const problem<builder>* prob) {
 
 	ASSERT(representation->number_of_variables() == prob->number_of_variables());
 
-	delete prob;
+	delete prob; // FIXME Ownership is taken, however auto_ptr would make the code messy
 
 	return representation;
 }
@@ -139,11 +139,13 @@ void print_sparsity(const problem<builder>* prob) {
 	const problem_data* const representation = build(prob);
 
 	representation->print_variable_occurences(cout);
+
+	builder::reset();
 }
 
 void test_system_of_equations(const problem<builder>* prob) {
 
-	expression_graph<interval> dag(build(prob));
+	expression_graph<interval> dag(build(prob)); // FIXME Duplication! auto_ptr?
 
 	builder::reset();
 
@@ -231,7 +233,7 @@ void test_Bratu_solutions(const problem<builder>* prob) {
 
 	const int n_sol = prob->number_of_stored_solutions();
 
-	expression_graph<interval> dag(build(prob)); // FIXME Eliminate duplication, auto_ptr?
+	expression_graph<interval> dag(build(prob));
 
 	builder::reset();
 
