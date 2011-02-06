@@ -384,6 +384,27 @@ bool is_narrow(const interval& x) {
 	return x.diameter() < NARROW;
 }
 
+bool easy_containment(double x, const interval& y) {
+
+	ASSERT2(y.lb <= y.ub, y);
+
+	if (y.lb-EASY_CONT_TOL <= x || x <= y.ub+EASY_CONT_TOL) {
+
+		return true;
+	}
+
+	const double lb = std::fabs(y.lb);
+
+	const double ub = std::fabs(y.ub);
+
+	if (y.lb-EASY_CONT_TOL*lb <= x || x <= y.ub+EASY_CONT_TOL*ub) {
+
+		return true;
+	}
+
+	return false;
+}
+
 std::ostream& operator<<(std::ostream& os, const interval& x) {
 
 	return os << "[ " << x.lb << ", " << x.ub << "]";

@@ -35,7 +35,9 @@ using namespace std;
 
 namespace {
 
-vector<vector<asol::interval> > solutions;
+vector<vector<asol::interval> > sol_boxes;
+
+vector<vector<double> > sol_vectors;
 
 const double AMOUNT(0.01);
 
@@ -70,19 +72,37 @@ public:
 	}
 };
 
-void copy_solutions(const problem<builder>* prob) {
+void copy_solution_vectors(const problem<builder>* prob) {
 
-	const BoundVector& initial_box = builder::get_problem_data()->get_initial_box();
+	const int n_var = prob->number_of_variables();
 
 	const int n_sol = prob->number_of_stored_solutions();
 
-	solutions.resize(n_sol);
+	sol_vectors.resize(n_sol);
 
 	for (int i=0; i<n_sol; ++i) {
 
 		const double* const x = prob->solution(i);
 
-		vector<interval>& sol= solutions.at(i);
+		sol_vectors.at(i).assign(x, x + n_var);
+	}
+}
+
+void copy_solutions(const problem<builder>* prob) {
+
+	copy_solution_vectors(prob);
+
+	const BoundVector& initial_box = builder::get_problem_data()->get_initial_box();
+
+	const int n_sol = prob->number_of_stored_solutions();
+
+	sol_boxes.resize(n_sol);
+
+	for (int i=0; i<n_sol; ++i) { // Eliminating the loop would make the intentions obscure
+
+		const double* const x = prob->solution(i);
+
+		vector<interval>& sol= sol_boxes.at(i);
 
 		sol.resize(initial_box.size());
 
@@ -218,7 +238,7 @@ void test_Bratu_solutions(expression_graph<interval>& dag, const int n_sol) {
 
 		cout << endl << "Testing solution " << (i+1) << " of " << n_sol << endl;
 
-		vector<interval>& box = solutions.at(i);
+		vector<interval>& box = sol_boxes.at(i);
 
 		dag.set_box(&(box.at(0)), box.size());
 
@@ -226,6 +246,7 @@ void test_Bratu_solutions(expression_graph<interval>& dag, const int n_sol) {
 
 		dag.show_variables(cout);
 
+		ASSERT(dag.contains(sol_vectors.at(i)) == STRICT_CONTAINMENT);
 	}
 }
 
@@ -237,7 +258,7 @@ void test_Bratu_solutions(const problem<builder>* prob) {
 
 	builder::reset();
 
-	ASSERT(n_sol==static_cast<int>(solutions.size()));
+	ASSERT(n_sol==static_cast<int>(sol_boxes.size()));
 
 	test_Bratu_solutions(dag, n_sol);
 }

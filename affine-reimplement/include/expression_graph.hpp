@@ -32,6 +32,12 @@ namespace asol {
 template <typename T> class primitive;
 class problem_data;
 
+enum containment {
+	NOT_CONTAINED,
+	EASY_CONTAINMENT,
+	STRICT_CONTAINMENT
+};
+
 template <typename T>
 class expression_graph {
 
@@ -40,6 +46,8 @@ public:
 	expression_graph(const problem_data* problem);
 
 	void set_box(const T* box, const int length);
+
+	containment contains(const std::vector<double>& solution) const;
 
 	void evaluate_all();
 
@@ -71,6 +79,9 @@ private:
 
 	int constraint_begin(int i) const;
 	int constraint_end(int i) const;
+
+	int first_not_strictly_contained(const std::vector<double>& solution) const;
+	int first_not_easily_contained(const std::vector<double>& solution, int from) const;
 
 	void evaluate_up_to(const int i);
 	void evaluate_constraint(int i);

@@ -83,6 +83,8 @@ public:
 
 	bool contains(double value) const;
 
+	friend bool easy_containment(double x, const interval& y);
+
 	double midpoint() const;
 
 	double diameter() const;
@@ -120,8 +122,9 @@ void equality_constraint_inverse(interval& z, double rhs);
 
 void propagate_mult(interval& z, interval& x, interval& y);
 
-// TODO Make a constants.hpp and move NARROW to there
+// TODO Make a constants.hpp and move them!
 const double NARROW = 1.0e-4;
+const double EASY_CONT_TOL = 1.0e-6;
 
 bool is_narrow(const interval& x);
 

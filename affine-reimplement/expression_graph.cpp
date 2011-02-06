@@ -113,6 +113,49 @@ void expression_graph<T>::set_box(const T* box, const int length) {
 }
 
 template <typename T>
+containment expression_graph<T>::contains(const vector<double>& solution) const {
+
+	int i = first_not_strictly_contained(solution);
+
+	if (i==n_vars) {
+
+		return STRICT_CONTAINMENT;
+	}
+
+	i = first_not_easily_contained(solution, i);
+
+	return (i==n_vars) ? EASY_CONTAINMENT : NOT_CONTAINED;
+}
+
+template <typename T>
+int expression_graph<T>::first_not_strictly_contained(const vector<double>& solution) const {
+
+	for (int i=0; i<n_vars; ++i) {
+
+		if (! v.at(i).contains(solution.at(i)) ) {
+
+			return i;
+		}
+	}
+
+	return n_vars;
+}
+
+template <typename T>
+int expression_graph<T>::first_not_easily_contained(const vector<double>& solution, int from) const {
+
+	for (int i=from ; i<n_vars; ++i) {
+
+		if (!easy_containment(solution.at(i), v.at(i)) ) {
+
+			return i;
+		}
+	}
+
+	return n_vars;
+}
+
+template <typename T>
 void expression_graph<T>::evaluate_all() {
 
 	for_each(primitives.begin(), primitives.end(), mem_fun(&primitive<T>::evaluate));
