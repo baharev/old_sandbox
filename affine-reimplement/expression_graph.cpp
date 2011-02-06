@@ -206,6 +206,8 @@ void expression_graph<T>::iterative_revision() {
 template <typename T>
 void expression_graph<T>::probing() {
 
+	revise_all(); // TODO Will it be always used like this?
+
 	save_current_as_orig();
 
 	const int m = constraints_size();

@@ -33,8 +33,6 @@ void probing(expression_graph<interval>& dag) {
 
 	//dag.show_variables(std::cout);
 
-	dag.revise_all();
-
 	dag.probing();
 
 	dag.show_variables(std::cout);
