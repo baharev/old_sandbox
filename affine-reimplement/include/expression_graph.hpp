@@ -89,7 +89,7 @@ private:
 	void revise_up_to(const int i);
 	void revise_constraint(int i);
 
-	void probing(const int i);
+	void probe_index(const int i);
 	void probe_one(const int i);
 	void save_current_as_orig();
 	void set_orig_as_v();

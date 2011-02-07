@@ -163,76 +163,10 @@ void print_sparsity(const problem<builder>* prob) {
 	builder::reset();
 }
 
-void test_system_of_equations(const problem<builder>* prob) {
+template <typename MemFun>
+void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
-	expression_graph<interval> dag(build(prob)); // FIXME Duplication! auto_ptr?
-
-	builder::reset();
-
-	for (int i=0; i<40; ++i) {
-		dag.revise_all2();
-	}
-
-	dag.show_variables(cout);
-
-	cout << "Last value: " << dag.last_value() << endl;
-}
-
-void test_iterative_revision(const problem<builder>* prob) {
-
-	expression_graph<interval> dag(build(prob));
-
-	builder::reset();
-
-	dag.iterative_revision();
-
-	dag.show_variables(cout);
-
-	cout << "Last value: " << dag.last_value() << endl;
-}
-
-void probing(expression_graph<interval>& dag, const interval box[], int size);
-
-void test_probing_Jacobsen(const problem<builder>* prob) {
-
-	expression_graph<interval> dag(build(prob));
-
-	builder::reset();
-
-	interval box[] = {
-			interval(0.92, 0.95),
-			interval(1.0e-4, 1.0),
-			interval(1.0e-4, 1.0),
-			interval(1.0e-4, 1.0),
-			interval(1.0e-4, 1.0),
-			interval(1.0e-4, 1.0),
-			interval(1.0e-4, 1.0),
-			interval(1.0e-4, 1.0),
-			interval(2.0, 4.0),
-			interval(2.0, 4.0),
-			interval(2.0, 4.0),
-			interval(2.0, 4.0),
-			interval(2.0, 4.0),
-			interval(2.0, 4.0),
-			interval(2.0, 4.0),
-			interval(0.49, 0.52)
-	};
-
-	probing(dag, box, sizeof(box)/sizeof(box[0]));
-}
-
-void probing(expression_graph<interval>& dag);
-
-void test_Bratu(const problem<builder>* prob) {
-
-	expression_graph<interval> dag(build(prob));
-
-	builder::reset();
-
-	probing(dag);
-}
-
-void test_Bratu_solutions(expression_graph<interval>& dag, const int n_sol) {
+	const int n_sol = static_cast<int> (sol_boxes.size());
 
 	for (int i=0; i<n_sol; ++i) {
 
@@ -242,7 +176,7 @@ void test_Bratu_solutions(expression_graph<interval>& dag, const int n_sol) {
 
 		dag.set_box(&(box.at(0)), box.size());
 
-		dag.revise_all();
+		(dag.*f)(); // TODO Can this be turned into a functor?
 
 		dag.show_variables(cout);
 
@@ -250,17 +184,51 @@ void test_Bratu_solutions(expression_graph<interval>& dag, const int n_sol) {
 	}
 }
 
-void test_Bratu_solutions(const problem<builder>* prob) {
+void test_solutions_revise(const problem<builder>* prob) {
 
-	const int n_sol = prob->number_of_stored_solutions();
+	expression_graph<interval> dag(build(prob)); // FIXME Duplication!
+
+	builder::reset();
+
+	test_solutions(dag, &expression_graph<interval>::revise_all);
+}
+
+void test_solutions_revise2(const problem<builder>* prob) {
 
 	expression_graph<interval> dag(build(prob));
 
 	builder::reset();
 
-	ASSERT(n_sol==static_cast<int>(sol_boxes.size()));
+	test_solutions(dag, &expression_graph<interval>::revise_all2);
+}
 
-	test_Bratu_solutions(dag, n_sol);
+void test_solutions_iterative_revise(const problem<builder>* prob) {
+
+	expression_graph<interval> dag(build(prob));
+
+	builder::reset();
+
+	test_solutions(dag, &expression_graph<interval>::iterative_revision);
+}
+
+void test_solutions_probing(const problem<builder>* prob) {
+
+	expression_graph<interval> dag(build(prob));
+
+	builder::reset();
+
+	test_solutions(dag, &expression_graph<interval>::probing);
+}
+
+void test_probing_on_initial_box(const problem<builder>* prob) {
+
+	expression_graph<interval> dag(build(prob));
+
+	builder::reset();
+
+	dag.probing();
+
+	dag.show_variables(cout);
 }
 
 }

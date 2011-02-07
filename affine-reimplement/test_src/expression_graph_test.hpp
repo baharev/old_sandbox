@@ -32,15 +32,15 @@ void dag_test(const problem<builder>* prob);
 
 void print_sparsity(const problem<builder>* prob);
 
-void test_system_of_equations(const problem<builder>* prob);
+void test_probing_on_initial_box(const problem<builder>* prob);
 
-void test_iterative_revision(const problem<builder>* prob);
+void test_solutions_revise(const problem<builder>* prob);
 
-void test_probing_Jacobsen(const problem<builder>* prob);
+void test_solutions_revise2(const problem<builder>* prob);
 
-void test_Bratu(const problem<builder>* prob);
+void test_solutions_iterative_revise(const problem<builder>* prob);
 
-void test_Bratu_solutions(const problem<builder>* prob);
+void test_solutions_probing(const problem<builder>* prob);
 
 }
 

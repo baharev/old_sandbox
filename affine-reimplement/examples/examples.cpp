@@ -91,45 +91,52 @@ void show_Jacobsen_sparsity() {
 	print_sparsity(new Jacobsen<builder> ());
 }
 
-void test_system_of_equations() {
-
-	cout << "###############################################" << endl;
-	cout << "Jacobsen system of equations" << endl;
-
-	test_system_of_equations(new Jacobsen<builder> ());
-}
-
-void test_directed_revision() {
-
-	cout << "###############################################" << endl;
-	cout << "Jacobsen iterative revision" << endl;
-
-	test_iterative_revision(new Jacobsen<builder> ());
-}
-
-void test_probing_Jacobsen() {
-
-	cout << "###############################################" << endl;
-	cout << "Jacobsen probing" << endl;
-
-	test_probing_Jacobsen(new Jacobsen<builder> ());
-}
-
-
 void example_Bratu() {
 
 	cout << "###############################################" << endl;
 	cout << "Bratu " << endl;
 
-	test_Bratu(new Bratu<builder> ());
+	test_probing_on_initial_box(new Bratu<builder> ());
 }
 
-void test_Bratu_solutions() {
+void Bratu_solutions() {
 
 	cout << "###############################################" << endl;
-	cout << "Bratu solutions" << endl;
+	cout << "Bratu solutions revise" << endl;
 
-	test_Bratu_solutions(new Bratu<builder> ());
+	test_solutions_revise(new Bratu<builder> ());
+}
+
+void Bratu_solutions_revise2() {
+
+	cout << "###############################################" << endl;
+	cout << "Bratu solutions revise2" << endl;
+
+	test_solutions_revise2(new Bratu<builder> ());
+}
+
+void Jacobsen_solutions() {
+
+	cout << "###############################################" << endl;
+	cout << "Jacobsen solutions revise_all" << endl;
+
+	test_solutions_revise(new Jacobsen<builder> ());
+}
+
+void Jacobsen_solutions_iterative_revise() {
+
+	cout << "###############################################" << endl;
+	cout << "Jacobsen solutions with iterative revision" << endl;
+
+	test_solutions_iterative_revise(new Jacobsen<builder> ());
+}
+
+void Jacobsen_solutions_probing() {
+
+	cout << "###############################################" << endl;
+	cout << "Jacobsen solutions probing" << endl;
+
+	test_solutions_probing(new Jacobsen<builder> ());
 }
 
 void run_examples() {
@@ -146,15 +153,17 @@ void run_examples() {
 
 	example_Jacobsen();
 
-	test_system_of_equations();
-
-	test_directed_revision();
-
-	test_probing_Jacobsen();
-
 	example_Bratu();
 
-	test_Bratu_solutions();
+	Bratu_solutions();
+
+	Bratu_solutions_revise2();
+
+	Jacobsen_solutions();
+
+	Jacobsen_solutions_iterative_revise();
+
+	Jacobsen_solutions_probing();
 
 	builder::release();
 }

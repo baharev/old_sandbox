@@ -38,6 +38,10 @@ private:
 
 	virtual void evaluate(const T x[]) const;
 
+	virtual int number_of_stored_solutions() const;
+
+	virtual const double* solution(int i) const;
+
 	enum {
 		X1, X2, X3, X4, X5, X6, X7, X8,
 		v1, v2, v3, v4, v5, v6, v7, C, SIZE

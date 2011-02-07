@@ -257,12 +257,12 @@ void expression_graph<T>::probing() {
 
 	for (int i=0; i<m; ++i) {
 
-		probing(i);
+		probe_index(i);
 	}
 }
 
 template <typename T>
-void expression_graph<T>::probing(const int k) {
+void expression_graph<T>::probe_index(const int k) {
 
 	hull.clear();
 
