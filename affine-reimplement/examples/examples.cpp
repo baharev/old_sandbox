@@ -28,6 +28,7 @@
 #include "Hansen.hpp"
 #include "Jacobsen.hpp"
 #include "Bratu.hpp"
+#include "eco9.hpp"
 #include "expression_graph_test.hpp"
 #include "builder.hpp"
 
@@ -139,6 +140,14 @@ void Jacobsen_solutions_probing() {
 	test_solutions_probing(new Jacobsen<builder> ());
 }
 
+void eco9_solutions_probing() {
+
+	cout << "###############################################" << endl;
+	cout << "eco9 solutions iterative revise" << endl;
+
+	test_solutions_iterative_revise(new eco9<builder> ());
+}
+
 void run_examples() {
 
 	example_Hansen();
@@ -164,6 +173,8 @@ void run_examples() {
 	Jacobsen_solutions_iterative_revise();
 
 	Jacobsen_solutions_probing();
+
+	eco9_solutions_probing();
 
 	builder::release();
 }
