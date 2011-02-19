@@ -203,6 +203,24 @@ private:
 };
 
 template <typename T>
+class logarithm : public unary_primitive<T> {
+
+public:
+
+	logarithm(int value, int arg);
+
+private:
+
+	virtual void evaluate() const;
+
+	virtual void revise() const;
+
+	virtual const unary_primitive<T>* downcast(const primitive<T>* other) const;
+
+	virtual void record(recorder* rec) const;
+};
+
+template <typename T>
 class equality_constraint : public primitive<T> {
 
 public:

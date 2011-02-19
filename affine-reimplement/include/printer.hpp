@@ -45,6 +45,7 @@ private:
 
 	virtual void square     (int z, int x);
 	virtual void exponential(int z, int x);
+	virtual void logarithm  (int z, int x);
 
 	virtual void equality_constraint(int z, int x, double val);
 

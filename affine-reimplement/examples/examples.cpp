@@ -29,6 +29,7 @@
 #include "Jacobsen.hpp"
 #include "Bratu.hpp"
 #include "eco9.hpp"
+#include "Wilson16.hpp"
 #include "expression_graph_test.hpp"
 #include "builder.hpp"
 
@@ -153,7 +154,7 @@ void Wilson16_solutions_iterative_revise() {
 	cout << "###############################################" << endl;
 	cout << "Wilson16 solutions iterative revise" << endl;
 
-	test_solutions_iterative_revise(new eco9<builder> ());
+	test_solutions_iterative_revise(new Wilson16<builder> ());
 }
 
 void run_examples() {

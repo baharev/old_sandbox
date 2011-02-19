@@ -47,7 +47,7 @@ private:
 		   T1, T2, T3,
 		   U1, U2, U3,
 		   LN_K1, LN_K2, LN_K3,
-		   SIZE, SOLS = 7 };
+		   SIZE, SOLS = 2 };
 	};
 };
 

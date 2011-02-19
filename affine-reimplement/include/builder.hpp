@@ -55,6 +55,8 @@ public:
 
 	friend const builder exp(const builder& x);
 
+	friend const builder log(const builder& x);
+
 	void mark_as_common_subexpression() const;
 
 	void equals(double value) const;

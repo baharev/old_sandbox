@@ -33,6 +33,7 @@ typedef multiplication<builder> Multiplication;
 typedef division<builder> Division;
 typedef square<builder> Square;
 typedef exponential<builder> Exponential;
+typedef logarithm<builder> Logarithm;
 typedef equality_constraint<builder> Equality_constraint;
 typedef common_subexpression<builder> Common_subexpression;
 
@@ -140,6 +141,17 @@ const builder exp(const builder& x) {
 	const builder z(0);
 
 	builder::problem->add_primitive(new Exponential(z.index, x.index));
+
+	return z;
+}
+
+const builder log(const builder& x) {
+
+	x.dbg_consistency();
+
+	const builder z(0);
+
+	builder::problem->add_primitive(new Logarithm(z.index, x.index));
 
 	return z;
 }

@@ -29,6 +29,43 @@ namespace {
 const int n_vars = 16;
 
 const double sol[][n_vars] = {
+
+		{
+				0.232307,
+				0.540553,
+				0.22714,
+				345.798,
+				0.573705,
+				0.728909,
+				0.593567,
+				0.404924,
+				0.741592,
+				0.382669,
+				-0.327491,
+				-0.0889876,
+				 0.546717,
+				0.0,
+				0.0,
+				0.0
+		} ,
+		{
+				1,
+				0,
+				0,
+				351.457,
+				1,
+				0.8079530807319288,
+				0.8580310941724832,
+				1,
+				0,
+				0,
+				0,
+				0.43253649084993007,
+				0.8240150141906243,
+				0,
+				0.6043896455041708,
+				0.14520011013979883
+		}
 };
 
 const int n_sol = sizeof(sol)/(n_vars*sizeof(double));
@@ -99,26 +136,26 @@ void Wilson16<U>::evaluate(const U v[]) const {
 	const U& ln_K2 = v[LN_K2];
 	const U& ln_K3 = v[LN_K3];
 
-	const U rT = 0.503556/T;
+	const U rT = (1.0/1.9858775)/T;
 
 	rT.mark_as_common_subexpression();
 
-	const U Lambda12 = 1.534*exp(-694.082*rT);
+	const U Lambda12 = (89.57/58.39)*exp(-694.0825*rT);
 	Lambda12.mark_as_common_subexpression();
 
-	const U Lambda13 = 0.309128*exp(-393.197*rT);
+	const U Lambda13 = (18.05/58.39)*exp(-393.1971*rT);
 	Lambda13.mark_as_common_subexpression();
 
-	const U Lambda21 = 0.651892*exp(149.798*rT);
+	const U Lambda21 = (58.39/89.57)*exp(149.7978*rT);
 	Lambda21.mark_as_common_subexpression();
 
-	const U Lambda23 = 0.201518*exp(-6811.34*rT);
+	const U Lambda23 = (18.05/89.57)*exp(-6811.3433*rT);
 	Lambda23.mark_as_common_subexpression();
 
-	const U Lambda31 = 3.2349*exp(-926.263*rT);
+	const U Lambda31 = (58.39/18.05)*exp(-926.263*rT);
 	Lambda31.mark_as_common_subexpression();
 
-	const U Lambda32 = 4.96233*exp(-1888.85*rT);
+	const U Lambda32 = (89.57/18.05)*exp(-1888.8509*rT);
 	Lambda32.mark_as_common_subexpression();
 
 	const U s1_con = x1          + x2*Lambda12 + x3*Lambda13 - s1;
@@ -148,17 +185,14 @@ void Wilson16<U>::evaluate(const U v[]) const {
     const U u3_con = Lambda13*t1 + Lambda23*t2 +          t3 + u3;
     u3_con.equals(1);
 
-    // FIXME Implement logarithm for builder and primitive
-    const builder log(const builder& );
+    const U ln_K1_con = 3667.704902/(-46.976 + T) + log(s1) + ln_K1 - u1;
+    ln_K1_con.equals(12.0457125667196);
 
-    const U ln_K1_con = 3667.7/(-46.976 + T) + log(s1) + ln_K1 - u1;
-    ln_K1_con.equals(0);
+    const U ln_K2_con = 2904.342681/(-51.191 + T) + log(s2) + ln_K2 - u2;
+    ln_K2_con.equals(9.63112956671963);
 
-    const U ln_K2_con = 2904.34/(-51.191 + T) + log(s2) + ln_K2 - u2;
-    ln_K2_con.equals(0);
-
-    const U ln_K3_con = 3984.92/(-39.734 + T) + log(s3) + ln_K3 - u3;
-    ln_K3_con.equals(0);
+    const U ln_K3_con = 3984.922839/(-39.734 + T) + log(s3) + ln_K3 - u3;
+    ln_K3_con.equals(11.9515595667196);
 
     const U eq_1 = x1*ln_K1;
     eq_1.equals(0);

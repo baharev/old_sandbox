@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <iomanip>
 #include "expression_graph_test.hpp"
 #include "builder.hpp"
 #include "diagnostics.hpp"
@@ -178,7 +179,7 @@ void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
 		(dag.*f)(); // TODO Can this be turned into a functor?
 
-		dag.show_variables(cout);
+		dag.show_variables(cout/* << scientific << setprecision(16)*/);
 
 		ASSERT(dag.contains(sol_vectors.at(i)) == STRICT_CONTAINMENT);
 	}

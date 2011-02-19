@@ -79,7 +79,9 @@ public:
 
 	friend bool lessByLb(const interval& x, const interval& y);
 
-	bool degenerate() const;
+	bool is_narrow() const;
+
+	bool degenerate() const; // FIXME Seems to be unused: remove it!
 
 	bool contains(double value) const;
 
@@ -118,6 +120,8 @@ void sqr_inverse(interval& z, interval& x);
 
 void exp_inverse(interval& z, interval& x);
 
+void log_inverse(interval& z, interval& x);
+
 void equality_constraint_inverse(interval& z, double rhs);
 
 void propagate_mult(interval& z, interval& x, interval& y);
@@ -125,8 +129,7 @@ void propagate_mult(interval& z, interval& x, interval& y);
 // TODO Make a constants.hpp and move them!
 const double NARROW = 1.0e-4;
 const double EASY_CONT_TOL = 1.0e-6;
-
-bool is_narrow(const interval& x);
+const double IMPROVEMENT_TOL = 1.0e-12;
 
 const interval hull_of(const interval& x, const interval& y);
 

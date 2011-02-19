@@ -154,6 +154,11 @@ void index_set::exponential(int z, int x) {
 	record_unary_primitive(z, x);
 }
 
+void index_set::logarithm(int z, int x) {
+
+	record_unary_primitive(z, x);
+}
+
 void index_set::equality_constraint(int , int , double ) {
 
 	push_back_current();

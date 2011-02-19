@@ -90,6 +90,11 @@ private:
 		v.push_back(new asol::exponential<T>(z, x));
 	}
 
+	virtual void logarithm(int z, int x) {
+
+		v.push_back(new asol::logarithm<T>(z, x));
+	}
+
 	virtual void equality_constraint(int z, int x, double val) {
 
 		v.push_back(new asol::equality_constraint<T>(z, x, val));

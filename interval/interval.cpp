@@ -234,24 +234,47 @@ void interval::equals(double value) {
 	intersect(value, value);
 }
 
+double add_tol(const double x, const double TOLERANCE) {
+
+	const double abs_tol = x + TOLERANCE;
+
+	const double rel_tol = x + TOLERANCE*std::fabs(x);
+
+	return std::max(abs_tol, rel_tol);
+}
+
+double sub_tol(const double x, const double TOLERANCE) {
+
+	const double abs_tol = x - TOLERANCE;
+
+	const double rel_tol = x - TOLERANCE*std::fabs(x);
+
+	return std::min(abs_tol, rel_tol);
+}
+
 bool interval::intersect(const double l, const double u) {
 
 	ASSERT2(l <= u, "l: "<<l<<", u: "<<u);
 	ASSERT2(lb <= ub, *this);
 
+	if (is_narrow()) {
+		// TODO Maybe the intersection could be computed but not written back?
+		return false;
+	}
+
 	bool improved = false;
 
-	if (l>lb) {
+	if (l > add_tol(lb, IMPROVEMENT_TOL)) {
 		lb = l;
 		improved = true;
 	}
 
-	if (u<ub) {
+	if (u < sub_tol(ub, IMPROVEMENT_TOL)) {
 		ub = u;
 		improved = true;
 	}
 
-	if (lb>ub) {
+	if (lb > ub) {
 		throw infeasible_problem();
 	}
 
@@ -330,6 +353,13 @@ void exp_inverse(interval& z, interval& x) {
 	z.intersect(exp(x));
 }
 
+void log_inverse(interval& z, interval& x) {
+
+	x.intersect(exp(z));
+
+	z.intersect(log(x));
+}
+
 // TODO Is it the best we can do?
 void equality_constraint_inverse(interval& z, double rhs) {
 
@@ -379,30 +409,31 @@ double interval::sup() const {
 	return ub;
 }
 
-bool is_narrow(const interval& x) {
+bool interval::is_narrow() const {
 
-	return x.diameter() < NARROW;
+	ASSERT2(lb <= ub, *this);
+
+	const double diameter = ub-lb;
+
+	if (diameter < NARROW) {
+
+		return true;
+	}
+
+	using namespace std;
+
+	const double abs_max = max(fabs(lb), fabs(ub));
+
+	ASSERT(abs_max > 0);
+
+	return (diameter/abs_max) < NARROW;
 }
 
 bool easy_containment(double x, const interval& y) {
 
 	ASSERT2(y.lb <= y.ub, y);
 
-	if (y.lb-EASY_CONT_TOL <= x || x <= y.ub+EASY_CONT_TOL) {
-
-		return true;
-	}
-
-	const double lb = std::fabs(y.lb);
-
-	const double ub = std::fabs(y.ub);
-
-	if (y.lb-EASY_CONT_TOL*lb <= x || x <= y.ub+EASY_CONT_TOL*ub) {
-
-		return true;
-	}
-
-	return false;
+	return sub_tol(y.lb, EASY_CONT_TOL)<=x && x<=add_tol(y.ub, EASY_CONT_TOL);
 }
 
 std::ostream& operator<<(std::ostream& os, const interval& x) {

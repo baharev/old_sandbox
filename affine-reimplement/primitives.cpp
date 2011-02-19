@@ -255,6 +255,33 @@ void exponential<T>::record(recorder* rec) const {
 }
 
 template <typename T>
+logarithm<T>::logarithm(int z, int x) : unary_primitive<T>(z, x) { }
+
+template <typename T>
+void logarithm<T>::evaluate() const {
+
+	this->val().assign( log(this->arg()) );
+}
+
+template <typename T>
+void logarithm<T>::revise() const {
+
+	log_inverse(this->val(), this->arg());
+}
+
+template <typename T>
+const unary_primitive<T>* logarithm<T>::downcast(const primitive<T>* p) const {
+
+	return dynamic_cast<const logarithm*> (p);
+}
+
+template <typename T>
+void logarithm<T>::record(recorder* rec) const {
+
+	rec->logarithm(this->z, this->x);
+}
+
+template <typename T>
 equality_constraint<T>::equality_constraint(int body, int index, double rhs) :
 primitive<T>(body), x(index), rhs(rhs)
 {
@@ -320,6 +347,7 @@ template class multiplication<interval>;
 template class division<interval>;
 template class square<interval>;
 template class exponential<interval>;
+template class logarithm<interval>;
 template class equality_constraint<interval>;
 template class common_subexpression<interval>;
 
@@ -329,6 +357,7 @@ template<> void multiplication<builder>::revise() const { }
 template<> void division<builder>::revise() const { }
 template<> void square<builder>::revise() const { }
 template<> void exponential<builder>::revise() const { }
+template<> void logarithm<builder>::revise() const { }
 template<> void equality_constraint<builder>::revise() const { }
 
 template class addition<builder>;
@@ -337,6 +366,7 @@ template class multiplication<builder>;
 template class division<builder>;
 template class square<builder>;
 template class exponential<builder>;
+template class logarithm<builder>;
 template class equality_constraint<builder>;
 template class common_subexpression<builder>;
 

@@ -59,7 +59,7 @@ void box_generator::generate_parts(int i) {
 
 	const interval range = v.at(i);
 
-	if (!is_narrow(range)) {
+	if (!range.is_narrow()) {
 
 		index.push_back(i);
 
