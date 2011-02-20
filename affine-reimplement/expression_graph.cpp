@@ -113,18 +113,25 @@ void expression_graph<T>::set_box(const T* box, const int length) {
 }
 
 template <typename T>
-containment expression_graph<T>::contains(const vector<double>& solution) const {
+containment<T> expression_graph<T>::contains(const vector<double>& solution) const {
 
-	int i = first_not_strictly_contained(solution);
+	const int i = first_not_strictly_contained(solution);
 
 	if (i==n_vars) {
 
-		return STRICT_CONTAINMENT;
+		return containment<T>(STRICT_CONT, i);
 	}
 
-	i = first_not_easily_contained(solution, i);
+	const int j = first_not_easily_contained(solution, i);
 
-	return (i==n_vars) ? EASY_CONTAINMENT : NOT_CONTAINED;
+	if (j==n_vars) {
+
+		return containment<T>(EASY_CONT, i, v.at(i));
+	}
+	else {
+
+		return containment<T>(NOT_CONT, j, v.at(j));
+	}
 }
 
 template <typename T>

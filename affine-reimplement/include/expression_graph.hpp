@@ -25,18 +25,13 @@
 
 #include <iosfwd>
 #include <vector>
+#include "containment.hpp"
 #include "typedefs.hpp"
 
 namespace asol {
 
 template <typename T> class primitive;
 class problem_data;
-
-enum containment {
-	NOT_CONTAINED,
-	EASY_CONTAINMENT,
-	STRICT_CONTAINMENT
-};
 
 template <typename T>
 class expression_graph {
@@ -47,7 +42,7 @@ public:
 
 	void set_box(const T* box, const int length);
 
-	containment contains(const std::vector<double>& solution) const;
+	containment<T> contains(const std::vector<double>& solution) const;
 
 	void evaluate_all();
 

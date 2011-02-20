@@ -36,9 +36,13 @@ using namespace std;
 
 namespace {
 
-vector<vector<asol::interval> > sol_boxes;
+typedef vector<asol::interval> ivector;
 
-vector<vector<double> > sol_vectors;
+typedef vector<double> dvector;
+
+vector<ivector> sol_boxes;
+
+vector<dvector> sol_vectors;
 
 const double AMOUNT(0.01);
 
@@ -169,18 +173,46 @@ void print_sparsity(const problem<builder>* prob) {
 	builder::reset();
 }
 
-void check_containment(const expression_graph<interval>& dag, int i) {
+void print_index_values(const containment<interval>& type, const dvector& sol) {
 
-	dag.show_variables(cout/* << scientific << setprecision(16)*/);
+	ASSERT(!type.strict());
 
-	const containment type = dag.contains(sol_vectors.at(i));
+	ios_base::fmtflags flag_old = cout.setf(ios_base::scientific);
 
-	ASSERT(type != NOT_CONTAINED);
+	streamsize         prec_old = cout.precision(16);
 
-	if (type == EASY_CONTAINMENT) {
+	const int index = type.index();
+
+	cout << index << ": " << type.value() << "  " << sol.at(index) << endl;
+
+	cout.flags(flag_old);
+
+	cout.precision(prec_old);
+}
+
+void check_containment(const expression_graph<interval>& dag, const dvector& sol) {
+
+	dag.show_variables(cout);
+
+	const containment<interval> type = dag.contains(sol);
+
+	//ASSERT(!type.no_sol());
+
+	if (type.strict()) {
+
+		return;
+	}
+
+	if (type.easy()) {
 
 		cout << "Warning: easy containment detected!" << endl;
 	}
+	else {
+
+		cout << "Error: not contained!" << endl;
+	}
+
+	print_index_values(type, sol);
 }
 
 template <typename MemFun>
@@ -192,13 +224,13 @@ void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
 		cout << endl << "Testing solution " << (i+1) << " of " << n_sol << endl;
 
-		vector<interval>& box = sol_boxes.at(i);
+		ivector& box = sol_boxes.at(i);
 
 		dag.set_box(&(box.at(0)), box.size());
 
 		(dag.*f)(); // TODO Can this be turned into a functor?
 
-		check_containment(dag, i);
+		check_containment(dag, sol_vectors.at(i));
 	}
 }
 
