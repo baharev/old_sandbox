@@ -278,7 +278,7 @@ void expression_graph<T>::probe_index(const int k) {
 	box_generator generator(v, index_sets.at(k), 3);
 
 	if (generator.empty()) {
-
+		// FIXME Something should be saved here? set_orig_as_v() called twice
 		return;
 	}
 
@@ -333,7 +333,12 @@ void expression_graph<T>::save_hull() {
 	}
 	else {
 
-		transform(hull.begin(), hull.end(), v.begin(), hull.begin(), hull_of);
+		for (int i=0; i<hull.size(); ++i) {
+
+			hull.at(i) = hull_of(hull.at(i), v.at(i));
+		}
+		// FIXME The two are not the same?
+		//transform(hull.begin(), hull.end(), v.begin(), hull.begin(), hull_of);
 	}
 }
 
