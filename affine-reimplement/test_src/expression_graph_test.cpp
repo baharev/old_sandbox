@@ -69,7 +69,12 @@ public:
 
 	const interval operator()(const pair<double,double>& orig, const double sol) const {
 
-		return intersection(interval(orig.first, orig.second), infl*sol);
+		const double l = orig.first;
+		const double u = orig.second;
+
+		ASSERT2(l<=sol&&sol<=u,"l, u, sol: "<<l<<", "<<u<<", "<<sol);
+
+		return intersection(interval(l, u), infl*sol);
 	}
 };
 
@@ -164,6 +169,20 @@ void print_sparsity(const problem<builder>* prob) {
 	builder::reset();
 }
 
+void check_containment(const expression_graph<interval>& dag, int i) {
+
+	dag.show_variables(cout/* << scientific << setprecision(16)*/);
+
+	const containment type = dag.contains(sol_vectors.at(i));
+
+	ASSERT(type != NOT_CONTAINED);
+
+	if (type == EASY_CONTAINMENT) {
+
+		cout << "Warning: easy containment detected!" << endl;
+	}
+}
+
 template <typename MemFun>
 void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
@@ -179,9 +198,7 @@ void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
 		(dag.*f)(); // TODO Can this be turned into a functor?
 
-		dag.show_variables(cout/* << scientific << setprecision(16)*/);
-
-		ASSERT(dag.contains(sol_vectors.at(i)) == STRICT_CONTAINMENT);
+		check_containment(dag, i);
 	}
 }
 
