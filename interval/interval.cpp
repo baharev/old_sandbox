@@ -258,7 +258,7 @@ bool interval::intersect(const double l, const double u) {
 	ASSERT2(lb <= ub, *this);
 
 	if (is_narrow()) {
-		// TODO Maybe the intersection could be computed but not written back?
+		// TODO Maybe the intersection could be computed but not written back? (May detect infeas?)
 		return false;
 	}
 
