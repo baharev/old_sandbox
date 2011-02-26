@@ -266,6 +266,9 @@ void expression_graph<T>::probing() {
 
 		probe_index(i);
 	}
+
+	// the result of probing is in orig, result is retrieved as v
+	set_orig_as_v();
 }
 
 template <typename T>
@@ -278,7 +281,7 @@ void expression_graph<T>::probe_index(const int k) {
 	box_generator generator(v, index_sets.at(k), 3);
 
 	if (generator.empty()) {
-		// FIXME Something should be saved here? set_orig_as_v() called twice
+		// No progress, orig was set in the previous iteration
 		return;
 	}
 
@@ -333,12 +336,7 @@ void expression_graph<T>::save_hull() {
 	}
 	else {
 
-		for (int i=0; i<hull.size(); ++i) {
-
-			hull.at(i) = hull_of(hull.at(i), v.at(i));
-		}
-		// FIXME The two are not the same?
-		//transform(hull.begin(), hull.end(), v.begin(), hull.begin(), hull_of);
+		transform(hull.begin(), hull.end(), v.begin(), hull.begin(), hull_of);
 	}
 }
 
