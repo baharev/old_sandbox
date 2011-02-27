@@ -28,6 +28,7 @@
 #include "builder.hpp"
 #include "diagnostics.hpp"
 #include "expression_graph.hpp"
+#include "floating_point_tol.hpp"
 #include "interval.hpp"
 #include "problem.hpp"
 #include "problem_data.hpp"
@@ -65,11 +66,11 @@ void evaluate(const problem<builder>* prob) {
 
 class inflation {
 
-	const interval infl;
+	const double amount;
 
 public:
 
-	inflation(double amount) : infl(1-amount, 1+amount) { }
+	inflation(double amount) : amount(amount) { }
 
 	const interval operator()(const pair<double,double>& orig, const double sol) const {
 
@@ -78,7 +79,10 @@ public:
 
 		ASSERT2(l<=sol&&sol<=u,"l, u, sol: "<<l<<", "<<u<<", "<<sol);
 
-		return intersection(interval(l, u), infl*sol);
+		const double lb = sub_tol(sol, amount);
+		const double ub = add_tol(sol, amount);
+
+		return intersection(interval(l, u), interval(lb, ub));
 	}
 };
 
@@ -139,7 +143,7 @@ void print_data(const problem_data* representation) {
 
 	representation->print_info(cout);
 	representation->print_primitives(cout);
-	//representation->print_index_set(cout);
+	//representation->print_index_set(cout); // FIXME Reconsider this kind of index set!
 	representation->print_type1_common_subexpressions(cout);
 	representation->print_type2_common_subexpressions(cout);
 	representation->print_type3_common_subexpressions(cout);
@@ -163,6 +167,16 @@ void dag_test(const problem<builder>* prob) {
 
 	cout << "Last value: " << dag.last_value() << endl;
 }
+
+// FIXME Reconsider and perhaps remove this kind of index set
+//void print_index_set(const problem<builder>* prob) {
+//
+//	const problem_data* const representation = build(prob);
+//
+//	representation->print_index_set(cout);
+//
+//	builder::reset();
+//}
 
 void print_sparsity(const problem<builder>* prob) {
 

@@ -149,12 +149,18 @@ void eco9_solutions_iterative_revise() {
 	test_solutions_iterative_revise(new eco9<builder> ());
 }
 
-void Wilson16_solutions_iterative_revise() {
+void Wilson16_solutions_probing() {
 
 	cout << "###############################################" << endl;
-	cout << "Wilson16 solutions iterative revise" << endl;
+	cout << "Wilson16 solutions probing" << endl;
 
-	test_solutions_iterative_revise(new Wilson16<builder> ());
+	dag_test(new Wilson16<builder> ());
+
+	// FIXME Reconsider this index set stuff
+	//extern void print_index_set(const problem<builder>* );
+	//print_index_set(new Wilson16<builder> ());
+
+	test_solutions_probing(new Wilson16<builder> ());
 }
 
 void run_examples() {
@@ -185,7 +191,7 @@ void run_examples() {
 
 	eco9_solutions_iterative_revise();
 
-	Wilson16_solutions_iterative_revise();
+	Wilson16_solutions_probing();
 
 	builder::release();
 }

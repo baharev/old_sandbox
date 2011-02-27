@@ -23,9 +23,10 @@
 #include <ostream>
 #include <cmath>
 #include <algorithm>
-#include "interval.hpp"
-#include "exceptions.hpp"
 #include "diagnostics.hpp"
+#include "exceptions.hpp"
+#include "floating_point_tol.hpp"
+#include "interval.hpp"
 
 namespace {
 
@@ -232,24 +233,6 @@ void interval::assign(const interval& other) {
 void interval::equals(double value) {
 
 	intersect(value, value);
-}
-
-double add_tol(const double x, const double TOLERANCE) {
-
-	const double abs_tol = x + TOLERANCE;
-
-	const double rel_tol = x + TOLERANCE*std::fabs(x);
-
-	return std::max(abs_tol, rel_tol);
-}
-
-double sub_tol(const double x, const double TOLERANCE) {
-
-	const double abs_tol = x - TOLERANCE;
-
-	const double rel_tol = x - TOLERANCE*std::fabs(x);
-
-	return std::min(abs_tol, rel_tol);
 }
 
 bool interval::intersect(const double l, const double u) {

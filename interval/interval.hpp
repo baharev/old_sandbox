@@ -126,11 +126,6 @@ void equality_constraint_inverse(interval& z, double rhs);
 
 void propagate_mult(interval& z, interval& x, interval& y);
 
-// TODO Make a constants.hpp and move them!
-const double NARROW = 1.0e-4;
-const double EASY_CONT_TOL = 1.0e-6;
-const double IMPROVEMENT_TOL = 1.0e-12;
-
 const interval hull_of(const interval& x, const interval& y);
 
 bool lessByLb(const interval& x, const interval& y);
