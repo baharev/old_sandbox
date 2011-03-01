@@ -81,7 +81,7 @@ public:
 
 	bool is_narrow() const;
 
-	bool degenerate() const; // FIXME Seems to be unused: remove it!
+	bool degenerate() const; // Convex envelopes use it
 
 	bool contains(double value) const;
 

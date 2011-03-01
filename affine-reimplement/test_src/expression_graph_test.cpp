@@ -242,7 +242,7 @@ void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
 		dag.set_box(&(box.at(0)), box.size());
 
-		(dag.*f)(); // TODO Can this be turned into a functor?
+		(dag.*f)();
 
 		check_containment(dag, sol_vectors.at(i));
 	}
