@@ -41,6 +41,8 @@ public:
 
 	bool intersect(const interval& other);
 
+	bool unchecked_intersection(const double l, const double u);
+
 	// Used by the primitives
 	void assign(const interval& other);
 	void equals(double value);
@@ -64,6 +66,8 @@ public:
 	friend const interval operator*(double x, const interval& y);
 
 	friend const interval operator/(const interval& x, const interval& y);
+
+	friend bool real_extended_division(const interval& x, const interval& y, interval& z, interval& gap);
 
 	friend const interval sqr(const interval& x);
 
@@ -107,6 +111,8 @@ private:
 };
 
 const interval operator*(const interval& x, double y);
+
+bool extended_division(const interval& x, const interval& y, interval& z, interval& gap);
 
 void addition_inverse(interval& z, interval& x, interval& y);
 

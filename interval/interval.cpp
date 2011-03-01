@@ -141,6 +141,111 @@ const interval operator/(const interval& x, const interval& y) {
 	return interval(zL, zU);
 }
 
+// Returns true and sets gap if a gap is generated, otherwise gap is undefined
+bool extended_division(const interval& x, const interval& y, interval& z, interval& gap) {
+
+	gap = interval();
+
+	if (!y.contains(0)) {  // trivial case
+
+		z.intersect(x/y);
+
+		return false;
+	}
+	// y.contains(0)==true
+
+	if (x.contains(0)) {  // no progress case
+
+		return false;
+	}
+	// (!x.contains(0) && y.contains(0)) == true
+
+	if (y.inf()==0 && y.sup()==0) {  // undefined case
+
+		ASSERT2(false, "undefined result; x, z: "<<x<<", "<<z);
+	}
+
+	return real_extended_division(x, y, z, gap);
+}
+
+bool set_gap(const double l, const double u, interval& z, interval& gap);
+
+bool real_extended_division(const interval& x, const interval& y, interval& z, interval& gap) {
+
+	ASSERT(!x.contains(0) && y.contains(0));
+
+	bool ret_val = false;
+
+	if (x.ub < 0) {
+
+		if (y.ub==0) {
+
+			z.unchecked_intersection(x.ub/y.lb, z.ub);
+		}
+		else if (y.lb==0) {
+
+			z.unchecked_intersection(z.lb, x.ub/y.ub);
+		}
+		else {
+
+			ret_val = set_gap(x.ub/y.ub, x.ub/y.lb, z, gap);
+		}
+	}
+	else {
+
+		if (y.ub==0) {
+
+			z.unchecked_intersection(z.lb, x.lb/y.lb);
+		}
+		else if (y.lb==0) {
+
+			z.unchecked_intersection(x.lb/y.ub, z.ub);
+		}
+		else {
+
+			ret_val = set_gap(x.lb/y.lb, x.lb/y.ub, z, gap);
+		}
+	}
+
+	return ret_val;
+}
+
+// FIXME It actually performs intersection which is inconsistent with intersect
+bool set_gap(const double l, const double u, interval& z, interval& gap) {
+
+	ASSERT2( l <= u, "l, u: " << l << ", " << u );
+
+	const double zL = z.inf(), zU = z.sup();
+
+	bool ret_val = false;
+
+	if (u < zL || zU < l) {
+
+		; // Neither gap nor progress
+	}
+	else if (zL <= l && u <= zU) {
+
+		gap = interval(l, u);
+
+		ret_val = true;
+	}
+	else if (l < zL) {
+
+		z.intersect(zL, u);
+
+	}
+	else if (zU < u) {
+
+		z.intersect(l, zU);
+	}
+	else {
+
+		ASSERT(false);
+	}
+
+	return ret_val;
+}
+
 const interval sqr(const interval& x) {
 
 	ASSERT2(x.lb <= x.ub, "x: "<<x);
@@ -264,18 +369,36 @@ bool interval::intersect(const double l, const double u) {
 	return improved;
 }
 
+bool interval::unchecked_intersection(const double l, const double u) {
+
+	ASSERT2(lb <= ub, *this);
+
+	if (l > u) {
+
+		throw infeasible_problem();
+	}
+
+	return intersect(l, u);
+}
+
 // z = x*y
 void propagate_mult(interval& z, interval& x, interval& y) {
+// FIXME Remove the code in comment when ready!
+//	if (!x.contains(0)) { // y = z/x
+//
+//		y.intersect(z/x);
+//	}
 
-	if (!x.contains(0)) { // y = z/x
+	interval gap;
 
-		y.intersect(z/x);
-	}
+	extended_division(z, x, y, gap);
 
-	if (!y.contains(0)) {  // x = z/y
+//	if (!y.contains(0)) {  // x = z/y
+//
+//		x.intersect(z/y);
+//	}
 
-		x.intersect(z/y);
-	}
+	extended_division(z, y, x, gap);
 
 	// z = x*y
 	z.intersect(x*y);
