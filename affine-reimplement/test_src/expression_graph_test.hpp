@@ -27,6 +27,7 @@ namespace asol {
 
 template <typename T> class problem;
 class builder;
+class interval;
 
 void dag_test(const problem<builder>* prob);
 
@@ -41,6 +42,8 @@ void test_solutions_revise2(const problem<builder>* prob);
 void test_solutions_iterative_revise(const problem<builder>* prob);
 
 void test_solutions_probing(const problem<builder>* prob);
+
+void extended_division_test(const problem<builder>* prob, const interval* box, const double* sol, int length);
 
 }
 

@@ -32,6 +32,7 @@
 #include "Wilson16.hpp"
 #include "expression_graph_test.hpp"
 #include "builder.hpp"
+#include "interval.hpp"
 
 using namespace std;
 
@@ -163,6 +164,25 @@ void Wilson16_solutions_probing() {
 	test_solutions_probing(new Wilson16<builder> ());
 }
 
+void eco9_extended_division_test() {
+
+	cout << "###############################################" << endl;
+	cout << "Extended division test on eco9" << endl;
+
+	interval x[8];
+
+	for (int i=0; i<8; ++i) {
+		x[i] = interval(-100, 100);
+	}
+
+	x[6] = interval( 0.5, 100);
+	x[7] = interval(-100,  -7);
+
+	double sol[8] = { 1, 1, 1, 1, 1, 1, 1, -8 };
+
+	extended_division_test(new eco9<builder> (), x, sol, 8);
+}
+
 void run_examples() {
 
 	example_Hansen();
@@ -192,6 +212,8 @@ void run_examples() {
 	eco9_solutions_iterative_revise();
 
 	Wilson16_solutions_probing();
+
+	eco9_extended_division_test();
 
 	builder::release();
 }

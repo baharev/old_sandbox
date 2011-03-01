@@ -295,5 +295,27 @@ void test_probing_on_initial_box(const problem<builder>* prob) {
 	dag.show_variables(cout);
 }
 
+void extended_division_test(const problem<builder>* prob, const interval* box, const double* sol, int length) {
+
+	expression_graph<interval> dag(build(prob));
+
+	builder::reset();
+
+	dag.set_box(box, length);
+
+	dvector solution = dvector(sol, sol+length);
+
+	cout << endl << "Initial box:" << endl;
+
+	check_containment(dag, solution);
+
+	dag.probing();
+
+	cout << endl << "After probing:" << endl;
+
+	check_containment(dag, solution);
+
+}
+
 }
 
