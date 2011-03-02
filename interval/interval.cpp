@@ -304,6 +304,13 @@ bool interval::subset_of(const interval& x) const {
 	return lb >= x.lb && ub <= x.ub && (lb!=x.lb || ub !=x.ub);
 }
 
+bool disjoint(const interval& x, const interval& y) {
+
+	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
+
+	return (x.ub < y.lb) || (y.ub < x.lb);
+}
+
 bool lessByLb(const interval& x, const interval& y) {
 
 	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
@@ -433,21 +440,37 @@ void division_inverse(interval& z, interval& x, interval& y) {
 	multiplication_inverse(x, z, y);
 }
 
+// FIXME It actually performs intersection which is inconsistent with intersect
 void sqr_inverse(interval& z, interval& x) {
 
-	interval x_new = sqrt(z);
+	bool has_gap = false;
 
-	if (x.inf()>=0) {
-		;
+	interval gap;
+
+	const interval x_1 = sqrt(z);
+
+	const interval x_2 = -x_1;
+
+	interval x_image;
+
+	if (disjoint(x, x_2)) {
+
+		x_image = x_1;
 	}
-	else if (x.sup()<=0) {
-		x_new = -x_new;
+	else if (disjoint(x, x_1)) {
+
+		x_image = x_2;
 	}
 	else {
-		x_new = interval(-(x_new.sup()), x_new.sup());
+
+		gap = interval(x_2.sup(), x_1.inf());
+
+		has_gap = gap.diameter() > IMPROVEMENT_TOL; // FIXME GAP_SQRT_TOL ?
+
+		x_image = hull_of(x_1, x_2);
 	}
 
-	x.intersect(x_new);
+	x.intersect(x_image);
 
 	z.intersect(sqr(x));
 }

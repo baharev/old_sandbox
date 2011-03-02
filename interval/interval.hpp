@@ -81,6 +81,8 @@ public:
 
 	bool subset_of(const interval& other) const;
 
+	friend bool disjoint(const interval& x, const interval& y);
+
 	friend bool lessByLb(const interval& x, const interval& y);
 
 	bool is_narrow() const;
