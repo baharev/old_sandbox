@@ -2,7 +2,7 @@
 //
 // This code is part of ASOL (nonlinear system solver using affine arithmetic)
 //
-// Copyright (C) 2010, 2011 Ali Baharev
+// Copyright (C) 2011 Ali Baharev
 // All rights reserved. E-mail: <my_first_name.my_last_name@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -20,33 +20,17 @@
 //
 //==============================================================================
 
-#ifndef EXPRESSION_GRAPH_TEST_HPP_
-#define EXPRESSION_GRAPH_TEST_HPP_
+#ifndef GAP_INFO_HPP_
+#define GAP_INFO_HPP_
 
 namespace asol {
 
-template <typename T> class problem;
-class builder;
-class interval;
-
-void dag_test(const problem<builder>* prob);
-
-void print_sparsity(const problem<builder>* prob);
-
-void test_probing_on_initial_box(const problem<builder>* prob);
-
-void test_solutions_revise(const problem<builder>* prob);
-
-void test_solutions_revise2(const problem<builder>* prob);
-
-void test_solutions_iterative_revise(const problem<builder>* prob);
-
-void test_solutions_probing(const problem<builder>* prob);
-
-void extended_division_test(const problem<builder>* prob, const interval* box, const double* sol, int length);
-
-void gap_probing_test(const problem<builder>* prob, interval* box, const double* sol, int length);
+template <typename T>
+struct gap_info {
+	int index;
+	T gap;
+};
 
 }
 
-#endif // EXPRESSION_GRAPH_TEST_HPP_
+#endif // GAP_INFO_HPP_

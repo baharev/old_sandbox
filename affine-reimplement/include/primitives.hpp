@@ -28,6 +28,7 @@
 namespace asol {
 
 class recorder;
+template <typename T> struct gap_info;
 
 template <typename T>
 class primitive {
@@ -47,6 +48,8 @@ public:
 
 	static void set_vector(std::vector<T>* vec) { v = vec; }
 
+	static void set_gap_container(std::vector<gap_info<T> >* vec) { gaps = vec; }
+
 protected:
 
 	explicit primitive(int lhs);
@@ -56,6 +59,8 @@ protected:
 	const int z;
 
 	static std::vector<T>* v;
+
+	static std::vector<gap_info<T> >* gaps;
 };
 
 template <typename T>

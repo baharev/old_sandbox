@@ -22,6 +22,7 @@
 
 #include "primitives.hpp"
 #include "builder.hpp"
+#include "gap_info.hpp"
 #include "interval.hpp"
 #include "recorder.hpp"
 
@@ -29,6 +30,9 @@ namespace asol {
 
 template <typename T>
 std::vector<T>* primitive<T>::v = 0;
+
+template <typename T>
+std::vector<gap_info<T> >* primitive<T>::gaps = 0;
 
 template <typename T>
 primitive<T>::primitive(int lhs) : z(lhs) { }

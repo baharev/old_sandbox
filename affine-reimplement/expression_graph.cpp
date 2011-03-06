@@ -27,6 +27,7 @@
 #include "delete_struct.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
+#include "gap_info.hpp"
 #include "interval.hpp"
 #include "problem_data.hpp"
 
@@ -251,6 +252,25 @@ void expression_graph<T>::iterative_revision() {
 
 		revise_up_to(pos);
 	}
+}
+
+template <typename T>
+void expression_graph<T>::iterative_revision_save_gaps() {
+
+	const int end = constraints_size();
+
+	for (int pos=0; pos<end-1; ++pos) {
+
+		revise_up_to(pos);
+	}
+
+	evaluate_up_to(end);
+
+	gaps.clear();
+	// FIXME Continue from here!
+	//primitive<T>::set_gap_container(&gaps);
+
+	for_each(primitives.rbegin(), primitives.rend(), mem_fun(&primitive<T>::revise));
 }
 
 template <typename T>

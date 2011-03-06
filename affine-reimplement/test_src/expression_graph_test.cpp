@@ -29,6 +29,7 @@
 #include "diagnostics.hpp"
 #include "expression_graph.hpp"
 #include "floating_point_tol.hpp"
+#include "gap_probing.hpp"
 #include "interval.hpp"
 #include "problem.hpp"
 #include "problem_data.hpp"
@@ -315,6 +316,35 @@ void extended_division_test(const problem<builder>* prob, const interval* box, c
 
 	check_containment(dag, solution);
 
+}
+
+void gap_probing_test(const problem<builder>* prob, interval* box, const double* sol, int length) {
+
+	expression_graph<interval> dag(build(prob));
+
+	builder::reset();
+
+	dag.set_box(box, length);
+
+	dvector solution = dvector(sol, sol+length);
+
+	cout << endl << "Initial box:" << endl;
+
+	check_containment(dag, solution);
+
+	interval* initial_box = new interval[length];
+
+	copy(box, box+length, initial_box);
+
+	gap_probing p(dag, initial_box, length);
+
+	interval* reduced_box = p.contracted_box();
+
+	cout << endl << "After gap probing:" << endl;
+
+	check_containment(dag, solution);
+
+	delete[] reduced_box;
 }
 
 }

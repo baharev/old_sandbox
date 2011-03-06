@@ -32,6 +32,7 @@ namespace asol {
 
 template <typename T> class primitive;
 class problem_data;
+template <typename T> struct gap_info;
 
 template <typename T>
 class expression_graph {
@@ -51,6 +52,8 @@ public:
 	void revise_all2(); // TODO Remove
 
 	void iterative_revision();
+
+	void iterative_revision_save_gaps();
 
 	void probing();
 
@@ -105,6 +108,8 @@ private:
 
 	std::vector<T> orig;
 	std::vector<T> hull;
+
+	std::vector<gap_info<T> > gaps;
 };
 
 }

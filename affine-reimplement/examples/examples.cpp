@@ -183,6 +183,25 @@ void eco9_extended_division_test() {
 	extended_division_test(new eco9<builder> (), x, sol, 8);
 }
 
+void eco9_gap_probing() {
+
+	cout << "###############################################" << endl;
+	cout << "Gap probing on eco9" << endl;
+
+	interval x[8];
+
+	for (int i=0; i<8; ++i) {
+		x[i] = interval(-100, 100);
+	}
+
+	x[6] = interval( 0.5, 100);
+	x[7] = interval(-100,  -7);
+
+	double sol[8] = { 1, 1, 1, 1, 1, 1, 1, -8 };
+
+	gap_probing_test(new eco9<builder> (), x, sol, 8);
+}
+
 void run_examples() {
 
 	example_Hansen();
@@ -214,6 +233,8 @@ void run_examples() {
 	Wilson16_solutions_probing();
 
 	eco9_extended_division_test();
+
+	eco9_gap_probing();
 
 	builder::release();
 }
