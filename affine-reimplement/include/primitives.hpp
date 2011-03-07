@@ -46,9 +46,9 @@ public:
 
 	virtual ~primitive();
 
-	static void set_vector(std::vector<T>* vec) { v = vec; }
+	static void set_vector(std::vector<T>* vec);
 
-	static void set_gap_container(std::vector<gap_info<T> >* vec) { gaps = vec; }
+	static void set_gap_container(std::vector<gap_info<T> >* vec);
 
 protected:
 

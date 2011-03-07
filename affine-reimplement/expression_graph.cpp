@@ -268,7 +268,7 @@ void expression_graph<T>::iterative_revision_save_gaps() {
 
 	gaps.clear();
 	// FIXME Continue from here!
-	//primitive<T>::set_gap_container(&gaps);
+	primitive<T>::set_gap_container(&gaps);
 
 	for_each(primitives.rbegin(), primitives.rend(), mem_fun(&primitive<T>::revise));
 }

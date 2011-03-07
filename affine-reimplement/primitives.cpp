@@ -35,6 +35,18 @@ template <typename T>
 std::vector<gap_info<T> >* primitive<T>::gaps = 0;
 
 template <typename T>
+void primitive<T>::set_vector(std::vector<T>* vec) {
+
+	v = vec;
+}
+
+template <typename T>
+void primitive<T>::set_gap_container(std::vector<gap_info<T> >* vec) {
+
+	gaps = vec;
+}
+
+template <typename T>
 primitive<T>::primitive(int lhs) : z(lhs) { }
 
 template <typename T>
@@ -344,6 +356,8 @@ void common_subexpression<T>::record(recorder* rec) const {
 
 	rec->common_subexpression(this->z, x);
 }
+
+template class primitive<interval>;
 
 template class addition<interval>;
 template class substraction<interval>;
