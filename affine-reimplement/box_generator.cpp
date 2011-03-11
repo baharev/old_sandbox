@@ -105,8 +105,8 @@ bool box_generator::get_next() {
 		++dbg_counter;
 	}
 	else {
-
-		const int expected = (int) (std::pow((double)parts_to_generate, parts.size())+0.001);
+		// FIXME Messy casts and rounding
+		const int expected = (int) ( std::pow((double)parts_to_generate, (int) parts.size() )+0.001);
 
 		ASSERT2(dbg_counter==expected,"dbg_counter, expected: "<<dbg_counter<<", "<<expected);
 	}
