@@ -120,11 +120,9 @@ void addition_inverse(interval& z, interval& x, interval& y);
 
 void substraction_inverse(interval& z, interval& x, interval& y);
 
-void multiplication_inverse(interval& z, interval& x, interval& y);
+bool division_inverse(interval& z, interval& x, interval& y, interval& gap);
 
-void division_inverse(interval& z, interval& x, interval& y);
-
-void sqr_inverse(interval& z, interval& x);
+bool sqr_inverse(interval& z, interval& x, interval& gap);
 
 void exp_inverse(interval& z, interval& x);
 

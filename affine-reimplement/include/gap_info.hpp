@@ -27,6 +27,7 @@ namespace asol {
 
 template <typename T>
 struct gap_info {
+	gap_info(int i, const T& gap) : index(i), gap(gap) { }
 	int index;
 	T gap;
 };

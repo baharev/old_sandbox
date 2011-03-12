@@ -38,7 +38,7 @@ interval* gap_probing::contracted_box() {
 
 	graph.set_box(box, n_vars);
 
-	graph.iterative_revision();
+	graph.iterative_revision_save_gaps();
 
 	return box;
 }

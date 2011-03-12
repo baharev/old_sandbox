@@ -53,6 +53,15 @@ template <typename T>
 primitive<T>::~primitive() { }
 
 template <typename T>
+void primitive<T>::push_back(int index, const T& value) const {
+
+	if (gaps) {
+
+		gaps->push_back(gap_info<T>(index, value));
+	}
+}
+
+template <typename T>
 unary_primitive<T>::unary_primitive(int value, int arg) :
 primitive<T>(value), x(arg)
 {
@@ -170,7 +179,25 @@ void multiplication<T>::evaluate() const {
 template <typename T>
 void multiplication<T>::revise() const {
 
-	multiplication_inverse(this->val(), this->arg1(), this->arg2());
+	T gap;
+
+	// y = z/x
+	bool has_gap = extended_division(this->val(), this->arg1(), this->arg2(), gap);
+
+	if (has_gap) {
+
+		this->push_back(this->y, gap);
+	}
+
+	// x = z/y
+	has_gap = extended_division(this->val(), this->arg2(), this->arg1(), gap);
+
+	if (has_gap) {
+
+		this->push_back(this->x, gap);
+	}
+
+	evaluate();
 }
 
 template <typename T>
@@ -194,14 +221,21 @@ binary_primitive<T>(z, x, y)
 
 template <typename T>
 void division<T>::evaluate() const {
-	// TODO Extended division with intersection
+	// Arg2 cannot contain zero, extended division is not applicable
 	this->val().assign( this->arg1() / this->arg2() );
 }
 
 template <typename T>
 void division<T>::revise() const {
 
-	division_inverse(this->val(), this->arg1(), this->arg2());
+	T gap;
+
+	bool has_gap = division_inverse(this->val(), this->arg1(), this->arg2(), gap);
+
+	if (has_gap) {
+
+		this->push_back(this->y, gap); // Only y = x/z can generate gap
+	}
 }
 
 template <typename T>
@@ -228,7 +262,14 @@ void square<T>::evaluate() const {
 template <typename T>
 void square<T>::revise() const {
 
-	sqr_inverse(this->val(), this->arg());
+	T gap;
+
+	bool has_gap = sqr_inverse(this->val(), this->arg(), gap);
+
+	if (has_gap) {
+
+		this->push_back(this->x, gap);
+	}
 }
 
 template <typename T>

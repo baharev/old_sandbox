@@ -219,11 +219,11 @@ bool save_gap_if_any(const double l, const double u, interval& z, interval& gap)
 
 	bool ret_val = false;
 
-	if (u < zL || zU < l) {
+	if (u <= zL || zU <= l) {
 
 		; // Neither gap nor progress
 	}
-	else if (zL <= l && u <= zU) {
+	else if (zL < l && u < zU) {
 
 		gap = interval(l, u);
 
@@ -390,7 +390,7 @@ bool interval::prechecked_intersection(const double l, const double u) {
 
 // z = x*y
 void propagate_mult(interval& z, interval& x, interval& y) {
-// FIXME Remove the code in comment when ready!
+// TODO Eliminate propagate_mult, only used by envelopes
 //	if (!x.contains(0)) { // y = z/x
 //
 //		y.intersect(z/x);
@@ -426,26 +426,23 @@ void substraction_inverse(interval& z, interval& x, interval& y) {
 	addition_inverse(x, z, y);
 }
 
-void multiplication_inverse(interval& z, interval& x, interval& y) {
-	// TODO Use extended division and save the gap?
-	// TODO Eliminate propagate_mult, only used by envelopes
-	propagate_mult(z, x, y);
-}
-
-void division_inverse(interval& z, interval& x, interval& y) {
-
-	ASSERT2(!y.contains(0), "y: "<<y);
+bool division_inverse(interval& z, interval& x, interval& y, interval& gap) {
 
 	// z = x/y --> x = z*y
-	multiplication_inverse(x, z, y);
+	x.intersect(z*y);
+
+	// y = x/z
+	bool has_gap = extended_division(x, z, y, gap);
+
+	z.intersect(x/y);
+
+	return has_gap;
 }
 
 // FIXME It actually performs intersection which is inconsistent with intersect
-void sqr_inverse(interval& z, interval& x) {
+bool sqr_inverse(interval& z, interval& x, interval& gap) {
 
 	bool has_gap = false;
-
-	interval gap;
 
 	const interval x_1 = sqrt(z);
 
@@ -473,6 +470,8 @@ void sqr_inverse(interval& z, interval& x) {
 	x.intersect(x_image);
 
 	z.intersect(sqr(x));
+
+	return has_gap;
 }
 
 void exp_inverse(interval& z, interval& x) {

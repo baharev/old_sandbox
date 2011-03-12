@@ -56,6 +56,8 @@ protected:
 
 	T& val() const { return v->at(z); }
 
+	void push_back(int index, const T& value) const;
+
 	const int z;
 
 	static std::vector<T>* v;
