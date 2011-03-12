@@ -165,12 +165,12 @@ bool extended_division(const interval& x, const interval& y, interval& z, interv
 		ASSERT2(false, "undefined result; x, z: "<<x<<", "<<z);
 	}
 
-	return real_extended_division(x, y, z, gap);
+	return true_extended_division(x, y, z, gap);
 }
 
-bool set_gap(const double l, const double u, interval& z, interval& gap);
+bool save_gap_if_any(const double l, const double u, interval& z, interval& gap);
 
-bool real_extended_division(const interval& x, const interval& y, interval& z, interval& gap) {
+bool true_extended_division(const interval& x, const interval& y, interval& z, interval& gap) {
 
 	ASSERT(!x.contains(0) && y.contains(0));
 
@@ -180,30 +180,30 @@ bool real_extended_division(const interval& x, const interval& y, interval& z, i
 
 		if (y.ub==0) {
 
-			z.unchecked_intersection(x.ub/y.lb, z.ub);
+			z.prechecked_intersection(x.ub/y.lb, z.ub);
 		}
 		else if (y.lb==0) {
 
-			z.unchecked_intersection(z.lb, x.ub/y.ub);
+			z.prechecked_intersection(z.lb, x.ub/y.ub);
 		}
 		else {
 
-			ret_val = set_gap(x.ub/y.ub, x.ub/y.lb, z, gap);
+			ret_val = save_gap_if_any(x.ub/y.ub, x.ub/y.lb, z, gap);
 		}
 	}
 	else {
 
 		if (y.ub==0) {
 
-			z.unchecked_intersection(z.lb, x.lb/y.lb);
+			z.prechecked_intersection(z.lb, x.lb/y.lb);
 		}
 		else if (y.lb==0) {
 
-			z.unchecked_intersection(x.lb/y.ub, z.ub);
+			z.prechecked_intersection(x.lb/y.ub, z.ub);
 		}
 		else {
 
-			ret_val = set_gap(x.lb/y.lb, x.lb/y.ub, z, gap);
+			ret_val = save_gap_if_any(x.lb/y.lb, x.lb/y.ub, z, gap);
 		}
 	}
 
@@ -211,7 +211,7 @@ bool real_extended_division(const interval& x, const interval& y, interval& z, i
 }
 
 // FIXME It actually performs intersection which is inconsistent with intersect
-bool set_gap(const double l, const double u, interval& z, interval& gap) {
+bool save_gap_if_any(const double l, const double u, interval& z, interval& gap) {
 
 	ASSERT2( l <= u, "l, u: " << l << ", " << u );
 
@@ -376,7 +376,7 @@ bool interval::intersect(const double l, const double u) {
 	return improved;
 }
 
-bool interval::unchecked_intersection(const double l, const double u) {
+bool interval::prechecked_intersection(const double l, const double u) {
 
 	ASSERT2(lb <= ub, *this);
 
