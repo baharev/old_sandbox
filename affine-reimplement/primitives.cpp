@@ -22,6 +22,7 @@
 
 #include "primitives.hpp"
 #include "builder.hpp"
+#include "diagnostics.hpp"
 #include "gap_info.hpp"
 #include "interval.hpp"
 #include "recorder.hpp"
@@ -43,6 +44,7 @@ void primitive<T>::set_vector(std::vector<T>* vec) {
 template <typename T>
 void primitive<T>::set_gap_container(std::vector<gap_info<T> >* vec) {
 
+	ASSERT2(vec==0 || gaps==0,"forgot to set gap container to NULL");
 	gaps = vec;
 }
 

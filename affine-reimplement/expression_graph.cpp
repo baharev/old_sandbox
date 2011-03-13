@@ -255,6 +255,19 @@ void expression_graph<T>::iterative_revision() {
 }
 
 template <typename T>
+struct raii {
+
+	raii(vector<gap_info<T> >* gaps) {
+
+		gaps->clear();
+
+		primitive<T>::set_gap_container(gaps);
+	}
+
+	~raii() { primitive<T>::set_gap_container(0); }
+};
+
+template <typename T>
 void expression_graph<T>::iterative_revision_save_gaps() {
 
 	const int end = constraints_size();
@@ -266,25 +279,11 @@ void expression_graph<T>::iterative_revision_save_gaps() {
 
 	evaluate_up_to(end-1);
 
-	gaps.clear(); // FIXME Continue from here!
+	// FIXME Continue from here!
+	raii<T> set_primitive_gap_container(&gaps);
 
-	try { // FIXME Eliminate it with RAII
+	for_each(primitives.rbegin(), primitives.rend(), mem_fun(&primitive<T>::revise));
 
-		primitive<T>::set_gap_container(&gaps);
-
-		for_each(primitives.rbegin(), primitives.rend(), mem_fun(&primitive<T>::revise));
-
-		ASSERT(gaps.size());
-
-		primitive<T>::set_gap_container(0);
-
-	}
-	catch (...) {
-
-		primitive<T>::set_gap_container(0);
-
-		throw;
-	}
 }
 
 template <typename T>
