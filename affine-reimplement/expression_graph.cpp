@@ -387,7 +387,7 @@ void expression_graph<T>::write_hull_to_orig() {
 
 		set_orig_as_v();
 
-		revise_all();
+		iterative_revision_save_gaps();
 
 		save_current_as_orig();
 	}
