@@ -74,6 +74,8 @@ private:
 
 	virtual void common_subexpression(int z, int x);
 
+	virtual void less_than_or_equal_to(int z, int x);
+
 	void record_unary_primitive(int z, int x);
 	void record_arg(const int index);
 	void record_binary_primitive(int z, int x, int y);

@@ -347,6 +347,28 @@ void interval::equals(double value) {
 	intersect(value, value);
 }
 
+void interval::less_than_or_equal_to(interval& rhs) {
+
+	ASSERT2(rhs.lb <= rhs.ub, rhs);
+	ASSERT2(lb <= ub, *this);
+
+	//  this  <=  rhs
+	// [a, b] <= [c, d]
+
+	const double a = lb;
+
+	const double d = rhs.ub;
+
+	if (a > d) {
+
+		throw infeasible_problem();
+	}
+
+	intersect(a, d); // b <= d; b is modified appropriately
+
+	rhs.intersect(a, d); // a <= c; c is modified appropriately
+}
+
 bool interval::intersect(const double l, const double u) {
 
 	ASSERT2(l <= u, "l: "<<l<<", u: "<<u);

@@ -46,6 +46,7 @@ public:
 	// Used by the primitives
 	void assign(const interval& other);
 	void equals(double value);
+	void less_than_or_equal_to(interval& rhs);
 
 	friend void copy_array(const interval src[], interval dstn[], int size);
 

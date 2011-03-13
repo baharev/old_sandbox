@@ -61,6 +61,8 @@ public:
 
 	void equals(double value) const;
 
+	void less_than_or_equal_to(const builder& rhs) const;
+
 	void assign(const builder& ) const { }
 
 	void dbg_consistency() const;

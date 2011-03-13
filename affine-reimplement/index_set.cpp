@@ -169,6 +169,15 @@ void index_set::common_subexpression(int , int ) {
 	push_back_current();
 }
 
+void index_set::less_than_or_equal_to(int lhs, int rhs) {
+
+	ASSERT(!is_numeric_constant(rhs));
+
+	record_unary_primitive(lhs, rhs);
+
+	push_back_current();
+}
+
 void index_set::print_constraint(const int k, ostream& out) const {
 
 	out << "Constraint " << k << '\n';

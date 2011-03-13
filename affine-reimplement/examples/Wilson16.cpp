@@ -283,6 +283,12 @@ void Wilson16<U>::evaluate(const U v[]) const {
 	const U Lambda32 = (89.57/18.05)*exp(-1888.8509*rT);
 	Lambda32.mark_as_common_subexpression();
 
+	x1.less_than_or_equal_to(t1);
+
+	x2.less_than_or_equal_to(t2);
+
+	x3.less_than_or_equal_to(t3);
+
 	const U s1_con = x1          + x2*Lambda12 + x3*Lambda13 - s1;
     s1_con.equals(0);
 

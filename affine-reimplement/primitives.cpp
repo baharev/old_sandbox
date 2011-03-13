@@ -400,6 +400,43 @@ void common_subexpression<T>::record(recorder* rec) const {
 	rec->common_subexpression(this->z, x);
 }
 
+template <typename T>
+less_than_or_equal_to<T>::less_than_or_equal_to(int z, int x)
+: unary_primitive<T>(z, x)
+{
+
+}
+
+template <typename T>
+void less_than_or_equal_to<T>::evaluate() const {
+
+	this->val().less_than_or_equal_to(this->arg());
+}
+
+template <typename T>
+void less_than_or_equal_to<T>::revise() const {
+	// TODO Is this the best we can do?
+	this->val().less_than_or_equal_to(this->arg());
+}
+
+template <typename T>
+const unary_primitive<T>* less_than_or_equal_to<T>::downcast(const primitive<T>* other) const {
+
+	return 0;
+}
+
+template <typename T>
+bool less_than_or_equal_to<T>::common_subexpressions(const primitive<T>* p) const {
+
+	return false;
+}
+
+template <typename T>
+void less_than_or_equal_to<T>::record(recorder* rec) const {
+
+	rec->less_than_or_equal_to(this->z, this->x);
+}
+
 template class primitive<interval>;
 
 template class addition<interval>;
@@ -411,6 +448,7 @@ template class exponential<interval>;
 template class logarithm<interval>;
 template class equality_constraint<interval>;
 template class common_subexpression<interval>;
+template class less_than_or_equal_to<interval>;
 
 template<> void addition<builder>::revise() const { }
 template<> void substraction<builder>::revise() const { }
@@ -420,6 +458,7 @@ template<> void square<builder>::revise() const { }
 template<> void exponential<builder>::revise() const { }
 template<> void logarithm<builder>::revise() const { }
 template<> void equality_constraint<builder>::revise() const { }
+template<> void less_than_or_equal_to<builder>::revise() const { }
 
 template class addition<builder>;
 template class substraction<builder>;
@@ -430,5 +469,6 @@ template class exponential<builder>;
 template class logarithm<builder>;
 template class equality_constraint<builder>;
 template class common_subexpression<builder>;
+template class less_than_or_equal_to<builder>;
 
 }

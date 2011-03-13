@@ -105,6 +105,11 @@ private:
 		v.push_back(new asol::common_subexpression<T>(z, x));
 	}
 
+	virtual void less_than_or_equal_to(int z, int x) {
+
+		v.push_back(new asol::less_than_or_equal_to<T>(z, x));
+	}
+
 	vector<primitive<T>*> v;
 };
 

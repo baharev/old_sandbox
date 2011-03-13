@@ -44,6 +44,8 @@ public:
 
 	virtual void common_subexpression(int z, int x) = 0;
 
+	virtual void less_than_or_equal_to(int z, int x) = 0;
+
 	virtual ~recorder() { }
 };
 

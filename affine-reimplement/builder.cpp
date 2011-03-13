@@ -36,6 +36,7 @@ typedef exponential<builder> Exponential;
 typedef logarithm<builder> Logarithm;
 typedef equality_constraint<builder> Equality_constraint;
 typedef common_subexpression<builder> Common_subexpression;
+typedef less_than_or_equal_to<builder> Less_than_or_equal_to;
 
 problem_data* builder::problem = new problem_data;
 
@@ -218,6 +219,14 @@ void builder::equals(double value) const {
 	int constraint_offset = problem->add_constraint_rhs(value);
 
 	problem->add_primitive(new Equality_constraint(index, constraint_offset, value));
+}
+
+void builder::less_than_or_equal_to(const builder& rhs) const {
+
+	dbg_consistency();
+	rhs.dbg_consistency();
+
+	problem->add_primitive(new Less_than_or_equal_to(index, rhs.index));
 }
 
 void builder::dbg_consistency() const {

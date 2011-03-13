@@ -269,6 +269,26 @@ private:
 	const int x;
 };
 
+template <typename T>
+class less_than_or_equal_to : public unary_primitive<T> {
+
+public:
+
+	less_than_or_equal_to(int lhs, int rhs);
+
+private:
+
+	virtual void evaluate() const;
+
+	virtual void revise() const;
+
+	virtual const unary_primitive<T>* downcast(const primitive<T>* other) const;
+
+	virtual bool common_subexpressions(const primitive<T>* p) const;
+
+	virtual void record(recorder* rec) const;
+};
+
 }
 
 #endif // PRIMITIVES_HPP_
