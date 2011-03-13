@@ -272,8 +272,8 @@ void test_solutions_iterative_revise(const problem<builder>* prob) {
 	expression_graph<interval> dag(build(prob));
 
 	builder::reset();
-
-	test_solutions(dag, &expression_graph<interval>::iterative_revision);
+	// TODO Decide whether the gaps should be saved
+	test_solutions(dag, &expression_graph<interval>::iterative_revision_save_gaps);
 }
 
 void test_solutions_probing(const problem<builder>* prob) {
