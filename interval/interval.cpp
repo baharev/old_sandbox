@@ -561,11 +561,16 @@ double interval::sup() const {
 
 bool interval::is_narrow() const {
 
+	return is_narrow(NARROW);
+}
+
+bool interval::is_narrow(const double TOLERANCE) const { // FIXME Only for testing
+
 	ASSERT2(lb <= ub, *this);
 
 	const double diameter = ub-lb;
 
-	if (diameter < NARROW) {
+	if (diameter < TOLERANCE) {
 
 		return true;
 	}
@@ -576,7 +581,7 @@ bool interval::is_narrow() const {
 
 	ASSERT(abs_max > 0);
 
-	return (diameter/abs_max) < NARROW;
+	return (diameter/abs_max) < TOLERANCE;
 }
 
 bool easy_containment(double x, const interval& y) {

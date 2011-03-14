@@ -43,6 +43,8 @@ public:
 
 	void set_box(const T* box, const int length);
 
+	const T* get_box() const;
+
 	containment<T> contains(const std::vector<double>& solution) const;
 
 	void evaluate_all();

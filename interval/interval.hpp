@@ -88,6 +88,8 @@ public:
 
 	bool is_narrow() const;
 
+	bool is_narrow(const double TOLERANCE) const; // FIXME Only for testing
+
 	bool degenerate() const; // Convex envelopes use it
 
 	bool contains(double value) const;

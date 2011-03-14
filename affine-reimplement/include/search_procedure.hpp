@@ -61,9 +61,16 @@ private:
 	void print_statistics() const;
 
 	void iteration_step();
-	bool not_discarded() const;
+	bool not_done_with_box() const;
 	bool sufficient_progress();
+	bool sufficient(const double max_progress) const;
+	double compute_max_progress() const;
 	void split();
+
+	void delete_box();
+	void print_box() const;
+	void contracting_step();
+	void check_convergence();
 
 	const int n_vars;
 

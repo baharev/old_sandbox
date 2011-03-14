@@ -114,6 +114,14 @@ void expression_graph<T>::set_box(const T* box, const int length) {
 }
 
 template <typename T>
+const T* expression_graph<T>::get_box() const {
+
+	ASSERT(v.size()>0); // TODO Replace with .at(0)
+
+	return &v[0];
+}
+
+template <typename T>
 containment<T> expression_graph<T>::contains(const vector<double>& solution) const {
 
 	const int i = first_not_strictly_contained(solution);
@@ -433,9 +441,7 @@ bool expression_graph<T>::compute_intersection() {
 template <typename T>
 void expression_graph<T>::show_variables(ostream& out) const {
 
-	const int length = static_cast<int> (initial_box.size());
-
-	for (int i=0; i<length; ++i) {
+	for (int i=0; i<n_vars; ++i) {
 
 		out << i << ": " << v.at(i) << endl;
 	}
