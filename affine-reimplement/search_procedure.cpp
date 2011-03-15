@@ -21,6 +21,7 @@
 //==============================================================================
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <iterator>
 #include "search_procedure.hpp"
@@ -34,11 +35,12 @@
 
 using std::cout;
 using std::endl;
+using std::fabs;
 
 namespace asol {
 
 search_procedure::search_procedure(const problem<builder>* p)
-: n_vars(prob->number_of_variables()), prob(p), representation(0), box_orig(0)
+: prob(p), n_vars(prob->number_of_variables()), representation(0), box_orig(0)
 {
 	build_problem_representation();
 
@@ -216,9 +218,11 @@ void search_procedure::contracting_step() {
 	check_convergence();
 }
 
+const double CONVERGENCE_TOL = 0.05; // FIXME Just for testing
+
 struct wide {
 
-	bool operator()(const interval& x) const { return !x.is_narrow(0.05); }
+	bool operator()(const interval& x) const { return !x.is_narrow(CONVERGENCE_TOL); }
 };
 
 void search_procedure::check_convergence() {
@@ -240,7 +244,7 @@ void search_procedure::check_convergence() {
 
 void search_procedure::delete_box() {
 
-	cout << "Box discarded" << endl;
+	cout << "Box discarded" << endl; // TODO Somewhat misplaced for true solutions
 
 	delete[] box_orig;
 
@@ -276,11 +280,15 @@ bool search_procedure::sufficient_progress() {
 	return sufficient(best_reduction);
 }
 
-struct reduction {
+struct diam_reduction {
 
 	double operator()(const interval& x, const interval& y) {
 
-		// FIXME Continue from here!!!
+		ASSERT(x.subset_of(y));
+
+		const double y_diam = y.diameter();
+
+		return (y_diam == 0) ? 10 : x.diameter() / y_diam; // TODO Magic number
 	}
 };
 
@@ -288,36 +296,69 @@ double search_procedure::compute_max_progress() const {
 
 	const interval* const box_contracted = expr_graph->get_box();
 
-	double best_reduction = 10;
+	double reduction[n_vars];
 
-	for (int i=0; i<n_vars; ++i) {
+	std::transform(box_contracted, box_contracted+n_vars, box_orig, reduction, diam_reduction());
 
-		const double orig_diam = box_orig[i].diameter();
-
-		if (orig_diam == 0) {
-
-			cout << "Warning: index " << i << " has zero width" << endl;
-
-			continue;
-		}
-
-		// TODO Check if orig contains contracted
-
-		double reduction = box_contracted[i].diameter() / orig_diam;
-
-		if (reduction<best_reduction) {
-
-			best_reduction = reduction;
-		}
-	}
+	const double best_reduction = *std::min_element(reduction, reduction+n_vars);
 
 	cout << "Best reduction: " << best_reduction << endl;
+
+	// Check convergence was already called
+	ASSERT2(best_reduction!=10,"all components have zero width"); // FIXME Magic number
 
 	return best_reduction;
 }
 
 void search_procedure::split() {
 
+	interval* const box_new = new interval[n_vars];
+
+	std::copy(box_orig, box_orig+n_vars, box_new);
+
+	const int index = select_index_to_split();
+
+	double lb  = box_orig[index].inf();
+	double ub  = box_orig[index].sup();
+
+	double mid;
+
+	if (lb <= 0 && 0 <= ub) {
+		mid = (fabs(lb) > fabs(ub)) ? (lb/10.0) : (ub/10.0);
+	}
+	else {
+		mid = box_orig[index].midpoint();
+	}
+
+	box_orig[index] = interval(lb, mid);
+	box_new[index]  = interval(mid, ub);
+
+	pending_boxes.push_back(box_orig);
+	pending_boxes.push_back(box_new);
+
+	++splits;
+
+	box_orig = 0;
+}
+
+struct width {
+
+	double operator()(const interval& x) { return x.diameter(); } // TODO rel diam?
+};
+
+int search_procedure::select_index_to_split() const {
+
+	double reldiam[n_vars];
+
+	std::transform(box_orig, box_orig+n_vars, reldiam, width());
+
+	int index = std::max_element(reldiam, reldiam+n_vars) - reldiam;
+
+	cout << "Splitting " << index << ", " << box_orig[index] << endl;
+
+	//ASSERT ( ! box_orig[index].is_narrow(CONVERGENCE_TOL) ); // TODO Inconsistent with width
+
+	return index;
 }
 
 }

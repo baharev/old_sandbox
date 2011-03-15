@@ -80,6 +80,8 @@ public:
 
 	friend const interval hull_of(const interval& x, const interval& y);
 
+	bool true_subset_of(const interval& other) const;
+
 	bool subset_of(const interval& other) const;
 
 	friend bool disjoint(const interval& x, const interval& y);

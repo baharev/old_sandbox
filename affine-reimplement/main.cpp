@@ -28,6 +28,8 @@ using namespace asol;
 
 int main() {
 
+	//run_search_procedure();
+
 	run_assert_test();
 
 	run_box_generator_test();

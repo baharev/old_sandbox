@@ -161,8 +161,9 @@ bool extended_division(const interval& x, const interval& y, interval& z, interv
 	// (!x.contains(0) && y.contains(0)) == true
 
 	if (y.inf()==0 && y.sup()==0) {  // undefined case
-
-		ASSERT2(false, "undefined result; x, z: "<<x<<", "<<z);
+		// FIXME Is it safe to declare it infeasible? Or should we just signal no progress?
+		//ASSERT2(false, "undefined result; x, z: "<<x<<", "<<z);
+		throw infeasible_problem();
 	}
 
 	return true_extended_division(x, y, z, gap);
@@ -219,28 +220,15 @@ bool save_gap_if_any(const double l, const double u, interval& z, interval& gap)
 
 	bool ret_val = false;
 
-	if (u <= zL || zU <= l) {
-
-		; // Neither gap nor progress
-	}
-	else if (zL < l && u < zU) {
+	if (zL < l && u < zU) {
 
 		gap = interval(l, u);
 
 		ret_val = true;
 	}
-	else if (l < zL) {
-
-		z.intersect(zL, u);
-
-	}
-	else if (zU < u) {
-
-		z.intersect(l, zU);
-	}
 	else {
 
-		ASSERT(false);
+		z.intersect(l, u);
 	}
 
 	return ret_val;
@@ -296,12 +284,20 @@ const interval hull_of(const interval& x, const interval& y) {
 	return interval(std::min(x.lb, y.lb), std::max(x.ub, y.ub));
 }
 
-bool interval::subset_of(const interval& x) const {
+bool interval::true_subset_of(const interval& x) const {
 
 	ASSERT2(lb <= ub, *this);
 	ASSERT2(x.lb <= x.ub, x);
 
 	return lb >= x.lb && ub <= x.ub && (lb!=x.lb || ub !=x.ub);
+}
+
+bool interval::subset_of(const interval& x) const {
+
+	ASSERT2(lb <= ub, *this);
+	ASSERT2(x.lb <= x.ub, x);
+
+	return lb >= x.lb && ub <= x.ub;
 }
 
 bool disjoint(const interval& x, const interval& y) {

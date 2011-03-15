@@ -66,15 +66,16 @@ private:
 	bool sufficient(const double max_progress) const;
 	double compute_max_progress() const;
 	void split();
+	int select_index_to_split() const;
 
 	void delete_box();
 	void print_box() const;
 	void contracting_step();
 	void check_convergence();
 
-	const int n_vars;
-
 	const problem<builder>* prob;
+
+	const int n_vars;
 
 	const problem_data* representation;
 

@@ -25,6 +25,8 @@
 
 namespace asol {
 
+void run_search_procedure();
+
 void run_examples();
 
 void show_Jacobsen_sparsity();

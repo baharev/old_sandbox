@@ -130,7 +130,7 @@ void box_generator::set_box() {
 
 		interval& component = v.at(index.at(i));
 
-		ASSERT(part.subset_of(component));
+		ASSERT(part.true_subset_of(component));
 
 		component = part;
 	}

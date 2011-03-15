@@ -33,6 +33,7 @@
 #include "expression_graph_test.hpp"
 #include "builder.hpp"
 #include "interval.hpp"
+#include "search_procedure.hpp"
 
 using namespace std;
 
@@ -237,6 +238,13 @@ void run_examples() {
 	eco9_gap_probing();
 
 	builder::release();
+}
+
+void run_search_procedure() {
+
+	search_procedure algorithm(new Bratu<builder> ());
+
+	algorithm.run();
 }
 
 }
