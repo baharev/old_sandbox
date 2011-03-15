@@ -55,6 +55,8 @@ public:
 		return v;
 	}
 
+	~converter();
+
 private:
 
 	converter(const converter& );
@@ -112,6 +114,11 @@ private:
 
 	vector<primitive<T>*> v;
 };
+
+template <typename T>
+converter<T>::~converter() {
+	// Dtor is out-of-line to make the compiler shut-up
+}
 
 template <typename T>
 const vector<primitive<T>*> convert(const Vector& vec) {

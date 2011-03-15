@@ -39,12 +39,12 @@ public:
 
 	bool intersect(const double l, const double u);
 
-	bool intersect(const interval& other);
+	bool intersect(const interval& x) { return intersect(x.lb, x.ub); } // Profiler says...
 
 	bool prechecked_intersection(const double l, const double u);
 
 	// Used by the primitives
-	void assign(const interval& other);
+	void assign(const interval& other) { intersect(other); } // Profiler says...
 	void equals(double value);
 	void less_than_or_equal_to(interval& rhs);
 
@@ -88,7 +88,7 @@ public:
 
 	friend bool lessByLb(const interval& x, const interval& y);
 
-	bool is_narrow() const;
+	bool is_narrow() const { return is_narrow(1.0e-4); } // FIXME Magic number NARROW
 
 	bool is_narrow(const double TOLERANCE) const; // FIXME Only for testing
 

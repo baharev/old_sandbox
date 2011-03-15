@@ -23,6 +23,8 @@
 #ifndef FLOATING_POINT_TOL_HPP_
 #define FLOATING_POINT_TOL_HPP_
 
+#include <cmath>
+
 namespace asol {
 
 const double NARROW          = 1.0e-4;
@@ -31,9 +33,23 @@ const double EASY_CONT_TOL   = 1.0e-5;
 
 const double IMPROVEMENT_TOL = 1.0e-12;
 
-double add_tol(const double x, const double TOLERANCE);
+inline double add_tol(const double x, const double TOLERANCE) {
 
-double sub_tol(const double x, const double TOLERANCE);
+	const double abs_tol = x + TOLERANCE;
+
+	const double rel_tol = x + TOLERANCE*std::fabs(x);
+
+	return abs_tol < rel_tol ? rel_tol : abs_tol;
+}
+
+inline double sub_tol(const double x, const double TOLERANCE) {
+
+	const double abs_tol = x - TOLERANCE;
+
+	const double rel_tol = x - TOLERANCE*std::fabs(x);
+
+	return rel_tol < abs_tol ? rel_tol : abs_tol;
+}
 
 }
 

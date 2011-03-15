@@ -20,13 +20,14 @@
 //
 //==============================================================================
 
+#define ASOL_DISABLE_ASSERTS
+
 #include <ostream>
-#include <cmath>
 #include <algorithm>
+#include "interval.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
 #include "floating_point_tol.hpp"
-#include "interval.hpp"
 
 namespace {
 
@@ -328,16 +329,6 @@ bool interval::contains(double value) const {
 	return lb<=value && value<=ub;
 }
 
-bool interval::intersect(const interval& other) {
-
-	return intersect(other.inf(), other.sup());
-}
-
-void interval::assign(const interval& other) {
-
-	intersect(other);
-}
-
 void interval::equals(double value) {
 
 	intersect(value, value);
@@ -555,29 +546,28 @@ double interval::sup() const {
 	return ub;
 }
 
-bool interval::is_narrow() const {
-
-	return is_narrow(NARROW);
-}
-
 bool interval::is_narrow(const double TOLERANCE) const { // FIXME Only for testing
 
 	ASSERT2(lb <= ub, *this);
 
+	bool ret_val = true;
+
 	const double diameter = ub-lb;
 
-	if (diameter < TOLERANCE) {
+	if (diameter >= TOLERANCE) { // diameter < TOLERANCE means narrow
 
-		return true;
+		const double fabs_lb = std::fabs(lb);
+
+		const double fabs_ub = std::fabs(ub);
+
+		const double abs_max = fabs_lb < fabs_ub ? fabs_ub : fabs_lb;
+
+		ASSERT(abs_max > 0);
+
+		ret_val = (diameter/abs_max) < TOLERANCE;
 	}
 
-	using namespace std;
-
-	const double abs_max = max(fabs(lb), fabs(ub));
-
-	ASSERT(abs_max > 0);
-
-	return (diameter/abs_max) < TOLERANCE;
+	return ret_val;
 }
 
 bool easy_containment(double x, const interval& y) {
