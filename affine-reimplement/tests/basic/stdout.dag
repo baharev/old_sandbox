@@ -1,5 +1,5 @@
 std::logic_error
-Assertion failed: !y.contains(0); y: [ -2, 5]; const asol::interval asol::operator/(const asol::interval&, const asol::interval&) at ../interval.cpp:133
+Assertion failed: !y.contains(0); y: [ -2, 5]; const asol::interval asol::operator/(const asol::interval&, const asol::interval&) at ../interval.cpp:152
 ###############################################
 Box generator tests
 testing invalid arguments: Assertion failed: index_set.size()>0, asol::box_generator::box_generator(std::vector<asol::interval, std::allocator<asol::interval> >&, const std::vector<int, std::allocator<int> >&, int) at ../box_generator.cpp:38
