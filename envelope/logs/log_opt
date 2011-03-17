@@ -156,10 +156,14 @@ Swap
 spec_75
 
 real    0m45.448s
+real    0m18.383s (debian)
+splits: 9, solutions: 5
 
 spec_95
 
 real    1m16.626s
+real    0m30.155s (debian)
+splits: 4, solutions: 5
 
 maxw_95
 
