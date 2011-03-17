@@ -89,8 +89,8 @@ private:
 	void revise_up_to(const int i);
 	void revise_constraint(int i);
 
-	void probe_index(const int i);
-	void probe_one(const int i);
+	void probe_in_constraint(const int i);
+	void revise_up_to_with_hull_saved(const int i);
 	void save_current_as_orig();
 	void set_orig_as_v();
 	void save_hull();

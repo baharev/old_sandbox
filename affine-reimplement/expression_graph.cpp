@@ -305,7 +305,11 @@ void expression_graph<T>::probing() {
 
 	for (int i=0; i<m; ++i) {
 
-		probe_index(i);
+		hull.clear();
+
+		set_orig_as_v();
+
+		probe_in_constraint(i);
 	}
 
 	// the result of probing is in orig, result is retrieved as v
@@ -313,11 +317,7 @@ void expression_graph<T>::probing() {
 }
 
 template <typename T>
-void expression_graph<T>::probe_index(const int k) {
-
-	hull.clear();
-
-	set_orig_as_v();
+void expression_graph<T>::probe_in_constraint(const int k) {
 
 	box_generator generator(v, index_sets.at(k), 3);
 
@@ -332,7 +332,7 @@ void expression_graph<T>::probe_index(const int k) {
 
 		generator.set_box();
 
-		probe_one(k);
+		revise_up_to_with_hull_saved(k);
 	}
 
 	write_hull_to_orig();
@@ -351,7 +351,7 @@ void expression_graph<T>::set_orig_as_v() {
 }
 
 template <typename T>
-void expression_graph<T>::probe_one(const int k) {
+void expression_graph<T>::revise_up_to_with_hull_saved(const int k) {
 
 	try {
 
