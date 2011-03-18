@@ -23,6 +23,7 @@
 //#define ASOL_DISABLE_ASSERTS
 
 #include <ostream>
+#include <algorithm>
 #include "interval.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
@@ -101,30 +102,11 @@ const interval operator*(const interval& x, const interval& y) {
 
 	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
 
-	double zL = x.lb*y.lb;
+	double z[] = { x.lb*y.lb, x.lb*y.ub, x.ub*y.lb, x.ub*y.ub };
 
-	double zU = zL;
+	double zL = *std::min_element(z, z+4);
 
-	const double z1 = x.lb*y.ub;
-
-	if (z1<zL)
-		zL = z1;
-	else if (z1>zU)
-		zU = z1;
-
-	const double z2 = x.ub*y.lb;
-
-	if (z2<zL)
-		zL = z2;
-	else if (z2>zU)
-		zU = z2;
-
-	const double z3 = x.ub*y.ub;
-
-	if (z3<zL)
-		zL = z3;
-	else if (z3>zU)
-		zU = z3;
+	double zU = *std::max_element(z, z+4);
 
 	return interval(zL, zU);
 }
@@ -151,30 +133,11 @@ const interval operator/(const interval& x, const interval& y) {
 
 	ASSERT2(!y.contains(0), "y: "<<y);
 
-	double zL = x.lb/y.lb;
+	double z[] = { x.lb/y.lb, x.lb/y.ub, x.ub/y.lb, x.ub/y.ub };
 
-	double zU = zL;
+	double zL = *std::min_element(z, z+4);
 
-	const double z1 = x.lb/y.ub;
-
-	if (z1<zL)
-		zL = z1;
-	else if (z1>zU)
-		zU = z1;
-
-	const double z2 = x.ub/y.lb;
-
-	if (z2<zL)
-		zL = z2;
-	else if (z2>zU)
-		zU = z2;
-
-	const double z3 = x.ub/y.ub;
-
-	if (z3<zL)
-		zL = z3;
-	else if (z3>zU)
-		zU = z3;
+	double zU = *std::max_element(z, z+4);
 
 	return interval(zL, zU);
 }
@@ -319,7 +282,7 @@ const interval hull_of(const interval& x, const interval& y) {
 
 	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);
 
-	return interval(x.lb<y.lb?x.lb:y.lb, x.ub<y.ub?y.ub:x.ub);
+	return interval(std::min(x.lb, y.lb), std::max(x.ub, y.ub));
 }
 
 bool interval::true_subset_of(const interval& x) const {
