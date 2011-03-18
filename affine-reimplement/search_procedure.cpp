@@ -215,6 +215,8 @@ void search_procedure::contracting_step() {
 
 	expr_graph->probing();
 
+	//expr_graph->iterative_revision();
+
 	check_convergence();
 }
 
@@ -316,19 +318,24 @@ void search_procedure::split() {
 
 	std::copy(box_orig, box_orig+n_vars, box_new);
 
-	const int index = select_index_to_split();
+	double x1 = box_orig[0].diameter();
+	double D  = box_orig[15].diameter();
+
+	int index = (x1 > D)? 0 : 15;
+
+	//const int index = select_index_to_split();
 
 	double lb  = box_orig[index].inf();
 	double ub  = box_orig[index].sup();
 
 	double mid;
 
-	if (lb <= 0 && 0 <= ub) {
-		mid = (fabs(lb) > fabs(ub)) ? (lb/10.0) : (ub/10.0);
-	}
-	else {
+	//if (lb <= 0 && 0 <= ub) {
+	//	mid = (fabs(lb) > fabs(ub)) ? (lb/10.0) : (ub/10.0);
+	//}
+	//else {
 		mid = box_orig[index].midpoint();
-	}
+	//}
 
 	box_orig[index] = interval(lb, mid);
 	box_new[index]  = interval(mid, ub);
