@@ -347,13 +347,22 @@ int Wilson16<T>::number_of_stored_solutions() const {
 }
 
 template <typename T>
-const double* Wilson16<T>::solution(int i) const {
+const DoubleArray2D Wilson16<T>::solutions() const {
+
+	ASSERT2(n_vars==SIZE,"n_vars: "<<n_vars)
 
 	ASSERT2(SOLS==n_sol,"n_sol: "<<n_sol);
 
-	ASSERT2(0<=i&&i<SOLS,"i, SOLS: "<< i<<", "<<SOLS);
+	DoubleArray2D solution_vectors(SOLS);
 
-	return sol[i];
+	for (int i=0; i<SOLS; ++i) {
+
+		const double* const x = sol[i];
+
+		solution_vectors.at(i).assign(x, x + SIZE);
+	}
+
+	return solution_vectors;
 }
 
 template class Wilson16<builder>;

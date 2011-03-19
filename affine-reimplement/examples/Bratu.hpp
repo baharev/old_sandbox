@@ -40,7 +40,7 @@ private:
 
 	virtual int number_of_stored_solutions() const;
 
-	virtual const double* solution(int i) const;
+	virtual const DoubleArray2D solutions() const;
 
 	enum { SOLS = 2, SIZE = 30 };
 };

@@ -390,11 +390,20 @@ int Jacobsen<T>::number_of_stored_solutions() const {
 }
 
 template <typename T>
-const double* Jacobsen<T>::solution(int i) const {
+const DoubleArray2D Jacobsen<T>::solutions() const {
 
-	ASSERT2(0<=i&&i<n_sol,"i, n_sol: "<< i<<", "<<n_sol);
+	ASSERT2(n_vars==SIZE,"n_vars: "<<n_vars)
 
-	return sol[i];
+	DoubleArray2D solution_vectors(n_sol);
+
+	for (int i=0; i<n_sol; ++i) {
+
+		const double* const x = sol[i];
+
+		solution_vectors.at(i).assign(x, x + SIZE);
+	}
+
+	return solution_vectors;
 }
 
 template class Jacobsen<builder>;

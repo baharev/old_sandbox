@@ -23,7 +23,11 @@
 #ifndef PROBLEM_HPP_
 #define PROBLEM_HPP_
 
+#include <vector>
+
 namespace asol {
+
+typedef std::vector<std::vector<double> > DoubleArray2D;
 
 template <typename T>
 class problem {
@@ -38,7 +42,7 @@ public:
 
 	virtual int number_of_stored_solutions() const { return 0; }
 
-	virtual const double* solution(int i) const { return 0; }
+	virtual const DoubleArray2D solutions() const { return DoubleArray2D(); }
 
 	virtual ~problem() { }
 

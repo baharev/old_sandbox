@@ -28,9 +28,9 @@ using namespace asol;
 
 int main() {
 
-	run_search_procedure();
+	//run_search_procedure();
 
-	return 0;
+	//return 0;
 
 	run_assert_test();
 

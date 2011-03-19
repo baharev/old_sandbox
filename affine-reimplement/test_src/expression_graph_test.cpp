@@ -95,9 +95,11 @@ void copy_solution_vectors(const problem<builder>* prob) {
 
 	sol_vectors.resize(n_sol);
 
+	const DoubleArray2D solution_vectors = prob->solutions();
+
 	for (int i=0; i<n_sol; ++i) {
 
-		const double* const x = prob->solution(i);
+		const double* const x = &solution_vectors[i][0];
 
 		sol_vectors.at(i).assign(x, x + n_var);
 	}
@@ -113,9 +115,11 @@ void copy_solutions(const problem<builder>* prob) {
 
 	sol_boxes.resize(n_sol);
 
+	const DoubleArray2D solution_vectors = prob->solutions();
+
 	for (int i=0; i<n_sol; ++i) { // Eliminating the loop would make the intentions obscure
 
-		const double* const x = prob->solution(i);
+		const double* const x = &solution_vectors[i][0];
 
 		vector<interval>& sol= sol_boxes.at(i);
 
