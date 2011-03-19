@@ -23,7 +23,8 @@
 #ifndef SOL_TRACKER_HPP_
 #define SOL_TRACKER_HPP_
 
-#include <map>
+#include <vector>
+#include <utility>
 #include "problem.hpp"
 
 namespace asol {
@@ -39,13 +40,42 @@ public:
 
 	void save_containment_info(const interval* box);
 
+	void check_transitions_since_last_call(const interval* box);
+
 private:
 
 	enum type { NOT, EASY, STRICT };
 
+	typedef std::pair<type,int> containment_info;
+
+	typedef std::vector<std::vector<double> >::const_iterator const_itr;
+
+	void save_containment(const const_itr begin, const const_itr end);
+
+	const containment_info check_sol() const;
+
+	int first_not_strictly_contained() const;
+
+	int first_not_easily_contained(const int from) const;
+
+	void check_all_sol(const const_itr begin, const const_itr end);
+
+	void check_transition(const containment_info status, int sol_index) const;
+
+	void show_component(const char* msg, const int index) const;
+
 	const int n_vars;
+
 	DoubleArray2D solutions;
-	std::map<int,type> containment;
+
+	std::vector<containment_info> containment;
+
+	const interval* box;
+
+	std::vector<double>::const_iterator sol;
+
+	std::vector<interval> previous_box;
+
 };
 
 }
