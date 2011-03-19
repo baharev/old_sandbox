@@ -24,6 +24,7 @@
 #include <exception>
 #include <typeinfo>
 #include "diagnostics.hpp"
+#include "builder.hpp"
 #include "demangle.hpp"
 #include "interval.hpp"
 
@@ -46,6 +47,12 @@ void assert_tests() {
 	//c.diameter();
 
 	a/b;
+
+	builder p;
+
+	builder q;
+
+	p+q;
 }
 
 void run_assert_test() {

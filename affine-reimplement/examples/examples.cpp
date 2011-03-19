@@ -242,7 +242,7 @@ void run_examples() {
 
 void run_search_procedure() {
 
-	search_procedure algorithm(new Bratu<builder> ());
+	search_procedure algorithm(new Jacobsen<builder> ());
 
 	algorithm.run();
 }
