@@ -51,7 +51,6 @@ private:
 
 	void build_problem_representation();
 	void evaluate_with_builder() const;
-	void copy_stored_solutions_if_any();
 	void push_initial_box_to_deque();
 
 	bool has_more_boxes() const;
@@ -84,8 +83,6 @@ private:
 	std::deque<interval*> pending_boxes;
 
 	interval* box_orig;
-
-	std::vector<std::vector<double> > sol_vectors;
 
 	int solutions_found;
 

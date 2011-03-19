@@ -48,8 +48,6 @@ search_procedure::search_procedure(const problem<builder>* p)
 
 	push_initial_box_to_deque();
 
-	copy_stored_solutions_if_any();
-
 	solutions_found = splits = boxes_processed = 0;
 
 	representation = 0;
@@ -86,22 +84,6 @@ void search_procedure::evaluate_with_builder() const {
 	delete[] x;
 
 	builder::finished();
-}
-
-void search_procedure::copy_stored_solutions_if_any() {
-
-	const int n_sol = prob->number_of_stored_solutions();
-
-	sol_vectors.resize(n_sol);
-
-	const DoubleArray2D solution_vectors = prob->solutions();
-
-	for (int i=0; i<n_sol; ++i) {
-
-		const double* const x = &solution_vectors[i][0];
-
-		sol_vectors.at(i).assign(x, x + n_vars);
-	}
 }
 
 struct pair2interval {

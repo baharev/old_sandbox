@@ -33,6 +33,7 @@
 #include "interval.hpp"
 #include "problem.hpp"
 #include "problem_data.hpp"
+#include "sol_tracker.hpp"
 
 using namespace std;
 
@@ -192,48 +193,6 @@ void print_sparsity(const problem<builder>* prob) {
 	builder::reset();
 }
 
-void print_index_values(const containment<interval>& type, const dvector& sol) {
-
-	ASSERT(!type.strict());
-
-	ios_base::fmtflags flag_old = cout.setf(ios_base::scientific);
-
-	streamsize         prec_old = cout.precision(16);
-
-	const int index = type.index();
-
-	cout << index << ": " << type.value() << "  " << sol.at(index) << endl;
-
-	cout.flags(flag_old);
-
-	cout.precision(prec_old);
-}
-
-void check_containment(const expression_graph<interval>& dag, const dvector& sol) {
-
-	dag.show_variables(cout);
-
-	const containment<interval> type = dag.contains(sol);
-
-	//ASSERT(!type.no_sol());
-
-	if (type.strict()) {
-
-		return;
-	}
-
-	if (type.easy()) {
-
-		cout << "Warning: easy containment detected!" << endl;
-	}
-	else {
-
-		cout << "Error: not contained!" << endl;
-	}
-
-	print_index_values(type, sol);
-}
-
 template <typename MemFun>
 void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
@@ -247,9 +206,15 @@ void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
 		dag.set_box(&(box.at(0)), box.size());
 
+		sol_tracker tracker(sol_vectors);
+
+		tracker.save_containment_info(dag.get_box());
+
 		(dag.*f)();
 
-		check_containment(dag, sol_vectors.at(i));
+		dag.show_variables(cout);
+
+		tracker.check_transitions_since_last_call(dag.get_box());
 	}
 }
 
@@ -312,13 +277,19 @@ void extended_division_test(const problem<builder>* prob, const interval* box, c
 
 	cout << endl << "Initial box:" << endl;
 
-	check_containment(dag, solution);
+	sol_tracker tracker(sol_vectors);
+
+	tracker.save_containment_info(dag.get_box());
+
+	dag.show_variables(cout);
 
 	dag.probing();
 
 	cout << endl << "After probing:" << endl;
 
-	check_containment(dag, solution);
+	dag.show_variables(cout);
+
+	tracker.check_transitions_since_last_call(dag.get_box());
 
 }
 
@@ -330,11 +301,15 @@ void gap_probing_test(const problem<builder>* prob, interval* box, const double*
 
 	dag.set_box(box, length);
 
+	sol_tracker tracker(sol_vectors);
+
+	tracker.save_containment_info(dag.get_box());
+
 	dvector solution = dvector(sol, sol+length);
 
 	cout << endl << "Initial box:" << endl;
 
-	check_containment(dag, solution);
+	dag.show_variables(cout);
 
 	interval* initial_box = new interval[length];
 
@@ -346,7 +321,9 @@ void gap_probing_test(const problem<builder>* prob, interval* box, const double*
 
 	cout << endl << "After gap probing:" << endl;
 
-	check_containment(dag, solution);
+	dag.show_variables(cout);
+
+	tracker.check_transitions_since_last_call(dag.get_box());
 
 	delete[] reduced_box;
 }

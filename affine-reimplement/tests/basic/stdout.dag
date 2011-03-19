@@ -1287,7 +1287,8 @@ Testing solution 2 of 7
 13: [ 0, 0]
 14: [ 0.596608, 0.612187]
 15: [ 0.1352, 0.1552]
-Warning: easy containment detected!
+Warning: strict containment became easy
+3: [ 3.4794243000000000e+02, 3.5497156999999999e+02]
 3: [ 3.5145818664400883e+02, 3.5145818664400883e+02]  3.5145699999999999e+02
 
 Testing solution 3 of 7
@@ -1307,7 +1308,8 @@ Testing solution 3 of 7
 13: [ 0.796466, 0.816466]
 14: [ 0, 0]
 15: [ 1.30211, 1.31529]
-Warning: easy containment detected!
+Warning: strict containment became easy
+3: [ 3.4922135695548263e+02, 3.5627633386367415e+02]
 3: [ 3.5274884540953087e+02, 3.5274884540953087e+02]  3.5274884540957839e+02
 
 Testing solution 4 of 7
@@ -1327,7 +1329,8 @@ Testing solution 4 of 7
 13: [ 2.5638, 2.581]
 14: [ 11.8959, 12.02]
 15: [ 0, 0]
-Warning: easy containment detected!
+Warning: strict containment became easy
+3: [ 3.6942526376580503e+02, 3.7688840040753843e+02]
 3: [ 3.7315683212112708e+02, 3.7315683839546102e+02]  3.7315683208667173e+02
 
 Testing solution 5 of 7

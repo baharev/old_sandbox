@@ -41,7 +41,17 @@ sol_tracker::sol_tracker(const problem<builder>* prob)
 	box = 0;
 }
 
-// TODO Move containment-related methods from expression_graph to here
+sol_tracker::sol_tracker(const DoubleArray2D& sols)
+: n_vars(sols.begin()->size()), solutions(sols)
+{
+	box = 0;
+}
+
+sol_tracker::~sol_tracker() {
+	// Just to make the compiler shut-up
+}
+
+// FIXME Make sol_tracker member of expression_graph and clean-up tests!!!
 void sol_tracker::save_containment_info(const interval* current_box) {
 
 	ASSERT2(!solutions.empty(),"set solutions first");
@@ -159,13 +169,13 @@ void sol_tracker::check_transition(const containment_info status, int sol_index)
 
 		show_component("Error: solution lost, generating hexadecimal dump", index);
 
-		// TODO Hexa dump
+		// TODO Hexa dump then exit
 	}
 	else if (previous < current) {
 
 		show_component("Error: the box grew, generating hexadecimal dump", index);
 
-		// TODO Hexa dump
+		// TODO Hexa dump then exit
 	}
 	else if (previous == current) {
 
@@ -175,7 +185,6 @@ void sol_tracker::check_transition(const containment_info status, int sol_index)
 
 		ASSERT(false);
 	}
-
 }
 
 void sol_tracker::show_component(const char* msg, const int index) const {
@@ -184,9 +193,13 @@ void sol_tracker::show_component(const char* msg, const int index) const {
 
 	streamsize         prec_old = cout.precision(16);
 
+	cout << msg << endl;
+
 	cout << index << ": " << previous_box.at(index) << endl;
 
-	cout << index << ": " <<             box[index] << endl;
+	cout << index << ": " <<             box[index] << "  ";
+
+	cout << sol[index] << endl;
 
 	cout.flags(flag_old);
 

@@ -38,9 +38,13 @@ public:
 
 	explicit sol_tracker(const problem<builder>* prob);
 
+	explicit sol_tracker(const DoubleArray2D& solutions);
+
 	void save_containment_info(const interval* box);
 
 	void check_transitions_since_last_call(const interval* box);
+
+	~sol_tracker();
 
 private:
 
