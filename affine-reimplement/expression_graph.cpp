@@ -122,56 +122,6 @@ const T* expression_graph<T>::get_box() const {
 }
 
 template <typename T>
-containment<T> expression_graph<T>::contains(const vector<double>& solution) const {
-
-	const int i = first_not_strictly_contained(solution);
-
-	if (i==n_vars) {
-
-		return containment<T>(STRICT_CONT, i);
-	}
-
-	const int j = first_not_easily_contained(solution, i);
-
-	if (j==n_vars) {
-
-		return containment<T>(EASY_CONT, i, v.at(i));
-	}
-	else {
-
-		return containment<T>(NOT_CONT, j, v.at(j));
-	}
-}
-
-template <typename T>
-int expression_graph<T>::first_not_strictly_contained(const vector<double>& solution) const {
-
-	for (int i=0; i<n_vars; ++i) {
-
-		if (! v.at(i).contains(solution.at(i)) ) {
-
-			return i;
-		}
-	}
-
-	return n_vars;
-}
-
-template <typename T>
-int expression_graph<T>::first_not_easily_contained(const vector<double>& solution, int from) const {
-
-	for (int i=from ; i<n_vars; ++i) {
-
-		if (!easy_containment(solution.at(i), v.at(i)) ) {
-
-			return i;
-		}
-	}
-
-	return n_vars;
-}
-
-template <typename T>
 void expression_graph<T>::evaluate_all() {
 
 	for_each(primitives.begin(), primitives.end(), mem_fun(&primitive<T>::evaluate));

@@ -32,18 +32,21 @@ using namespace std;
 namespace asol {
 
 sol_tracker::sol_tracker(const problem<builder>* prob)
-: n_vars(prob->number_of_variables()), solutions(prob->solutions())
+: n_vars(prob->number_of_variables()),
+  solutions(prob->solutions())
 {
 	// TODO Make number_of_stored_solutions() return size()
 	const int size = static_cast<int>(solutions.size());
 	ASSERT2(size==prob->number_of_stored_solutions(),"size: "<<size);
 
+	STRICT_CONTAINMENT = make_pair(STRICT, -1); // FIXME Why fails in the init list?
 	box = 0;
 }
 
 sol_tracker::sol_tracker(const DoubleArray2D& sols)
 : n_vars(sols.begin()->size()), solutions(sols)
 {
+	STRICT_CONTAINMENT = make_pair(STRICT, -1);
 	box = 0;
 }
 
@@ -64,7 +67,23 @@ void sol_tracker::save_containment_info(const interval* current_box) {
 
 	box = 0;
 
-	// TODO Print containment statistics
+	print_containment_statistics();
+}
+
+void sol_tracker::print_containment_statistics() const {
+
+	int strict = count(containment.begin(), containment.end(), STRICT_CONTAINMENT);
+
+	cout << "Strictly contains " << strict << " of " << containment.size();
+	cout << " solutions";
+
+	if ( strict == 1) {
+		int pos = find(containment.begin(), containment.end(), STRICT_CONTAINMENT)
+				     - containment.begin();
+		cout << " (" << pos+1 << ")";
+	}
+
+	cout << endl;
 }
 
 void sol_tracker::save_containment(const const_itr begin, const const_itr end) {
@@ -75,7 +94,9 @@ void sol_tracker::save_containment(const const_itr begin, const const_itr end) {
 
 		sol = i->begin();
 
-		containment.push_back( check_sol() );
+		containment_info status = check_sol();
+
+		containment.push_back( status );
 	}
 }
 
@@ -85,7 +106,7 @@ const sol_tracker::containment_info sol_tracker::check_sol() const {
 
 	if (i==n_vars) {
 
-		return containment_info(STRICT, -1);
+		return STRICT_CONTAINMENT;
 	}
 
 	const int j = first_not_easily_contained(i);

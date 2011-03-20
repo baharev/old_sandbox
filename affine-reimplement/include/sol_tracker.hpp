@@ -48,11 +48,13 @@ public:
 
 private:
 
-	enum type { NOT, EASY, STRICT };
+	enum type { NOT, EASY, STRICT};
 
 	typedef std::pair<type,int> containment_info;
 
 	typedef std::vector<std::vector<double> >::const_iterator const_itr;
+
+	void print_containment_statistics() const;
 
 	void save_containment(const const_itr begin, const const_itr end);
 
@@ -71,6 +73,8 @@ private:
 	const int n_vars;
 
 	DoubleArray2D solutions;
+
+	containment_info STRICT_CONTAINMENT;
 
 	std::vector<containment_info> containment;
 

@@ -516,6 +516,7 @@ Bratu
 Bratu solutions revise
 
 Testing solution 1 of 2
+Strictly contains 1 of 2 solutions (1)
 0: [ 0.0121941, 0.0222047]
 1: [ 0.0233402, 0.0433402]
 2: [ 0.0384051, 0.0584051]
@@ -548,6 +549,7 @@ Testing solution 1 of 2
 29: [ 0.0121941, 0.0222047]
 
 Testing solution 2 of 2
+Strictly contains 1 of 2 solutions (2)
 0: [ 0.343816, 0.35383]
 1: [ 0.686171, 0.706171]
 2: [ 1.03102, 1.05185]
@@ -582,6 +584,7 @@ Testing solution 2 of 2
 Bratu solutions revise2
 
 Testing solution 1 of 2
+Strictly contains 1 of 2 solutions (1)
 0: [ 0.0121941, 0.0222047]
 1: [ 0.0233402, 0.0433402]
 2: [ 0.0384051, 0.0584051]
@@ -614,6 +617,7 @@ Testing solution 1 of 2
 29: [ 0.0121941, 0.0222047]
 
 Testing solution 2 of 2
+Strictly contains 1 of 2 solutions (2)
 0: [ 0.343816, 0.35383]
 1: [ 0.686171, 0.706171]
 2: [ 1.03102, 1.05185]
@@ -648,6 +652,7 @@ Testing solution 2 of 2
 Jacobsen solutions revise_all
 
 Testing solution 1 of 5
+Strictly contains 1 of 5 solutions (1)
 0: [ 0.985726, 1]
 1: [ 0.976317, 0.996317]
 2: [ 0.948235, 0.968235]
@@ -666,6 +671,7 @@ Testing solution 1 of 5
 15: [ 0.416717, 0.43263]
 
 Testing solution 2 of 5
+Strictly contains 1 of 5 solutions (2)
 0: [ 0.193818, 0.200323]
 1: [ 0.09548, 0.112846]
 2: [ 0.0715134, 0.0856427]
@@ -684,6 +690,7 @@ Testing solution 2 of 5
 15: [ 1.06436, 1.08586]
 
 Testing solution 3 of 5
+Strictly contains 1 of 5 solutions (3)
 0: [ 0.97717, 0.99717]
 1: [ 0.950178, 0.970178]
 2: [ 0.876708, 0.896708]
@@ -702,6 +709,7 @@ Testing solution 3 of 5
 15: [ 0.476419, 0.490285]
 
 Testing solution 4 of 5
+Strictly contains 1 of 5 solutions (4)
 0: [ 0.987599, 1]
 1: [ 0.98207, 1]
 2: [ 0.96462, 0.98462]
@@ -720,6 +728,7 @@ Testing solution 4 of 5
 15: [ 0.283312, 0.303312]
 
 Testing solution 5 of 5
+Strictly contains 1 of 5 solutions (5)
 0: [ 0.924517, 0.944517]
 1: [ 0.80886, 0.82886]
 2: [ 0.592621, 0.612621]
@@ -740,6 +749,7 @@ Testing solution 5 of 5
 Jacobsen solutions with iterative revision
 
 Testing solution 1 of 5
+Strictly contains 1 of 5 solutions (1)
 0: [ 0.985726, 1]
 1: [ 0.976317, 0.996317]
 2: [ 0.948235, 0.968235]
@@ -758,6 +768,7 @@ Testing solution 1 of 5
 15: [ 0.418993, 0.430453]
 
 Testing solution 2 of 5
+Strictly contains 1 of 5 solutions (2)
 0: [ 0.193861, 0.199823]
 1: [ 0.101057, 0.106838]
 2: [ 0.0764852, 0.0803407]
@@ -776,6 +787,7 @@ Testing solution 2 of 5
 15: [ 1.06436, 1.08586]
 
 Testing solution 3 of 5
+Strictly contains 1 of 5 solutions (3)
 0: [ 0.97717, 0.99717]
 1: [ 0.950178, 0.970178]
 2: [ 0.876708, 0.896708]
@@ -794,6 +806,7 @@ Testing solution 3 of 5
 15: [ 0.480064, 0.486665]
 
 Testing solution 4 of 5
+Strictly contains 1 of 5 solutions (4)
 0: [ 0.987599, 1]
 1: [ 0.98207, 1]
 2: [ 0.96462, 0.98462]
@@ -812,6 +825,7 @@ Testing solution 4 of 5
 15: [ 0.283312, 0.303312]
 
 Testing solution 5 of 5
+Strictly contains 1 of 5 solutions (5)
 0: [ 0.924517, 0.944517]
 1: [ 0.80886, 0.82886]
 2: [ 0.592621, 0.612621]
@@ -832,6 +846,7 @@ Testing solution 5 of 5
 Jacobsen solutions probing
 
 Testing solution 1 of 5
+Strictly contains 1 of 5 solutions (1)
 0: [ 0.986365, 1]
 1: [ 0.976564, 0.996317]
 2: [ 0.948235, 0.968235]
@@ -850,6 +865,7 @@ Testing solution 1 of 5
 15: [ 0.419743, 0.429666]
 
 Testing solution 2 of 5
+Strictly contains 1 of 5 solutions (2)
 0: [ 0.19433, 0.199462]
 1: [ 0.102684, 0.105172]
 2: [ 0.0777914, 0.0789697]
@@ -868,6 +884,7 @@ Testing solution 2 of 5
 15: [ 1.06561, 1.08412]
 
 Testing solution 3 of 5
+Strictly contains 1 of 5 solutions (3)
 0: [ 0.977708, 0.996728]
 1: [ 0.950178, 0.970178]
 2: [ 0.876708, 0.896708]
@@ -886,6 +903,7 @@ Testing solution 3 of 5
 15: [ 0.480707, 0.486083]
 
 Testing solution 4 of 5
+Strictly contains 1 of 5 solutions (4)
 0: [ 0.987599, 1]
 1: [ 0.98207, 1]
 2: [ 0.96462, 0.98462]
@@ -904,6 +922,7 @@ Testing solution 4 of 5
 15: [ 0.283312, 0.303312]
 
 Testing solution 5 of 5
+Strictly contains 1 of 5 solutions (5)
 0: [ 0.926071, 0.942943]
 1: [ 0.80886, 0.82886]
 2: [ 0.592621, 0.612621]
@@ -924,6 +943,7 @@ Testing solution 5 of 5
 eco9 solutions iterative revise
 
 Testing solution 1 of 16
+Strictly contains 1 of 16 solutions (1)
 0: [ -0.135, -0.115]
 1: [ -0.135, -0.115]
 2: [ -0.135, -0.115]
@@ -934,6 +954,7 @@ Testing solution 1 of 16
 7: [ -0.135, -0.115]
 
 Testing solution 2 of 16
+Strictly contains 1 of 16 solutions (2)
 0: [ 0.635506, 0.655506]
 1: [ 0.607128, 0.627128]
 2: [ 0.662842, 0.682842]
@@ -944,6 +965,7 @@ Testing solution 2 of 16
 7: [ -0.826178, -0.806178]
 
 Testing solution 3 of 16
+Strictly contains 1 of 16 solutions (3)
 0: [ 0.842877, 0.862877]
 1: [ 0.119364, 0.139364]
 2: [ -1.211, -1.18702]
@@ -954,6 +976,7 @@ Testing solution 3 of 16
 7: [ -0.474184, -0.454184]
 
 Testing solution 4 of 16
+Strictly contains 1 of 16 solutions (4)
 0: [ -0.0734148, -0.0534148]
 1: [ -0.672095, -0.652095]
 2: [ 1.60712, 1.63959]
@@ -964,6 +987,7 @@ Testing solution 4 of 16
 7: [ -0.656226, -0.636226]
 
 Testing solution 5 of 16
+Strictly contains 1 of 16 solutions (5)
 0: [ -0.0494626, -0.0294626]
 1: [ 1.12226, 1.14493]
 2: [ -0.482669, -0.462669]
@@ -974,6 +998,7 @@ Testing solution 5 of 16
 7: [ -0.426711, -0.406711]
 
 Testing solution 6 of 16
+Strictly contains 1 of 16 solutions (6)
 0: [ 0.549969, 0.569969]
 1: [ -0.710057, -0.690057]
 2: [ 0.190279, 0.210279]
@@ -984,6 +1009,7 @@ Testing solution 6 of 16
 7: [ -0.254827, -0.234827]
 
 Testing solution 7 of 16
+Strictly contains 1 of 16 solutions (7)
 0: [ 0.0121226, 0.0321226]
 1: [ 0.591768, 0.611768]
 2: [ 1.29484, 1.321]
@@ -994,6 +1020,7 @@ Testing solution 7 of 16
 7: [ -2.17586, -2.13278]
 
 Testing solution 8 of 16
+Strictly contains 1 of 16 solutions (8)
 0: [ 1.52247, 1.55322]
 1: [ 0.214122, 0.234122]
 2: [ -1.18989, -1.16633]
@@ -1004,6 +1031,7 @@ Testing solution 8 of 16
 7: [ -0.919159, -0.899159]
 
 Testing solution 9 of 16
+Strictly contains 1 of 16 solutions (9)
 0: [ 0.997923, 1.0021]
 1: [ 0.99559, 1.00447]
 2: [ 0.99297, 1.00714]
@@ -1014,6 +1042,7 @@ Testing solution 9 of 16
 7: [ -8.05375, -7.94645]
 
 Testing solution 10 of 16
+Strictly contains 1 of 16 solutions (10)
 0: [ 0.931389, 0.945583]
 1: [ 1.45689, 1.48632]
 2: [ -0.293717, -0.273717]
@@ -1024,6 +1053,7 @@ Testing solution 10 of 16
 7: [ -1.56292, -1.53197]
 
 Testing solution 11 of 16
+Strictly contains 1 of 16 solutions (11)
 0: [ 0.219494, 0.239494]
 1: [ -0.0252683, -0.00526829]
 2: [ -0.189614, -0.169614]
@@ -1034,6 +1064,7 @@ Testing solution 11 of 16
 7: [ -1.23747, -1.21297]
 
 Testing solution 12 of 16
+Strictly contains 1 of 16 solutions (12)
 0: [ 0.305031, 0.325031]
 1: [ 1.26091, 1.28639]
 2: [ -0.0779422, -0.0579422]
@@ -1044,6 +1075,7 @@ Testing solution 12 of 16
 7: [ -4.12536, -4.04367]
 
 Testing solution 13 of 16
+Strictly contains 1 of 16 solutions (13)
 0: [ 0.909946, 0.91907]
 1: [ -0.357508, -0.337508]
 2: [ 0.0373254, 0.0573254]
@@ -1054,6 +1086,7 @@ Testing solution 13 of 16
 7: [ -2.42374, -2.37574]
 
 Testing solution 14 of 16
+Strictly contains 1 of 16 solutions (14)
 0: [ 1.60856, 1.6385]
 1: [ 1.6087, 1.6412]
 2: [ 0.604711, 0.624711]
@@ -1064,6 +1097,7 @@ Testing solution 14 of 16
 7: [ -3.06116, -3.00055]
 
 Testing solution 15 of 16
+Strictly contains 1 of 16 solutions (15)
 0: [ -0.672846, -0.652846]
 1: [ 1.52978, 1.56068]
 2: [ -0.43466, -0.41466]
@@ -1074,6 +1108,7 @@ Testing solution 15 of 16
 7: [ -1.11092, -1.08892]
 
 Testing solution 16 of 16
+Strictly contains 1 of 16 solutions (16)
 0: [ -0.758383, -0.738383]
 1: [ 0.32996, 0.34996]
 2: [ 0.66449, 0.68449]
@@ -1253,6 +1288,7 @@ Type 3 common subexpressions:
 Last value: [ 1, 1]
 
 Testing solution 1 of 7
+Strictly contains 1 of 7 solutions (1)
 0: [ 0.222621, 0.242193]
 1: [ 0.530553, 0.550553]
 2: [ 0.217477, 0.237002]
@@ -1271,6 +1307,7 @@ Testing solution 1 of 7
 15: [ 0, 0]
 
 Testing solution 2 of 7
+Strictly contains 1 of 7 solutions (2)
 0: [ 1, 1]
 1: [ 0, 0]
 2: [ 0, 0]
@@ -1292,6 +1329,7 @@ Warning: strict containment became easy
 3: [ 3.5145818664400883e+02, 3.5145818664400883e+02]  3.5145699999999999e+02
 
 Testing solution 3 of 7
+Strictly contains 1 of 7 solutions (3)
 0: [ 0, 0]
 1: [ 1, 1]
 2: [ 0, 0]
@@ -1313,6 +1351,7 @@ Warning: strict containment became easy
 3: [ 3.5274884540953087e+02, 3.5274884540953087e+02]  3.5274884540957839e+02
 
 Testing solution 4 of 7
+Strictly contains 1 of 7 solutions (4)
 0: [ 0, 0]
 1: [ 0, 0]
 2: [ 1, 1]
@@ -1334,6 +1373,7 @@ Warning: strict containment became easy
 3: [ 3.7315683212112708e+02, 3.7315683839546102e+02]  3.7315683208667173e+02
 
 Testing solution 5 of 7
+Strictly contains 1 of 7 solutions (5)
 0: [ 0.476645, 0.496645]
 1: [ 0.503355, 0.523355]
 2: [ 0, 0]
@@ -1352,6 +1392,7 @@ Testing solution 5 of 7
 15: [ 0.425564, 0.445564]
 
 Testing solution 6 of 7
+Strictly contains 1 of 7 solutions (6)
 0: [ 0.882091, 0.901955]
 1: [ 0, 0]
 2: [ 0.0980448, 0.117909]
@@ -1370,6 +1411,7 @@ Testing solution 6 of 7
 15: [ 0, 0]
 
 Testing solution 7 of 7
+Strictly contains 1 of 7 solutions (7)
 0: [ 0, 0]
 1: [ 0.670573, 0.690573]
 2: [ 0.309427, 0.329427]
@@ -1390,6 +1432,7 @@ Testing solution 7 of 7
 Extended division test on eco9
 
 Initial box:
+Strictly contains 1 of 16 solutions (9)
 0: [ -100, 100]
 1: [ -100, 100]
 2: [ -100, 100]
@@ -1410,6 +1453,7 @@ After probing:
 7: [ -100, -7]
 ###############################################
 Gap probing on eco9
+Strictly contains 1 of 16 solutions (9)
 
 Initial box:
 0: [ -100, 100]
