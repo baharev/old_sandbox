@@ -178,8 +178,11 @@ void search_procedure::iteration_step() {
 		contracting_step();
 	}
 	catch (infeasible_problem& ) {
-
-		ASSERT(!expr_graph->contains_solution());
+		// FIXME We should dump the previous one...
+		if(expr_graph->contains_solution()) {
+			expr_graph->dump();
+			ASSERT(false);
+		}
 
 		delete_box();
 	}

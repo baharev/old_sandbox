@@ -66,6 +66,8 @@ public:
 
 	void check_transitions_since_last_call();
 
+	void dump() const;
+
 	void show_variables(std::ostream& out) const;
 
 	const T& last_value() const;

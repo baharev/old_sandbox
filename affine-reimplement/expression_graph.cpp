@@ -32,6 +32,7 @@
 #include "interval.hpp"
 #include "problem_data.hpp"
 #include "sol_tracker.hpp"
+#include "vector_dump.hpp"
 
 using namespace std;
 
@@ -425,6 +426,12 @@ template <typename T>
 void expression_graph<T>::check_transitions_since_last_call() {
 
 	tracker->check_transitions_since_last_call(get_box());
+}
+
+template <typename T>
+void expression_graph<T>::dump() const {
+
+	asol::dump(v);
 }
 
 template <typename T>
