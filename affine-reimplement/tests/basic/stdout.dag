@@ -1432,7 +1432,6 @@ Strictly contains 1 of 7 solutions (7)
 Extended division test on eco9
 
 Initial box:
-Strictly contains 1 of 16 solutions (9)
 0: [ -100, 100]
 1: [ -100, 100]
 2: [ -100, 100]
@@ -1441,6 +1440,7 @@ Strictly contains 1 of 16 solutions (9)
 5: [ -100, 100]
 6: [ 0.5, 100]
 7: [ -100, -7]
+Strictly contains 1 of 16 solutions (9)
 
 After probing:
 0: [ 0.88, 11.1969]
@@ -1451,6 +1451,7 @@ After probing:
 5: [ -100, 100]
 6: [ 0.5, 100]
 7: [ -100, -7]
+Strictly contains 1 of 16 solutions (9)
 ###############################################
 Gap probing on eco9
 Strictly contains 1 of 16 solutions (9)

@@ -42,6 +42,8 @@ public:
 
 	void save_containment_info(const interval* box);
 
+	void print_containment_statistics() const;
+
 	void check_transitions_since_last_call(const interval* box);
 
 	~sol_tracker();
@@ -53,8 +55,6 @@ private:
 	typedef std::pair<type,int> containment_info;
 
 	typedef std::vector<std::vector<double> >::const_iterator const_itr;
-
-	void print_containment_statistics() const;
 
 	void save_containment(const const_itr begin, const const_itr end);
 

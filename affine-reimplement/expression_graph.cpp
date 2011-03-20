@@ -30,6 +30,7 @@
 #include "gap_info.hpp"
 #include "interval.hpp"
 #include "problem_data.hpp"
+#include "sol_tracker.hpp"
 
 using namespace std;
 
@@ -39,7 +40,7 @@ template <typename T>
 extern const std::vector<primitive<T>*> convert(const std::vector<primitive<builder>*>& v);
 
 template <typename T>
-expression_graph<T>::expression_graph(const problem_data* problem) :
+expression_graph<T>::expression_graph(const problem_data* problem, const DoubleArray2D& solutions) :
 
 v          (problem->peek_index()),
 n_vars     (problem->number_of_variables()),
@@ -48,6 +49,8 @@ constants  (problem->get_numeric_constants().begin(), problem->get_numeric_const
 initial_box(problem->get_initial_box()),
 index_sets (problem->get_index_sets()),
 constraints(problem->get_constraints()),
+apriori_sols(solutions),
+tracker    (0),
 orig       (v.size()),
 hull       (v.size())
 
@@ -61,6 +64,8 @@ template <typename T>
 expression_graph<T>::~expression_graph() {
 
 	for_each(primitives.begin(), primitives.end(), Delete());
+
+	delete tracker;
 }
 
 template <typename T>
@@ -116,9 +121,7 @@ void expression_graph<T>::set_box(const T* box, const int length) {
 template <typename T>
 const T* expression_graph<T>::get_box() const {
 
-	ASSERT(v.size()>0); // TODO Replace with .at(0)
-
-	return &v[0];
+	return &(v.at(0));
 }
 
 template <typename T>
@@ -386,6 +389,28 @@ bool expression_graph<T>::compute_intersection() {
 	}
 
 	return changed;
+}
+
+template <typename T>
+void expression_graph<T>::save_containment_info() {
+
+	delete tracker;
+
+	tracker = new sol_tracker(apriori_sols);
+
+	tracker->save_containment_info(get_box());
+}
+
+template <typename T>
+void expression_graph<T>::print_containment_statistics() const {
+
+	tracker->print_containment_statistics();
+}
+
+template <typename T>
+void expression_graph<T>::check_transitions_since_last_call() {
+
+	tracker->check_transitions_since_last_call(get_box());
 }
 
 template <typename T>

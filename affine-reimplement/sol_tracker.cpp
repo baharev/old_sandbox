@@ -44,7 +44,7 @@ sol_tracker::sol_tracker(const problem<builder>* prob)
 }
 
 sol_tracker::sol_tracker(const DoubleArray2D& sols)
-: n_vars(sols.begin()->size()), solutions(sols)
+: n_vars(sols.at(0).size()), solutions(sols)
 {
 	STRICT_CONTAINMENT = make_pair(STRICT, -1);
 	box = 0;

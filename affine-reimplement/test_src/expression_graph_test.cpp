@@ -33,7 +33,6 @@
 #include "interval.hpp"
 #include "problem.hpp"
 #include "problem_data.hpp"
-#include "sol_tracker.hpp"
 
 using namespace std;
 
@@ -41,11 +40,7 @@ namespace {
 
 typedef vector<asol::interval> ivector;
 
-typedef vector<double> dvector;
-
 vector<ivector> sol_boxes;
-
-vector<dvector> sol_vectors;
 
 const double AMOUNT(0.01);
 
@@ -88,27 +83,7 @@ public:
 	}
 };
 
-void copy_solution_vectors(const problem<builder>* prob) {
-
-	const int n_var = prob->number_of_variables();
-
-	const int n_sol = prob->number_of_stored_solutions();
-
-	sol_vectors.resize(n_sol);
-
-	const DoubleArray2D solution_vectors = prob->solutions();
-
-	for (int i=0; i<n_sol; ++i) {
-
-		const double* const x = &solution_vectors[i][0];
-
-		sol_vectors.at(i).assign(x, x + n_var);
-	}
-}
-
 void copy_solutions(const problem<builder>* prob) {
-
-	copy_solution_vectors(prob);
 
 	const BoundVector& initial_box = builder::get_problem_data()->get_initial_box();
 
@@ -157,9 +132,11 @@ void print_data(const problem_data* representation) {
 
 void dag_test(const problem<builder>* prob) {
 
+	DoubleArray2D solutions(prob->solutions());
+
 	const problem_data* const representation = build(prob);
 
-	expression_graph<interval> dag(representation);
+	expression_graph<interval> dag(representation, solutions);
 
 	print_data(representation);
 
@@ -206,21 +183,21 @@ void test_solutions(expression_graph<interval>& dag, MemFun f) {
 
 		dag.set_box(&(box.at(0)), box.size());
 
-		sol_tracker tracker(sol_vectors);
-
-		tracker.save_containment_info(dag.get_box());
+		dag.save_containment_info();
 
 		(dag.*f)();
 
 		dag.show_variables(cout);
 
-		tracker.check_transitions_since_last_call(dag.get_box());
+		dag.check_transitions_since_last_call();
 	}
 }
 
 void test_solutions_revise(const problem<builder>* prob) {
 
-	expression_graph<interval> dag(build(prob)); // FIXME Duplication!
+	DoubleArray2D solutions(prob->solutions()); // FIXME Duplication!
+
+	expression_graph<interval> dag(build(prob), solutions);
 
 	builder::reset();
 
@@ -229,7 +206,9 @@ void test_solutions_revise(const problem<builder>* prob) {
 
 void test_solutions_revise2(const problem<builder>* prob) {
 
-	expression_graph<interval> dag(build(prob));
+	DoubleArray2D solutions(prob->solutions());
+
+	expression_graph<interval> dag(build(prob), solutions);
 
 	builder::reset();
 
@@ -238,7 +217,9 @@ void test_solutions_revise2(const problem<builder>* prob) {
 
 void test_solutions_iterative_revise(const problem<builder>* prob) {
 
-	expression_graph<interval> dag(build(prob));
+	DoubleArray2D solutions(prob->solutions());
+
+	expression_graph<interval> dag(build(prob), solutions);
 
 	builder::reset();
 	// TODO Decide whether the gaps should be saved
@@ -247,7 +228,9 @@ void test_solutions_iterative_revise(const problem<builder>* prob) {
 
 void test_solutions_probing(const problem<builder>* prob) {
 
-	expression_graph<interval> dag(build(prob));
+	DoubleArray2D solutions(prob->solutions());
+
+	expression_graph<interval> dag(build(prob), solutions);
 
 	builder::reset();
 
@@ -256,7 +239,9 @@ void test_solutions_probing(const problem<builder>* prob) {
 
 void test_probing_on_initial_box(const problem<builder>* prob) {
 
-	expression_graph<interval> dag(build(prob));
+	DoubleArray2D solutions(prob->solutions());
+
+	expression_graph<interval> dag(build(prob), solutions);
 
 	builder::reset();
 
@@ -267,21 +252,19 @@ void test_probing_on_initial_box(const problem<builder>* prob) {
 
 void extended_division_test(const problem<builder>* prob, const interval* box, const double* sol, int length) {
 
-	expression_graph<interval> dag(build(prob));
+	DoubleArray2D solutions(prob->solutions());
+
+	expression_graph<interval> dag(build(prob), solutions);
 
 	builder::reset();
 
 	dag.set_box(box, length);
 
-	dvector solution = dvector(sol, sol+length);
-
 	cout << endl << "Initial box:" << endl;
 
-	sol_tracker tracker(sol_vectors);
-
-	tracker.save_containment_info(dag.get_box());
-
 	dag.show_variables(cout);
+
+	dag.save_containment_info();
 
 	dag.probing();
 
@@ -289,23 +272,23 @@ void extended_division_test(const problem<builder>* prob, const interval* box, c
 
 	dag.show_variables(cout);
 
-	tracker.check_transitions_since_last_call(dag.get_box());
+	dag.check_transitions_since_last_call();
 
+	dag.print_containment_statistics();
 }
 
+// TODO Make a new gap probing test
 void gap_probing_test(const problem<builder>* prob, interval* box, const double* sol, int length) {
 
-	expression_graph<interval> dag(build(prob));
+	DoubleArray2D solutions(prob->solutions());
+
+	expression_graph<interval> dag(build(prob), solutions);
 
 	builder::reset();
 
 	dag.set_box(box, length);
 
-	sol_tracker tracker(sol_vectors);
-
-	tracker.save_containment_info(dag.get_box());
-
-	dvector solution = dvector(sol, sol+length);
+	dag.save_containment_info();
 
 	cout << endl << "Initial box:" << endl;
 
@@ -323,7 +306,7 @@ void gap_probing_test(const problem<builder>* prob, interval* box, const double*
 
 	dag.show_variables(cout);
 
-	tracker.check_transitions_since_last_call(dag.get_box());
+	dag.check_transitions_since_last_call();
 
 	delete[] reduced_box;
 }

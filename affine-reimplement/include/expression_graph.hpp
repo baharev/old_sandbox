@@ -29,16 +29,18 @@
 
 namespace asol {
 
-template <typename T> class primitive;
-class problem_data;
 template <typename T> struct gap_info;
+template <typename T> class primitive;
+class sol_tracker;
+class problem_data;
+
 
 template <typename T>
 class expression_graph {
 
 public:
 
-	expression_graph(const problem_data* problem);
+	expression_graph(const problem_data* problem, const DoubleArray2D& solutions);
 
 	void set_box(const T* box, const int length);
 
@@ -55,6 +57,12 @@ public:
 	void iterative_revision_save_gaps();
 
 	void probing();
+
+	void save_containment_info();
+
+	void print_containment_statistics() const;
+
+	void check_transitions_since_last_call();
 
 	void show_variables(std::ostream& out) const;
 
@@ -76,9 +84,6 @@ private:
 
 	int constraint_begin(int i) const;
 	int constraint_end(int i) const;
-
-	int first_not_strictly_contained(const std::vector<double>& solution) const;
-	int first_not_easily_contained(const std::vector<double>& solution, int from) const;
 
 	void evaluate_up_to(const int i);
 	void evaluate_constraint(int i);
@@ -104,6 +109,8 @@ private:
 	const BoundVector initial_box;
 	const IntArray2D index_sets;
 	const IntVector constraints;
+	const DoubleArray2D apriori_sols;
+	sol_tracker* tracker;
 
 	std::vector<T> orig;
 	std::vector<T> hull;

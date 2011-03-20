@@ -44,7 +44,7 @@ search_procedure::search_procedure(const problem<builder>* p)
 {
 	build_problem_representation();
 
-	expr_graph = new expression_graph<interval>(representation);
+	expr_graph = new expression_graph<interval>(representation, prob->solutions());
 
 	push_initial_box_to_deque();
 
