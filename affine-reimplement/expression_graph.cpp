@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <iostream> // FIXME Remove when ready
 #include "expression_graph.hpp"
 #include "box_generator.hpp"
 #include "delete_struct.hpp"
@@ -240,7 +241,6 @@ void expression_graph<T>::iterative_revision_save_gaps() {
 
 	evaluate_up_to(end-1);
 
-	// FIXME Continue from here!
 	raii<T> set_primitive_gap_container(&gaps);
 
 	for_each(primitives.rbegin(), primitives.rend(), mem_fun(&primitive<T>::revise));
@@ -308,7 +308,15 @@ void expression_graph<T>::revise_up_to_with_hull_saved(const int k) {
 
 	try {
 
+		//save_containment_info();
+
+		//show_variables(cout);
+
 		revise_up_to(k);
+
+		//show_variables(cout);
+
+		//check_transitions_since_last_call();
 	}
 	catch (infeasible_problem& ) {
 		// Print something?

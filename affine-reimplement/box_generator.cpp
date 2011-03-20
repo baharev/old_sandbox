@@ -128,7 +128,9 @@ void box_generator::set_box() {
 
 		const interval& part = parts.at(i).at(j);
 
-		interval& component = v.at(index.at(i));
+		const int k = index.at(i);
+
+		interval& component = v.at(k);
 
 		ASSERT(part.true_subset_of(component));
 

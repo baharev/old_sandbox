@@ -197,9 +197,13 @@ void search_procedure::contracting_step() {
 
 	expr_graph->set_box(box_orig, n_vars);
 
+	//expr_graph->save_containment_info();
+
 	expr_graph->probing();
 
 	//expr_graph->iterative_revision();
+
+	//expr_graph->check_transitions_since_last_call();
 
 	check_convergence();
 }

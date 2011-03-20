@@ -28,7 +28,7 @@ using namespace asol;
 
 int main() {
 
-	//run_search_procedure();
+	//run_search_procedure(); // TODO Leaks, builder::release() is NOT called
 
 	//return 0;
 

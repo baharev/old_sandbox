@@ -54,7 +54,6 @@ sol_tracker::~sol_tracker() {
 	// Just to make the compiler shut-up
 }
 
-// FIXME Make sol_tracker member of expression_graph and clean-up tests!!!
 void sol_tracker::save_containment_info(const interval* current_box) {
 
 	ASSERT2(!solutions.empty(),"set solutions first");
@@ -189,14 +188,14 @@ void sol_tracker::check_transition(const containment_info status, int sol_index)
 	else if (previous == STRICT && current == NOT) {
 
 		show_component("Error: solution lost, generating hexadecimal dump", index);
-
 		// TODO Hexa dump then exit
+		ASSERT(false);
 	}
 	else if (previous < current) {
 
 		show_component("Error: the box grew, generating hexadecimal dump", index);
-
 		// TODO Hexa dump then exit
+		ASSERT(false);
 	}
 	else if (previous == current) {
 
