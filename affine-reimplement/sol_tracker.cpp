@@ -85,6 +85,11 @@ void sol_tracker::print_containment_statistics() const {
 	cout << endl;
 }
 
+bool sol_tracker::contains_solution() const {
+
+	return find(containment.begin(),containment.end(),STRICT_CONTAINMENT)!=containment.end();
+}
+
 void sol_tracker::save_containment(const const_itr begin, const const_itr end) {
 
 	ASSERT(containment.empty());

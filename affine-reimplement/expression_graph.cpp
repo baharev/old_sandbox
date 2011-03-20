@@ -416,6 +416,12 @@ void expression_graph<T>::print_containment_statistics() const {
 }
 
 template <typename T>
+bool expression_graph<T>::contains_solution() const {
+
+	return tracker->contains_solution();
+}
+
+template <typename T>
 void expression_graph<T>::check_transitions_since_last_call() {
 
 	tracker->check_transitions_since_last_call(get_box());

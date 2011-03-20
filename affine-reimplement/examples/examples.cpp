@@ -242,7 +242,7 @@ void run_examples() {
 
 void run_search_procedure() {
 
-	search_procedure algorithm(new Jacobsen<builder> ());
+	search_procedure algorithm(new eco9<builder> ());
 
 	algorithm.run();
 }

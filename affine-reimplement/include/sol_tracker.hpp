@@ -44,6 +44,8 @@ public:
 
 	void print_containment_statistics() const;
 
+	bool contains_solution() const;
+
 	void check_transitions_since_last_call(const interval* box);
 
 	~sol_tracker();

@@ -179,6 +179,8 @@ void search_procedure::iteration_step() {
 	}
 	catch (infeasible_problem& ) {
 
+		ASSERT(!expr_graph->contains_solution());
+
 		delete_box();
 	}
 	catch (numerical_problems& ) {
@@ -197,13 +199,13 @@ void search_procedure::contracting_step() {
 
 	expr_graph->set_box(box_orig, n_vars);
 
-	//expr_graph->save_containment_info();
+	expr_graph->save_containment_info();
 
-	expr_graph->probing();
+	//expr_graph->probing();
 
-	//expr_graph->iterative_revision();
+	expr_graph->iterative_revision();
 
-	//expr_graph->check_transitions_since_last_call();
+	expr_graph->check_transitions_since_last_call();
 
 	check_convergence();
 }
@@ -306,24 +308,24 @@ void search_procedure::split() {
 
 	std::copy(box_orig, box_orig+n_vars, box_new);
 
-	double x1 = box_orig[0].diameter();
-	double D  = box_orig[15].diameter();
+	//double x1 = box_orig[0].diameter();
+	//double D  = box_orig[15].diameter();
 
-	int index = (x1 > D)? 0 : 15;
+	//int index = (x1 > D)? 0 : 15;
 
-	//const int index = select_index_to_split();
+	const int index = select_index_to_split();
 
 	double lb  = box_orig[index].inf();
 	double ub  = box_orig[index].sup();
 
 	double mid;
 
-	//if (lb <= 0 && 0 <= ub) {
-	//	mid = (fabs(lb) > fabs(ub)) ? (lb/10.0) : (ub/10.0);
-	//}
-	//else {
+	if (lb <= 0 && 0 <= ub) {
+		mid = (fabs(lb) > fabs(ub)) ? (lb/10.1) : (ub/10.1);
+	}
+	else {
 		mid = box_orig[index].midpoint();
-	//}
+	}
 
 	box_orig[index] = interval(lb, mid);
 	box_new[index]  = interval(mid, ub);

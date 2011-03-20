@@ -62,6 +62,8 @@ public:
 
 	void print_containment_statistics() const;
 
+	bool contains_solution() const;
+
 	void check_transitions_since_last_call();
 
 	void show_variables(std::ostream& out) const;
