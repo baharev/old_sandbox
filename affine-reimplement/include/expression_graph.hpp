@@ -64,6 +64,10 @@ public:
 
 	bool contains_solution() const;
 
+	void increment_found_solution_counters();
+
+	void print_found_solutions() const;
+
 	void check_transitions_since_last_call();
 
 	void dump(const char* filename) const;
@@ -71,6 +75,8 @@ public:
 	void load_from_previous_dump();
 
 	void dump_trackers_previous() const;
+
+	void show_primitives_and_constraints(std::ostream& out) const;
 
 	void show_variables(std::ostream& out) const;
 

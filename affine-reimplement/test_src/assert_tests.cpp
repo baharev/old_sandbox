@@ -63,7 +63,7 @@ void run_assert_test() {
 	}
 	catch (exception& e) {
 
-		cout << demangle(typeid(e).name()) << endl;
+		cout << name(typeid(e)) << endl;
 		cout << e.what() << endl;
 	}
 }

@@ -32,6 +32,7 @@
 #include "interval.hpp"
 #include "problem.hpp"
 #include "problem_data.hpp"
+#include "vector_dump.hpp"
 
 using std::cout;
 using std::endl;
@@ -47,6 +48,7 @@ search_procedure::search_procedure(const problem<builder>* p)
 	expr_graph = new expression_graph<interval>(representation, prob->solutions());
 
 	push_initial_box_to_deque();
+	//dbg_initial_box_from_dump();
 
 	solutions_found = splits = boxes_processed = 0;
 
@@ -107,6 +109,21 @@ void search_procedure::push_initial_box_to_deque() {
 	pending_boxes.push_back(x);
 }
 
+void search_procedure::dbg_initial_box_from_dump() {
+
+	ASSERT(pending_boxes.empty());
+
+	std::vector<interval> v;
+
+	load(v);
+
+	interval* x = new interval[n_vars];
+
+	std::copy(&v.at(0), &v.at(n_vars), x);
+
+	pending_boxes.push_back(x);
+}
+
 void search_procedure::run() {
 
 	while (has_more_boxes()) {
@@ -145,6 +162,8 @@ void search_procedure::print_statistics() const {
 	cout << "=========================================================" << endl;
 	cout << "Number of splits: " << splits << ", solutions: ";
 	cout << solutions_found << endl;
+
+	expr_graph->print_found_solutions();
 }
 
 void search_procedure::process_box() {
@@ -189,7 +208,7 @@ void search_procedure::iteration_step() {
 	catch (convergence_reached& ) {
 
 		print_box();
-
+		dbg_solution_count();
 		delete_box();
 	}
 }
@@ -204,6 +223,11 @@ void search_procedure::dbg_check_infeasibilty() const {
 
 		ASSERT(false);
 	}
+}
+
+void search_procedure::dbg_solution_count() {
+
+	expr_graph->increment_found_solution_counters();
 }
 
 void search_procedure::contracting_step() {

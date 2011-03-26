@@ -34,7 +34,9 @@ namespace asol {
 
 #ifdef __GNUG__
 
-const string demangle(const char* name) {
+const string name(const type_info& t) {
+
+	const char* const name = t.name();
 
 	int status = -4;
 
@@ -51,9 +53,9 @@ const string demangle(const char* name) {
 
 #else
 
-const string demangle(const char* name) {
+const string name(const type_info& t) {
 
-	return string(name);
+	return string(t.name());
 }
 
 #endif

@@ -26,6 +26,7 @@
 #include "expression_graph.hpp"
 #include "box_generator.hpp"
 #include "delete_struct.hpp"
+#include "demangle.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
 #include "gap_info.hpp"
@@ -162,6 +163,8 @@ void expression_graph<T>::evaluate_constraint(int k) {
 	for (int i=begin; i<=end; ++i) {
 
 		primitives.at(i)->evaluate();
+
+		//check_transitions_since_last_call();
 	}
 }
 
@@ -175,6 +178,8 @@ void expression_graph<T>::revise_constraint(int k) {
 	for (int i=end; i>=begin; --i) {
 
 		primitives.at(i)->revise();
+
+		//check_transitions_since_last_call();
 	}
 }
 
@@ -184,6 +189,8 @@ void expression_graph<T>::evaluate_up_to(const int k) {
 	for (int i=0; i<=k; ++i) {
 
 		evaluate_constraint(i);
+
+		//check_transitions_since_last_call();
 	}
 }
 
@@ -195,6 +202,8 @@ void expression_graph<T>::revise_up_to(const int k) {
 	for (int i=k; i>=0; --i) {
 
 		revise_constraint(i);
+
+		//check_transitions_since_last_call();
 	}
 }
 
@@ -423,6 +432,18 @@ bool expression_graph<T>::contains_solution() const {
 }
 
 template <typename T>
+void expression_graph<T>::increment_found_solution_counters() {
+
+	tracker->increment_found_solution_counters();
+}
+
+template <typename T>
+void expression_graph<T>::print_found_solutions() const {
+
+	tracker->print_found_solutions();
+}
+
+template <typename T>
 void expression_graph<T>::check_transitions_since_last_call() {
 
 	tracker->check_transitions_since_last_call(&v);
@@ -448,6 +469,27 @@ void expression_graph<T>::load_from_previous_dump() {
 	asol::load(v);
 
 	ASSERT2(size==v.size(),"size mismatch after loading, size: "<<size<<", "<<v.size());
+}
+
+template <typename T>
+void expression_graph<T>::show_primitives_and_constraints(std::ostream& out) const {
+
+	out << "Dumping primitives" << endl;
+
+	const int n = static_cast<int> (primitives.size());
+
+	for (int i=0; i<n; ++i) {
+		out << i << ":\t" << name(typeid(*primitives.at(i))) << endl;
+	}
+	out << endl;
+
+	out << "Dumping constraint indices" << endl;
+
+	const int n_con = static_cast<int> (constraints.size());
+
+	for (int i=0; i<n_con; ++i) {
+		out << i << ":\t" << constraints.at(i) << endl;
+	}
 }
 
 template <typename T>

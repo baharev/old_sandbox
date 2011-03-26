@@ -50,6 +50,10 @@ public:
 
 	void check_transitions_since_last_call(const std::vector<interval>* v);
 
+	void increment_found_solution_counters();
+
+	void print_found_solutions() const;
+
 	~sol_tracker();
 
 private:
@@ -59,6 +63,8 @@ private:
 	typedef std::pair<type,int> containment_info;
 
 	typedef std::vector<std::vector<double> >::const_iterator const_itr;
+
+	void init();
 
 	void save_containment(const const_itr begin, const const_itr end);
 
@@ -76,7 +82,7 @@ private:
 
 	const int n_vars;
 
-	DoubleArray2D solutions;
+	const DoubleArray2D solutions;
 
 	containment_info STRICT_CONTAINMENT;
 

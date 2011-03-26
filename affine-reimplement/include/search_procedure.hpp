@@ -73,6 +73,8 @@ private:
 	void check_convergence();
 
 	void dbg_check_infeasibilty() const;
+	void dbg_solution_count();
+	void dbg_initial_box_from_dump();
 
 	const problem<builder>* prob;
 

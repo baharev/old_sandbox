@@ -24,10 +24,11 @@
 #define DEMANGLE_HPP_
 
 #include <string>
+#include <typeinfo>
 
 namespace asol {
 
-const std::string demangle(const char* name);
+const std::string name(const std::type_info& t);
 
 }
 

@@ -30,6 +30,12 @@
 
 using namespace std;
 
+namespace {
+// FIXME Search algorithm should have its own sol_tracker?
+std::vector<int> found;
+
+}
+
 namespace asol {
 
 sol_tracker::sol_tracker(const problem<builder>* prob)
@@ -40,15 +46,22 @@ sol_tracker::sol_tracker(const problem<builder>* prob)
 	const int size = static_cast<int>(solutions.size());
 	ASSERT2(size==prob->number_of_stored_solutions(),"size: "<<size);
 
-	STRICT_CONTAINMENT = make_pair(STRICT, -1); // FIXME Why fails in the init list?
-	v = 0;
+	init();
 }
 
 sol_tracker::sol_tracker(const DoubleArray2D& sols)
 : n_vars(sols.at(0).size()), solutions(sols)
 {
-	STRICT_CONTAINMENT = make_pair(STRICT, -1);
+	init();
+}
+
+void sol_tracker::init() {
+
+	STRICT_CONTAINMENT = make_pair(STRICT, -1); // FIXME Why fails in the init list?
+
 	v = 0;
+
+	found.resize(solutions.size(), 0);
 }
 
 sol_tracker::~sol_tracker() {
@@ -150,6 +163,31 @@ int sol_tracker::first_not_easily_contained(const int from) const {
 	}
 
 	return n_vars;
+}
+
+void sol_tracker::increment_found_solution_counters() {
+
+	const int n = static_cast<int> (containment.size());
+
+	for (int i=0; i<n; ++i) {
+
+		if (containment.at(i) == STRICT_CONTAINMENT) {
+
+			++found.at(i);
+		}
+	}
+}
+
+void sol_tracker::print_found_solutions() const {
+
+	const int n = static_cast<int> (found.size());
+
+	cout << "Statistics of found solutions" << endl;
+
+	for (int i=0; i<n; ++i) {
+
+		cout << i << " found " << found.at(i) << " times" << endl;
+	}
 }
 
 void sol_tracker::check_transitions_since_last_call(const std::vector<interval>* current_v) {
