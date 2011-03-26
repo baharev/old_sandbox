@@ -147,6 +147,11 @@ bool extended_division(const interval& x, const interval& y, interval& z, interv
 
 	gap = interval();
 
+	if (z.is_narrow()) { // if narrow, don't do anything
+		// TODO Actually, feasibility could be checked
+		return false;
+	}
+
 	if (!y.contains(0)) {  // trivial case
 
 		z.intersect(x/y);
@@ -212,7 +217,7 @@ bool true_extended_division(const interval& x, const interval& y, interval& z, i
 	return ret_val;
 }
 
-// FIXME It actually performs intersection which is inconsistent with intersect
+// FIXME Performs intersection which is inconsistent with intersect!
 bool save_gap_if_any(const double l, const double u, interval& z, interval& gap) {
 
 	ASSERT2( l <= u, "l, u: " << l << ", " << u );
@@ -221,16 +226,38 @@ bool save_gap_if_any(const double l, const double u, interval& z, interval& gap)
 
 	bool ret_val = false;
 
-	if (zL < l && u < zU) {
+	if (zL <= l && u <= zU) { // zL--l  u--zU
 
 		gap = interval(l, u);
 
 		ret_val = true;
 	}
+	else if (l < zL &&  zU < u) { // --l  zL--zU  u--
+
+		throw infeasible_problem();
+	}
+	else if (zU <= l) { // zL--zU--l  u--
+
+		; // no progress
+	}
+	else if (u <= zL) { // --l  u--zL--zU
+
+		; // no progress
+	}
+	else if (zL <= l && zU < u) { // zL--l  zU  u--
+
+		z = interval(zL, l);
+	}
+	else if (l < zL && u <= zU) { // --l  zL  u--zU
+
+		z = interval(u, zU);
+	}
 	else {
 
-		z.intersect(l, u);
+		ASSERT(false);
 	}
+
+	ASSERT(z.subset_of(interval(zL, zU)));
 
 	return ret_val;
 }
