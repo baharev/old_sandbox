@@ -178,12 +178,8 @@ void search_procedure::iteration_step() {
 		contracting_step();
 	}
 	catch (infeasible_problem& ) {
-		// FIXME We should dump the previous one...
-		if(expr_graph->contains_solution()) {
-			expr_graph->dump();
-			ASSERT(false);
-		}
 
+		dbg_check_infeasibilty();
 		delete_box();
 	}
 	catch (numerical_problems& ) {
@@ -195,6 +191,18 @@ void search_procedure::iteration_step() {
 		print_box();
 
 		delete_box();
+	}
+}
+
+void search_procedure::dbg_check_infeasibilty() const {
+
+	if(expr_graph->contains_solution()) {
+
+		expr_graph->dump_trackers_previous();
+
+		expr_graph->dump("v_current_dump.txt");
+
+		ASSERT(false);
 	}
 }
 

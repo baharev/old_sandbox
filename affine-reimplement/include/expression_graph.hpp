@@ -66,9 +66,11 @@ public:
 
 	void check_transitions_since_last_call();
 
-	void dump() const;
+	void dump(const char* filename) const;
 
 	void load_from_previous_dump();
+
+	void dump_trackers_previous() const;
 
 	void show_variables(std::ostream& out) const;
 

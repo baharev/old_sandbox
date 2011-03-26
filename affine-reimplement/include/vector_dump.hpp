@@ -28,7 +28,9 @@
 
 namespace asol {
 
-void dump(const std::vector<interval>& v);
+const char* const DUMP_FILE_NAME = "v_dump.txt";
+
+void dump(const std::vector<interval>& v, const char* filename = DUMP_FILE_NAME);
 
 void load(std::vector<interval>& v);
 

@@ -72,6 +72,8 @@ private:
 	void contracting_step();
 	void check_convergence();
 
+	void dbg_check_infeasibilty() const;
+
 	const problem<builder>* prob;
 
 	const int n_vars;

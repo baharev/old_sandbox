@@ -26,6 +26,7 @@
 #include "builder.hpp"
 #include "diagnostics.hpp"
 #include "interval.hpp"
+#include "vector_dump.hpp"
 
 using namespace std;
 
@@ -40,31 +41,31 @@ sol_tracker::sol_tracker(const problem<builder>* prob)
 	ASSERT2(size==prob->number_of_stored_solutions(),"size: "<<size);
 
 	STRICT_CONTAINMENT = make_pair(STRICT, -1); // FIXME Why fails in the init list?
-	box = 0;
+	v = 0;
 }
 
 sol_tracker::sol_tracker(const DoubleArray2D& sols)
 : n_vars(sols.at(0).size()), solutions(sols)
 {
 	STRICT_CONTAINMENT = make_pair(STRICT, -1);
-	box = 0;
+	v = 0;
 }
 
 sol_tracker::~sol_tracker() {
 	// Just to make the compiler shut-up
 }
 
-void sol_tracker::save_containment_info(const interval* current_box) {
+void sol_tracker::save_containment_info(const std::vector<interval>* current_v) {
 
 	ASSERT2(!solutions.empty(),"set solutions first");
 
-	box = current_box;
+	v = current_v;
 
 	save_containment(solutions.begin(), solutions.end());
 
-	previous_box.assign(box, box+n_vars);
+	previous_v.assign(v->begin(), v->end());
 
-	box = 0;
+	v = 0;
 
 	print_containment_statistics();
 }
@@ -129,7 +130,7 @@ int sol_tracker::first_not_strictly_contained() const {
 
 	for (int i=0; i<n_vars; ++i) {
 
-		if (! box[i].contains(sol[i]) ) {
+		if (! v->at(i).contains(sol[i]) ) {
 
 			return i;
 		}
@@ -142,7 +143,7 @@ int sol_tracker::first_not_easily_contained(const int from) const {
 
 	for (int i=from ; i<n_vars; ++i) {
 
-		if (!easy_containment(sol[i], box[i]) ) {
+		if (!easy_containment(sol[i], v->at(i)) ) {
 
 			return i;
 		}
@@ -151,17 +152,17 @@ int sol_tracker::first_not_easily_contained(const int from) const {
 	return n_vars;
 }
 
-void sol_tracker::check_transitions_since_last_call(const interval* current_box) {
+void sol_tracker::check_transitions_since_last_call(const std::vector<interval>* current_v) {
 
 	ASSERT2(!containment.empty(),"save containment info first");
 
-	box = current_box;
+	v = current_v;
 
 	check_all_sol(solutions.begin(), solutions.end());
 
-	previous_box.assign(box, box+n_vars);
+	previous_v.assign(v->begin(), v->end());
 
-	box = 0;
+	v = 0;
 }
 
 void sol_tracker::check_all_sol(const const_itr begin, const const_itr end) {
@@ -220,15 +221,22 @@ void sol_tracker::show_component(const char* msg, const int index) const {
 
 	cout << msg << endl;
 
-	cout << index << ": " << previous_box.at(index) << endl;
+	cout << index << ": " << previous_v.at(index) << endl;
 
-	cout << index << ": " <<             box[index] << "  ";
+	cout << index << ": " <<           v->at(index) << "  ";
 
 	cout << sol[index] << endl;
 
 	cout.flags(flag_old);
 
 	cout.precision(prec_old);
+}
+
+void sol_tracker::dump_previous_v() const {
+
+	ASSERT(!previous_v.empty());
+
+	asol::dump(previous_v);
 }
 
 }

@@ -407,7 +407,7 @@ void expression_graph<T>::save_containment_info() {
 
 	tracker = new sol_tracker(apriori_sols);
 
-	tracker->save_containment_info(get_box());
+	tracker->save_containment_info(&v);
 }
 
 template <typename T>
@@ -425,13 +425,19 @@ bool expression_graph<T>::contains_solution() const {
 template <typename T>
 void expression_graph<T>::check_transitions_since_last_call() {
 
-	tracker->check_transitions_since_last_call(get_box());
+	tracker->check_transitions_since_last_call(&v);
 }
 
 template <typename T>
-void expression_graph<T>::dump() const {
+void expression_graph<T>::dump(const char* filename) const {
 
-	asol::dump(v);
+	asol::dump(v, filename);
+}
+
+template <typename T>
+void expression_graph<T>::dump_trackers_previous() const {
+
+	tracker->dump_previous_v();
 }
 
 template <typename T>

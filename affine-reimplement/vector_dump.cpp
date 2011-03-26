@@ -30,10 +30,7 @@ using namespace std;
 
 namespace asol {
 
-const char* const DUMP_FILE_NAME = "v_dump.txt";
-
 const char* const INTERVAL_HEXA_FMT = "%la\t%la\n";
-
 
 void parse_line(const string& line, std::vector<interval>& v) {
 
@@ -94,9 +91,9 @@ void write(FILE* file, const char* format, const std::vector<interval>& v) {
 	fprintf(file, "\n");
 }
 
-void dump(const std::vector<interval>& v) {
+void dump(const std::vector<interval>& v, const char* filename) {
 
-	FILE * file = fopen(DUMP_FILE_NAME,"w");
+	FILE* file = fopen(filename, "w");
 
 	if (file==NULL) {
 		ASSERT2(false, "failed to open file for dump");

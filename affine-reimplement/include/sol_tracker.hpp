@@ -40,13 +40,15 @@ public:
 
 	explicit sol_tracker(const DoubleArray2D& solutions);
 
-	void save_containment_info(const interval* box);
+	void save_containment_info(const std::vector<interval>* v);
 
 	void print_containment_statistics() const;
 
 	bool contains_solution() const;
 
-	void check_transitions_since_last_call(const interval* box);
+	void dump_previous_v() const;
+
+	void check_transitions_since_last_call(const std::vector<interval>* v);
 
 	~sol_tracker();
 
@@ -80,11 +82,11 @@ private:
 
 	std::vector<containment_info> containment;
 
-	const interval* box;
+	const std::vector<interval>* v;
 
 	std::vector<double>::const_iterator sol;
 
-	std::vector<interval> previous_box;
+	std::vector<interval> previous_v;
 
 };
 
