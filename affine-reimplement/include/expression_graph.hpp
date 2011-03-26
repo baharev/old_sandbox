@@ -68,6 +68,8 @@ public:
 
 	void dump() const;
 
+	void load_from_previous_dump();
+
 	void show_variables(std::ostream& out) const;
 
 	const T& last_value() const;

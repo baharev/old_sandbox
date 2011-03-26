@@ -546,6 +546,16 @@ double interval::sup() const {
 	return ub;
 }
 
+double interval::unchecked_inf() const {
+
+	return lb;
+}
+
+double interval::unchecked_sup() const {
+
+	return ub;
+}
+
 bool interval::is_narrow(const double TOLERANCE) const { // FIXME Only for testing
 
 	ASSERT2(lb <= ub, *this);

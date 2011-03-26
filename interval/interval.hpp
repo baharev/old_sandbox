@@ -108,6 +108,10 @@ public:
 
 	double sup() const;
 
+	double unchecked_inf() const;
+
+	double unchecked_sup() const;
+
 	friend std::ostream& operator<<(std::ostream& , const interval& );
 
 private:

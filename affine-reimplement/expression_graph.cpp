@@ -435,6 +435,16 @@ void expression_graph<T>::dump() const {
 }
 
 template <typename T>
+void expression_graph<T>::load_from_previous_dump() {
+
+	const size_t size = v.size();
+
+	asol::load(v);
+
+	ASSERT2(size==v.size(),"size mismatch after loading, size: "<<size<<", "<<v.size());
+}
+
+template <typename T>
 void expression_graph<T>::show_variables(ostream& out) const {
 
 	for (int i=0; i<n_vars; ++i) {
