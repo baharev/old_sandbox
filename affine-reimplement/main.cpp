@@ -20,17 +20,24 @@
 //
 //==============================================================================
 
+#include <string>
 #include "assert_tests.hpp"
 #include "box_generator_tests.hpp"
+#include "diagnostics.hpp"
 #include "examples.hpp"
 
+using std::string;
 using namespace asol;
 
-int main() {
 
-	//run_search_procedure(); // TODO Leaks, builder::release() is NOT called
+namespace {
 
-	//return 0;
+const string SIMPLE_TESTS = "simple_tests";
+const string SEARCH_PROC  = "search_procedure";
+
+}
+
+void simple_tests() {
 
 	run_assert_test();
 
@@ -39,6 +46,30 @@ int main() {
 	show_Jacobsen_sparsity();
 
 	run_examples();
+}
+
+void search_procedure() {
+
+	run_search_procedure(); // TODO Leaks, builder::release() is NOT called
+
+}
+
+int main(int argc, const char* argv[]) {
+
+	ASSERT2(argc==2,"provide command line arguments");
+
+	if (argv[1]==SIMPLE_TESTS) {
+
+		simple_tests();
+	}
+	else if (argv[1]==SEARCH_PROC) {
+
+		search_procedure();
+	}
+	else {
+
+		ASSERT2(false,"command line argument not recognized: "<<argv[1]);
+	}
 
 	return 0;
 }
