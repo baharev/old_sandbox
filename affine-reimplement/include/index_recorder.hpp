@@ -56,11 +56,11 @@ private:
 
 	void record_unary_primitive(int z, int x);
 	void record_binary_primitive(int z, int x, int y);
-	bool record_arg(const int index);
+	void record_arg(const int index);
 
 	void resolve_def_var_dependecies();
-	void push_back_current(const int last_primitive_index);
-	int  at_primitive_index() const;
+	void push_back_current();
+	int  primitive_index() const;
 
 	bool is_numeric_constant(const int index) const;
 	bool is_defined_variable(const int index) const;

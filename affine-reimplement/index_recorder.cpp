@@ -47,7 +47,7 @@ index_recorder::index_recorder(const vector<primitive<builder>*>& prim) {
 	// TODO Certain containers must have equal size
 }
 
-int index_recorder::at_primitive_index() const {
+int index_recorder::primitive_index() const {
 
 	return pos;
 }
@@ -83,11 +83,13 @@ void index_recorder::resolve_def_var_dependecies() {
 	// recursively resolve those def_vars too?
 }
 
-void index_recorder::push_back_current(const int last_primitive_index) {
+void index_recorder::push_back_current() {
 
 	resolve_def_var_dependecies();
 
 	indices.push_back(current);
+
+	const int last_primitive_index = primitive_index();
 
 	boundary.push_back(last_primitive_index);
 
@@ -104,15 +106,11 @@ void index_recorder::record_unary_primitive(int z, int x) {
 	record_arg(x);
 }
 
-bool index_recorder::record_arg(const int index) {
+void index_recorder::record_arg(const int index) {
 
 	if (is_variable(index) || is_defined_variable(index)) {
 
-		return current.insert(index).second;
-	}
-	else {
-
-		return false;
+		current.insert(index).second;
 	}
 }
 
@@ -160,16 +158,16 @@ void index_recorder::logarithm(int z, int x) {
 
 void index_recorder::equality_constraint(int , int , double ) {
 
-	constraint_end.push_back(at_primitive_index());
+	constraint_end.push_back(primitive_index());
 
-	push_back_current(at_primitive_index());
+	push_back_current();
 }
 
 void index_recorder::common_subexpression(int index, int ) {
 
 	def_var_indices.insert(make_pair(index, indices.size()));
 
-	push_back_current(at_primitive_index());
+	push_back_current();
 }
 
 void index_recorder::less_than_or_equal_to(int lhs, int rhs) {
@@ -178,9 +176,9 @@ void index_recorder::less_than_or_equal_to(int lhs, int rhs) {
 
 	record_unary_primitive(lhs, rhs);
 
-	constraint_end.push_back(at_primitive_index());
+	constraint_end.push_back(primitive_index());
 
-	push_back_current(at_primitive_index());
+	push_back_current();
 }
 
 }
