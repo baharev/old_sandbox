@@ -316,6 +316,7 @@ void index_recorder_test(const problem<builder>* prob) {
 
 	index_recorder rec(build(prob));
 
+	rec.dump();
 }
 
 }

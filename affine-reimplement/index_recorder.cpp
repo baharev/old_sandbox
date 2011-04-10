@@ -21,6 +21,8 @@
 //==============================================================================
 
 #include <algorithm>
+#include <iostream>
+#include <iterator>
 #include "index_recorder.hpp"
 #include "builder.hpp"
 #include "diagnostics.hpp"
@@ -48,7 +50,11 @@ index_recorder::index_recorder(const problem_data* prob) {
 		prim.at(i)->record(this);
 	}
 
-	// TODO Certain containers must have equal size
+	ASSERT2(current.empty(),"problem must be closed by a constraint");
+
+	compute_constraint_index_set();
+
+	// TODO Check if all variables are really contained in the index set
 }
 
 int index_recorder::primitive_index() const {
@@ -77,14 +83,29 @@ bool index_recorder::is_variable(const int index) const {
 	return index < n_vars;
 }
 
+const set<int> index_recorder::extract_variables(const set<int>& s) {
+
+	return set<int>(s.begin(), s.lower_bound(n_vars));
+}
+
 void index_recorder::resolve_def_var_dependecies() {
 
-	// TODO Start here!
-	// iterate through current (start with lower n_var?)
-	// if a def_var is found find in def_var_indices
-	// get the dependencies from indices
-	// append that to current
-	// recursively resolve those def_vars too?
+	typedef set<int>::const_iterator itr;
+
+	itr i = current.lower_bound(n_vars);
+
+	for ( ; i!= current.end(); ++i)	{
+
+		map<int,int>::const_iterator k = def_var_indices.find(*i);
+
+		ASSERT2(k!=def_var_indices.end(), "index not found: " << (*i) );
+
+		const set<int>& dependencies = indices.at(k->second);
+
+		const set<int> vars = extract_variables(dependencies); // recursively resolve def_vars ?
+
+		current.insert(vars.begin(), vars.end());
+	}
 }
 
 void index_recorder::push_back_current() {
@@ -103,11 +124,29 @@ void index_recorder::push_back_current() {
 	ASSERT(constraint_end.size() <= boundary.size());
 }
 
-void index_recorder::record_unary_primitive(int z, int x) {
+void index_recorder::equality_constraint(int , int , double ) {
 
-	ASSERT(!is_numeric_constant(z));
+	constraint_end.push_back(primitive_index());
 
-	record_arg(x);
+	push_back_current();
+}
+
+void index_recorder::common_subexpression(int index, int ) {
+
+	def_var_indices.insert(make_pair(index, indices.size()));
+
+	push_back_current();
+}
+
+void index_recorder::less_than_or_equal_to(int lhs, int rhs) {
+
+	ASSERT(!is_numeric_constant(rhs));
+
+	record_unary_primitive(lhs, rhs);
+
+	constraint_end.push_back(primitive_index());
+
+	push_back_current();
 }
 
 void index_recorder::record_arg(const int index) {
@@ -116,6 +155,71 @@ void index_recorder::record_arg(const int index) {
 
 		current.insert(index).second;
 	}
+}
+
+void index_recorder::dump(const vector<set<int> >& index, const vector<int>& last_primitive) const {
+
+	const int n = static_cast<int>(index.size());
+
+	for (int i=0; i<n; ++i) {
+
+		cout << i << ": ";
+
+		const set<int>& s = index.at(i);
+
+		copy(s.begin(), s.end(), ostream_iterator<int>(cout, "\t"));
+
+		cout << '(' << last_primitive.at(i) << ')' << endl;
+	}
+
+	cout << endl;
+}
+
+void index_recorder::dump() const {
+
+	dump(indices, boundary);
+
+	dump(constraint_indices, constraint_end);
+}
+
+void index_recorder::merge_up_to(const int end) {
+
+	ASSERT(current.empty());
+
+	do {
+
+		++idx;
+
+		const set<int>& s = indices.at(idx);
+
+		current.insert(s.begin(), s.end());
+	}
+	while (boundary.at(idx)!=end);
+
+	ASSERT(!current.empty());
+
+	constraint_indices.push_back(current);
+
+	current.clear();
+}
+
+void index_recorder::compute_constraint_index_set() {
+
+	idx = -1;
+
+	const int n = constraint_end.size();
+
+	for (int i=0; i<n; ++i) {
+
+		merge_up_to(constraint_end.at(i));
+	}
+}
+
+void index_recorder::record_unary_primitive(int z, int x) {
+
+	ASSERT(!is_numeric_constant(z));
+
+	record_arg(x);
 }
 
 void index_recorder::record_binary_primitive(int z, int x, int y) {
@@ -158,31 +262,6 @@ void index_recorder::exponential(int z, int x) {
 void index_recorder::logarithm(int z, int x) {
 
 	record_unary_primitive(z, x);
-}
-
-void index_recorder::equality_constraint(int , int , double ) {
-
-	constraint_end.push_back(primitive_index());
-
-	push_back_current();
-}
-
-void index_recorder::common_subexpression(int index, int ) {
-
-	def_var_indices.insert(make_pair(index, indices.size()));
-
-	push_back_current();
-}
-
-void index_recorder::less_than_or_equal_to(int lhs, int rhs) {
-
-	ASSERT(!is_numeric_constant(rhs));
-
-	record_unary_primitive(lhs, rhs);
-
-	constraint_end.push_back(primitive_index());
-
-	push_back_current();
 }
 
 }

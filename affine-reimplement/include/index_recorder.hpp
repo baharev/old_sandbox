@@ -39,6 +39,8 @@ public:
 	// TODO It should build the problem data
 	index_recorder(const problem_data* prob);
 
+	void dump() const;
+
 private:
 
 	virtual void addition      (int z, int x, int y);
@@ -59,9 +61,13 @@ private:
 	void record_arg(const int index);
 
 	void resolve_def_var_dependecies();
+	const std::set<int> extract_variables(const std::set<int>& index_set);
 	void push_back_current();
-	int  primitive_index() const;
+	void compute_constraint_index_set();
+	void merge_up_to(const int last_primitive_index);
+	void dump(const std::vector<std::set<int> >& index_set, const std::vector<int>& last_primitive) const;
 
+	int  primitive_index() const;
 	bool is_numeric_constant(const int index) const;
 	bool is_defined_variable(const int index) const;
 	bool is_variable(const int index) const;
@@ -77,7 +83,7 @@ private:
 	int n_vars;                         // number of variables
 	std::set<int> current;
 	int pos;
-
+	int idx;
 };
 
 }
