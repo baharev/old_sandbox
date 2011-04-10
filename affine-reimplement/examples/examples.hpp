@@ -31,6 +31,8 @@ void run_examples();
 
 void show_Jacobsen_sparsity();
 
+void index_recorder_test();
+
 }
 
 #endif // EXAMPLES_HPP_

@@ -30,14 +30,14 @@
 
 namespace asol {
 
-class builder;
-template <typename T> class primitive;
+class problem_data;
 
 class index_recorder : public recorder {
 
 public:
 
-	index_recorder(const std::vector<primitive<builder>*>& prim);
+	// TODO It should build the problem data
+	index_recorder(const problem_data* prob);
 
 private:
 

@@ -47,6 +47,8 @@ void extended_division_test(const problem<builder>* prob, const interval* box, c
 
 void gap_probing_test(const problem<builder>* prob, interval* box, const double* sol, int length);
 
+void index_recorder_test(const problem<builder>* prob);
+
 }
 
 #endif // EXPRESSION_GRAPH_TEST_HPP_

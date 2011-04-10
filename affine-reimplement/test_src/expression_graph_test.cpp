@@ -30,6 +30,7 @@
 #include "expression_graph.hpp"
 #include "floating_point_tol.hpp"
 #include "gap_probing.hpp"
+#include "index_recorder.hpp"
 #include "interval.hpp"
 #include "problem.hpp"
 #include "problem_data.hpp"
@@ -309,6 +310,12 @@ void gap_probing_test(const problem<builder>* prob, interval* box, const double*
 	dag.check_transitions_since_last_call();
 
 	delete[] reduced_box;
+}
+
+void index_recorder_test(const problem<builder>* prob) {
+
+	index_recorder rec(build(prob));
+
 }
 
 }

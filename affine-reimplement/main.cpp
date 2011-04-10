@@ -32,8 +32,9 @@ using namespace asol;
 
 namespace {
 
-const string SIMPLE_TESTS = "simple_tests";
-const string SEARCH_PROC  = "search_procedure";
+const string SIMPLE_TESTS   = "simple_tests";
+const string SEARCH_PROC    = "search_procedure";
+const string INDEX_REC_TEST = "index_recorder";
 
 }
 
@@ -65,6 +66,10 @@ int main(int argc, const char* argv[]) {
 	else if (argv[1]==SEARCH_PROC) {
 
 		search_procedure();
+	}
+	else if (argv[1]==INDEX_REC_TEST) {
+
+		index_recorder_test();
 	}
 	else {
 

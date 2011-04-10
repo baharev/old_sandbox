@@ -203,6 +203,14 @@ void eco9_gap_probing() {
 	gap_probing_test(new eco9<builder> (), x, sol, 8);
 }
 
+void index_recorder_test() {
+
+	cout << "###############################################" << endl;
+	cout << "Jacobsen index recorder test" << endl;
+
+	index_recorder_test(new Jacobsen<builder> ());
+}
+
 void run_examples() {
 
 	example_Hansen();

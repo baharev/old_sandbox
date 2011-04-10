@@ -25,15 +25,19 @@
 #include "builder.hpp"
 #include "diagnostics.hpp"
 #include "primitives.hpp"
+#include "problem_data.hpp"
 
 using namespace std;
 
 namespace asol {
 
-index_recorder::index_recorder(const vector<primitive<builder>*>& prim) {
+index_recorder::index_recorder(const problem_data* prob) {
 
-	// TODO Assign numeric_const first
-	// TODO Assign n_vars
+	n_vars = prob->number_of_variables();
+
+	numeric_const = prob->get_numeric_constants();
+
+	const vector<primitive<builder>*>& prim = prob->get_primitives();
 
 	const int n = static_cast<int> (prim.size());
 
