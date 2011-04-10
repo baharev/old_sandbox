@@ -43,14 +43,17 @@ template <typename T>
 extern const std::vector<primitive<T>*> convert(const std::vector<primitive<builder>*>& v);
 
 template <typename T>
-expression_graph<T>::expression_graph(const problem_data* problem, const DoubleArray2D& solutions) :
+expression_graph<T>::expression_graph(const problem_data* problem,
+        const DoubleArray2D& solutions,
+        const IntArray2D& constraint_index_sets) :
 
 v          (problem->peek_index()),
 n_vars     (problem->number_of_variables()),
 primitives (convert<T>(problem->get_primitives())),
 constants  (problem->get_numeric_constants().begin(), problem->get_numeric_constants().end()),
 initial_box(problem->get_initial_box()),
-index_sets (problem->get_index_sets()),
+//index_sets (problem->get_index_sets()),
+index_sets (constraint_index_sets),
 constraints(problem->get_constraints()),
 apriori_sols(solutions),
 tracker    (0),

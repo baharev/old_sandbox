@@ -159,7 +159,8 @@ void index_recorder::record_arg(const int index) {
 	}
 }
 
-void index_recorder::dump(const vector<set<int> >& index, const vector<int>& last_primitive) const {
+template <typename T>
+void dump(const vector<T>& index, const vector<int>& last_primitive) {
 
 	const int n = static_cast<int>(index.size());
 
@@ -167,7 +168,7 @@ void index_recorder::dump(const vector<set<int> >& index, const vector<int>& las
 
 		cout << i << ": ";
 
-		const set<int>& s = index.at(i);
+		const T& s = index.at(i);
 
 		copy(s.begin(), s.end(), ostream_iterator<int>(cout, "\t"));
 
@@ -178,10 +179,10 @@ void index_recorder::dump(const vector<set<int> >& index, const vector<int>& las
 }
 
 void index_recorder::dump() const {
+	// TODO Ask on SO why asol:: is needed
+	asol::dump(indices, boundary);
 
-	dump(indices, boundary);
-
-	dump(constraint_indices, constraint_end);
+	asol::dump(constraint_indices, constraint_end);
 }
 
 void index_recorder::merge_up_to(const int end) {
@@ -200,7 +201,10 @@ void index_recorder::merge_up_to(const int end) {
 
 	ASSERT(!current.empty());
 
-	constraint_indices.push_back(current);
+	// TODO Only variables are pushed back, how about defined vars?
+	set<int> vars = extract_variables(current);
+
+	constraint_indices.push_back(vector<int>(vars.begin(), vars.end()));
 
 	current.clear();
 }
@@ -215,6 +219,11 @@ void index_recorder::compute_constraint_index_set() {
 
 		merge_up_to(constraint_end.at(i));
 	}
+}
+
+const vector<vector<int> >& index_recorder::constraint_index_sets() const {
+
+	return constraint_indices;
 }
 
 void index_recorder::record_unary_primitive(int z, int x) {

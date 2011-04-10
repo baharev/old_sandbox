@@ -39,6 +39,8 @@ public:
 	// TODO It should build the problem data
 	index_recorder(const problem_data* prob);
 
+	const std::vector<std::vector<int> >& constraint_index_sets() const;
+
 	void dump() const;
 
 private:
@@ -65,7 +67,6 @@ private:
 	void push_back_current();
 	void compute_constraint_index_set();
 	void merge_up_to(const int last_primitive_index);
-	void dump(const std::vector<std::set<int> >& index_set, const std::vector<int>& last_primitive) const;
 
 	int  primitive_index() const;
 	bool is_numeric_constant(const int index) const;
@@ -77,7 +78,7 @@ private:
 	std::map<int,int> def_var_indices;   // def_var index -> indices index to get dependencies
 
 	std::vector<int> constraint_end;     // last primitive index in con ONLY
-	std::vector<std::set<int> > constraint_indices; // indices occurring in con ONLY
+	std::vector<std::vector<int> > constraint_indices; // indices occurring in con ONLY
 
 	std::map<int,double> numeric_const; // numeric constants
 	int n_vars;                         // number of variables

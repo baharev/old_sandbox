@@ -40,7 +40,9 @@ class expression_graph {
 
 public:
 
-	expression_graph(const problem_data* problem, const DoubleArray2D& solutions);
+	expression_graph(const problem_data* problem,
+			         const DoubleArray2D& solutions,
+			         const IntArray2D& constraint_index_sets = IntArray2D());
 
 	void set_box(const T* box, const int length);
 

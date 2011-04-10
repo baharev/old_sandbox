@@ -314,9 +314,21 @@ void gap_probing_test(const problem<builder>* prob, interval* box, const double*
 
 void index_recorder_test(const problem<builder>* prob) {
 
-	index_recorder rec(build(prob));
+	DoubleArray2D solutions(prob->solutions());
+
+	const problem_data* const p = build(prob);
+
+	index_recorder rec(p);
 
 	rec.dump();
+
+	expression_graph<interval> dag(p, solutions, rec.constraint_index_sets());
+
+	builder::reset();
+
+	dag.probing();
+
+	dag.show_variables(cout);
 }
 
 }
