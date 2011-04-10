@@ -54,7 +54,7 @@ index_recorder::index_recorder(const problem_data* prob) {
 
 	compute_constraint_index_set();
 
-	// TODO Check if all variables are really contained in the index set
+	// TODO Check if all variables and def_vars are really contained in the index set
 }
 
 int index_recorder::primitive_index() const {
@@ -140,9 +140,11 @@ void index_recorder::common_subexpression(int index, int ) {
 
 void index_recorder::less_than_or_equal_to(int lhs, int rhs) {
 
-	ASSERT(!is_numeric_constant(rhs));
+	ASSERT(!is_numeric_constant(lhs) && !is_numeric_constant(rhs));
 
-	record_unary_primitive(lhs, rhs);
+	record_arg(lhs);
+
+	record_arg(rhs);
 
 	constraint_end.push_back(primitive_index());
 
