@@ -60,6 +60,8 @@ public:
 
 	void probing();
 
+	void probing2();
+
 	void save_containment_info();
 
 	void print_containment_statistics() const;
@@ -109,6 +111,7 @@ private:
 
 	void probe_in_constraint(const int i);
 	void revise_up_to_with_hull_saved(const int i);
+	void iterative_revise_with_hull_saved();
 	void save_current_as_orig();
 	void set_orig_as_v();
 	void save_hull();

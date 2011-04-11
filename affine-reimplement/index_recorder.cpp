@@ -185,6 +185,18 @@ void index_recorder::dump() const {
 	asol::dump(constraint_indices, constraint_end);
 }
 
+void index_recorder::compute_constraint_index_set() {
+
+	idx = -1;
+
+	const int n = constraint_end.size();
+
+	for (int i=0; i<n; ++i) {
+
+		merge_up_to(constraint_end.at(i));
+	}
+}
+
 void index_recorder::merge_up_to(const int end) {
 
 	ASSERT(current.empty());
@@ -207,18 +219,6 @@ void index_recorder::merge_up_to(const int end) {
 	constraint_indices.push_back(vector<int>(vars.begin(), vars.end()));
 
 	current.clear();
-}
-
-void index_recorder::compute_constraint_index_set() {
-
-	idx = -1;
-
-	const int n = constraint_end.size();
-
-	for (int i=0; i<n; ++i) {
-
-		merge_up_to(constraint_end.at(i));
-	}
 }
 
 const vector<vector<int> >& index_recorder::constraint_index_sets() const {

@@ -112,11 +112,22 @@ void search_procedure::push_initial_box_to_deque() {
 
 std::vector<std::vector<int> > search_procedure::index_sets() const {
 
-	index_recorder rec(representation);
+	//index_recorder rec(representation);
 
-	rec.dump();
+	//rec.dump();
 
-	return rec.constraint_index_sets();
+	//return rec.constraint_index_sets();
+
+	// FIXME Just a hack for probing2
+	IntArray2D indices;
+
+	IntVector vec;
+	vec.push_back(0);
+	vec.push_back(15);
+
+	indices.push_back(vec);
+
+	return indices;
 }
 
 void search_procedure::dbg_initial_box_from_dump() {
@@ -245,10 +256,10 @@ void search_procedure::contracting_step() {
 	expr_graph->set_box(box_orig, n_vars);
 
 	expr_graph->save_containment_info();
+	// TODO Check index sets!
+	expr_graph->probing2();
 
-	//expr_graph->probing();
-
-	expr_graph->iterative_revision();
+	//expr_graph->iterative_revision();
 
 	expr_graph->check_transitions_since_last_call();
 

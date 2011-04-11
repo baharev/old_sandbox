@@ -260,6 +260,56 @@ void expression_graph<T>::iterative_revision_save_gaps() {
 
 }
 
+// FIXME Refactor when ready!
+template <typename T>
+void expression_graph<T>::probing2() {
+
+	iterative_revision();
+
+	hull.clear();
+
+	save_current_as_orig();
+
+	box_generator generator(v, index_sets.at(0), 4); // FIXME Find a nicer way
+
+	if (generator.empty()) {
+
+		return;
+	}
+
+	while (generator.get_next()) {
+
+		set_orig_as_v();
+
+		generator.set_box();
+
+		iterative_revise_with_hull_saved();
+	}
+
+	write_hull_to_orig(); // TODO Find a better name, it actually computes intersection
+	                      // TODO Hull must be subset of orig (at least for vars?), check it?
+	// the result of probing is in orig, result is retrieved as v
+	set_orig_as_v();
+}
+
+template <typename T>
+void expression_graph<T>::iterative_revise_with_hull_saved() {
+
+	try {
+
+		iterative_revision();
+	}
+	catch (infeasible_problem& ) {
+		// Print something?
+		return;
+	}
+	catch (numerical_problems& ) {
+		ASSERT2(false, "implementation not updated properly");
+	}
+
+	save_hull();
+}
+
 template <typename T>
 void expression_graph<T>::probing() {
 
