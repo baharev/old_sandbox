@@ -43,6 +43,8 @@ public:
 
 	void dump() const;
 
+	~index_recorder();
+
 private:
 
 	virtual void addition      (int z, int x, int y);

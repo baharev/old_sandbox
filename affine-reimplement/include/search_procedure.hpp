@@ -52,6 +52,7 @@ private:
 	void build_problem_representation();
 	void evaluate_with_builder() const;
 	void push_initial_box_to_deque();
+	std::vector<std::vector<int> > index_sets() const;
 
 	bool has_more_boxes() const;
 	void get_next_box();

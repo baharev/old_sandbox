@@ -275,4 +275,8 @@ void index_recorder::logarithm(int z, int x) {
 	record_unary_primitive(z, x);
 }
 
+index_recorder::~index_recorder() {
+	// Out-of-line dtor just to make the compiler shut up
+}
+
 }

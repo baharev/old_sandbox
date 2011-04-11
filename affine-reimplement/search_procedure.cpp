@@ -29,6 +29,7 @@
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
 #include "expression_graph.hpp"
+#include "index_recorder.hpp"
 #include "interval.hpp"
 #include "problem.hpp"
 #include "problem_data.hpp"
@@ -45,7 +46,7 @@ search_procedure::search_procedure(const problem<builder>* p)
 {
 	build_problem_representation();
 
-	expr_graph = new expression_graph<interval>(representation, prob->solutions());
+	expr_graph = new expression_graph<interval>(representation, prob->solutions(), index_sets());
 
 	push_initial_box_to_deque();
 	//dbg_initial_box_from_dump();
@@ -107,6 +108,15 @@ void search_procedure::push_initial_box_to_deque() {
 	std::transform(initial_box.begin(), initial_box.end(), x, pair2interval());
 
 	pending_boxes.push_back(x);
+}
+
+std::vector<std::vector<int> > search_procedure::index_sets() const {
+
+	index_recorder rec(representation);
+
+	rec.dump();
+
+	return rec.constraint_index_sets();
 }
 
 void search_procedure::dbg_initial_box_from_dump() {
