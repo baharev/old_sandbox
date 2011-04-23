@@ -112,22 +112,22 @@ void search_procedure::push_initial_box_to_deque() {
 
 std::vector<std::vector<int> > search_procedure::index_sets() const {
 
-	index_recorder rec(representation);
+	//index_recorder rec(representation);
 
-	rec.dump();
+	//rec.dump();
 
-	return rec.constraint_index_sets();
+	//return rec.constraint_index_sets();
 
 	// FIXME Just a hack for probing2
-	//IntArray2D indices;
+	IntArray2D indices;
 
-	//IntVector vec;
-	//vec.push_back(0);
-	//vec.push_back(15);
+	IntVector vec;
+	vec.push_back(0);
+	vec.push_back(15);
 
-	//indices.push_back(vec);
+	indices.push_back(vec);
 
-	//return indices;
+	return indices;
 }
 
 void search_procedure::dbg_initial_box_from_dump() {
@@ -364,12 +364,12 @@ void search_procedure::split() {
 
 	std::copy(box_orig, box_orig+n_vars, box_new);
 
-	//double x1 = box_orig[0].diameter();
-	//double D  = box_orig[15].diameter();
+	double x1 = box_orig[0].diameter();
+	double D  = box_orig[15].diameter();
 
-	//int index = (x1 > D)? 0 : 15;
+	int index = (x1 > D)? 0 : 15;
 
-	const int index = select_index_to_split();
+	//const int index = select_index_to_split();
 
 	double lb  = box_orig[index].inf();
 	double ub  = box_orig[index].sup();
