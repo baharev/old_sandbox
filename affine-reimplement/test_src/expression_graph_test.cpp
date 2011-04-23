@@ -227,11 +227,16 @@ void test_solutions_iterative_revise(const problem<builder>* prob) {
 	test_solutions(dag, &expression_graph<interval>::iterative_revision_save_gaps);
 }
 
+// FIXME Duplication and buggy index set; replace with the index set given by AMPL?
 void test_solutions_probing(const problem<builder>* prob) {
 
 	DoubleArray2D solutions(prob->solutions());
 
-	expression_graph<interval> dag(build(prob), solutions);
+	const problem_data* const p = build(prob);
+
+	const IntArray2D buggy_index_set = p->get_index_sets();
+
+	expression_graph<interval> dag(p, solutions, buggy_index_set);
 
 	builder::reset();
 
@@ -242,7 +247,11 @@ void test_probing_on_initial_box(const problem<builder>* prob) {
 
 	DoubleArray2D solutions(prob->solutions());
 
-	expression_graph<interval> dag(build(prob), solutions);
+	const problem_data* const p = build(prob);
+
+	const IntArray2D buggy_index_set = p->get_index_sets();
+
+	expression_graph<interval> dag(p, solutions, buggy_index_set);
 
 	builder::reset();
 
@@ -255,7 +264,11 @@ void extended_division_test(const problem<builder>* prob, const interval* box, c
 
 	DoubleArray2D solutions(prob->solutions());
 
-	expression_graph<interval> dag(build(prob), solutions);
+	const problem_data* const p = build(prob);
+
+	const IntArray2D buggy_index_set = p->get_index_sets();
+
+	expression_graph<interval> dag(p, solutions, buggy_index_set);
 
 	builder::reset();
 
