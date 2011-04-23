@@ -313,7 +313,7 @@ void expression_graph<T>::iterative_revise_with_hull_saved() {
 template <typename T>
 void expression_graph<T>::probing() {
 
-	revise_all(); // TODO Will it be always used like this?
+	iterative_revision(); // TODO Will it be always used like this?
 
 	save_current_as_orig();
 
