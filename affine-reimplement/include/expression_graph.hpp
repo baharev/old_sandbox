@@ -115,7 +115,7 @@ private:
 	void save_current_as_orig();
 	void set_orig_as_v();
 	void save_hull();
-	void write_hull_to_orig();
+	void compute_intersection_of_hull_and_orig();
 	bool intersect_hull_and_orig();
 	bool compute_intersection();
 

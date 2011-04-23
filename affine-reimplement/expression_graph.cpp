@@ -260,7 +260,6 @@ void expression_graph<T>::iterative_revision_save_gaps() {
 
 }
 
-// FIXME Refactor when ready!
 template <typename T>
 void expression_graph<T>::probing2() {
 
@@ -286,10 +285,10 @@ void expression_graph<T>::probing2() {
 		iterative_revise_with_hull_saved();
 	}
 
-	write_hull_to_orig(); // TODO Find a better name, it actually computes intersection
-	                      // TODO Hull must be subset of orig (at least for vars?), check it?
-	// the result of probing is in orig, result is retrieved as v
-	set_orig_as_v();
+	compute_intersection_of_hull_and_orig();
+	// TODO Hull must be subset of orig (at least for vars?), check it?
+
+	set_orig_as_v(); // the result of probing is in orig, result is retrieved as v
 }
 
 template <typename T>
@@ -351,7 +350,7 @@ void expression_graph<T>::probe_in_constraint(const int k) {
 		revise_up_to_with_hull_saved(k);
 	}
 
-	write_hull_to_orig();
+	compute_intersection_of_hull_and_orig();
 }
 
 template <typename T>
@@ -406,7 +405,7 @@ void expression_graph<T>::save_hull() {
 }
 
 template <typename T>
-void expression_graph<T>::write_hull_to_orig() {
+void expression_graph<T>::compute_intersection_of_hull_and_orig() {
 
 	if (hull.empty()) {
 
