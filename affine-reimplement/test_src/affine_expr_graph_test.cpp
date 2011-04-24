@@ -20,47 +20,15 @@
 //
 //==============================================================================
 
-#ifndef AFFINE_HPP_
-#define AFFINE_HPP_
+#include "affine.hpp"
+#include "expression_graph.hpp"
 
-#include <iosfwd>
+using namespace asol;
 
-namespace asol {
+void affine_expr_graph_test() {
 
-class affine {
+	expression_graph<affine> aa_dag(0, DoubleArray2D());
 
-public:
-
-	affine();
-
-	explicit affine(double value);
-
-	affine(double lb, double ub);
-
-	void assign(const affine& other);
-
-	void equals(double value);
-
-	void less_than_or_equal_to(affine& rhs);
-
-	friend const affine exp(const affine& x);
-
-	friend const affine log(const affine& x);
-
-	friend const affine sqr(const affine& x);
-
-	friend const affine operator+(const affine& x, const affine& y);
-
-	friend const affine operator-(const affine& x, const affine& y);
-
-	friend const affine operator*(const affine& x, const affine& y);
-
-	friend const affine operator/(const affine& x, const affine& y);
-
-};
-
-std::ostream& operator<<(std::ostream& , const affine& );
+	aa_dag.evaluate_all();
 
 }
-
-#endif // AFFINE_HPP_

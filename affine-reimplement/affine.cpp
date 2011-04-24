@@ -28,4 +28,64 @@ affine::affine() {
 
 }
 
+affine::affine(double value) {
+
+}
+
+affine::affine(double lb, double ub) {
+
+}
+
+std::ostream& operator<<(std::ostream& os, const affine& ) {
+
+	return os;
+}
+
+const affine operator+(const affine& x, const affine& y) {
+
+	return affine();
+}
+
+const affine operator-(const affine& x, const affine& y) {
+
+	return affine();
+}
+
+const affine operator*(const affine& x, const affine& y) {
+
+	return affine();
+}
+
+const affine operator/(const affine& x, const affine& y) {
+
+	return affine();
+}
+
+void affine::assign(const affine& other) {
+
+}
+
+void affine::equals(double value) {
+
+}
+
+void affine::less_than_or_equal_to(affine& rhs) {
+
+}
+
+const affine exp(const affine& x) {
+
+	return affine();
+}
+
+const affine log(const affine& x) {
+
+	return affine();
+}
+
+const affine sqr(const affine& x) {
+
+	return affine();
+}
+
 }

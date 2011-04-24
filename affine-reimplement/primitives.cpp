@@ -21,6 +21,7 @@
 //==============================================================================
 
 #include "primitives.hpp"
+#include "affine.hpp"
 #include "builder.hpp"
 #include "diagnostics.hpp"
 #include "gap_info.hpp"
@@ -470,5 +471,31 @@ template class logarithm<builder>;
 template class equality_constraint<builder>;
 template class common_subexpression<builder>;
 template class less_than_or_equal_to<builder>;
+
+
+template <> void primitive<affine>::set_gap_container(std::vector<gap_info<affine> >* ) { }
+
+template class primitive<affine>;
+
+template<> void addition<affine>::revise() const { }
+template<> void substraction<affine>::revise() const { }
+template<> void multiplication<affine>::revise() const { }
+template<> void division<affine>::revise() const { }
+template<> void square<affine>::revise() const { }
+template<> void exponential<affine>::revise() const { }
+template<> void logarithm<affine>::revise() const { }
+template<> void equality_constraint<affine>::revise() const { }
+template<> void less_than_or_equal_to<affine>::revise() const { }
+
+template class addition<affine>;
+template class substraction<affine>;
+template class multiplication<affine>;
+template class division<affine>;
+template class square<affine>;
+template class exponential<affine>;
+template class logarithm<affine>;
+template class equality_constraint<affine>;
+template class common_subexpression<affine>;
+template class less_than_or_equal_to<affine>;
 
 }

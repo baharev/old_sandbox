@@ -24,6 +24,7 @@
 #include <functional>
 #include <iostream> // FIXME Remove when ready
 #include "expression_graph.hpp"
+#include "affine.hpp"
 #include "box_generator.hpp"
 #include "delete_struct.hpp"
 #include "demangle.hpp"
@@ -560,5 +561,18 @@ const T& expression_graph<T>::last_value() const {
 }
 
 template class expression_graph<interval>;
+
+template<> void expression_graph<affine>::iterative_revision_save_gaps() { }
+template<> void expression_graph<affine>::probing() { }
+template<> void expression_graph<affine>::probe_in_constraint(const int ) { }
+template<> void expression_graph<affine>::save_hull() { }
+template<> bool expression_graph<affine>::compute_intersection() { return false; }
+template<> void expression_graph<affine>::probing2() { }
+template<> void expression_graph<affine>::save_containment_info() { }
+template<> void expression_graph<affine>::check_transitions_since_last_call() { }
+template<> void expression_graph<affine>::dump(const char* ) const { }
+template<> void expression_graph<affine>::load_from_previous_dump() { }
+
+template class expression_graph<affine>;
 
 }

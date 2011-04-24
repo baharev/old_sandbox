@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include "affine.hpp"
 #include "builder.hpp"
 #include "interval.hpp"
 #include "primitives.hpp"
@@ -130,5 +131,8 @@ const vector<primitive<T>*> convert(const Vector& vec) {
 
 template
 const vector<primitive<interval>*> convert(const Vector& );
+
+template
+const vector<primitive<affine>*> convert(const Vector& );
 
 }
