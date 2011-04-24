@@ -31,6 +31,8 @@ namespace asol {
 
 struct epsilon {
 
+	epsilon() : index(-1), coeff(1.0e+300) { }
+
 	epsilon(int i, double c) : index(i), coeff(c) { }
 
 	int    index;
