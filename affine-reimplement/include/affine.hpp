@@ -24,8 +24,19 @@
 #define AFFINE_HPP_
 
 #include <iosfwd>
+#include <vector>
+#include <interval.hpp>
 
 namespace asol {
+
+struct epsilon {
+
+	epsilon(int i, double c) : index(i), coeff(c) { }
+
+	int    index;
+
+	double coeff;
+};
 
 class affine {
 
@@ -36,6 +47,8 @@ public:
 	explicit affine(double value);
 
 	affine(double lb, double ub);
+
+	~affine();
 
 	void assign(const affine& other);
 
@@ -57,9 +70,22 @@ public:
 
 	friend const affine operator/(const affine& x, const affine& y);
 
-};
+	friend std::ostream& operator<<(std::ostream& , const affine& );
 
-std::ostream& operator<<(std::ostream& , const affine& );
+private:
+
+	int size() const { return static_cast<int>(noise_vars.size()); }
+
+	const interval range() const { return v->at(range_index); }
+
+	std::vector<epsilon> noise_vars;
+
+	int range_index;
+
+	static int max_used_index;
+
+	static std::vector<interval>* v;
+};
 
 }
 

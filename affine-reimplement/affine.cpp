@@ -20,23 +20,38 @@
 //
 //==============================================================================
 
+#include <iostream>
 #include "affine.hpp"
 
 namespace asol {
 
-affine::affine() {
+int affine::max_used_index(0);
+
+std::vector<interval>* affine::v(0);
+
+affine::affine() : range_index(-1) {
 
 }
 
+// TODO Figure out how the affine expr_graph will be initialized
 affine::affine(double value) {
-
+	// Range index?
 }
 
 affine::affine(double lb, double ub) {
 
 }
 
-std::ostream& operator<<(std::ostream& os, const affine& ) {
+std::ostream& operator<<(std::ostream& os, const affine& x) {
+
+	for (int i=0; i<x.size(); ++i) {
+
+		epsilon e = x.noise_vars.at(i);
+
+		os << e.index << ": " << e.coeff << '\n';
+	}
+
+	os << "IA: " << x.range() << "\n\n";
 
 	return os;
 }
@@ -86,6 +101,10 @@ const affine log(const affine& x) {
 const affine sqr(const affine& x) {
 
 	return affine();
+}
+
+affine::~affine() {
+	// Out of line dtor to make the compiler shut up
 }
 
 }
