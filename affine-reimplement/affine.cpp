@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include "affine.hpp"
+#include "diagnostics.hpp"
 
 namespace asol {
 
@@ -29,17 +30,80 @@ int affine::max_used_index(0);
 
 std::vector<interval>* affine::v(0);
 
-affine::affine() : range_index(-1) {
+void affine::set_vector(std::vector<interval>* vec) {
 
+	v = vec;
 }
 
-// TODO Figure out how the affine expr_graph will be initialized
-affine::affine(double value) {
-	// Range index?
+void affine::reset_counter() {
+
+	max_used_index = 0;
 }
 
-affine::affine(double lb, double ub) {
+void affine::add_noise_var(int index, double coeff) {
 
+	noise_vars.push_back(epsilon(index, coeff));
+}
+
+void affine::make_variable() {
+
+	ASSERT(noise_vars.empty());
+
+	const interval rng = range();
+
+	ASSERT2(!rng.degenerate() , "index, range: " << range_index << ", " << rng);
+
+	add_noise_var(               0, rng.midpoint());
+
+	add_noise_var(++max_used_index, rng.radius()  );
+}
+
+void affine::recompute_variable(int i) {
+
+	ASSERT(noise_vars.size()==2);
+
+	ASSERT(range_index==i);
+
+	ASSERT(max_used_index==i);
+
+	const interval rng = range();
+
+	ASSERT2(!rng.degenerate() , "index, range: " << range_index << ", " << rng);
+
+	reset_var(++max_used_index, rng);
+}
+
+void affine::reset_var(int index, const interval& rng) {
+
+	epsilon& e_0 = noise_vars.at(0);
+
+	ASSERT(e_0.index==0);
+
+	e_0.coeff = rng.midpoint();
+
+	epsilon& e_i = noise_vars.at(1);
+
+	ASSERT(e_i.index==index);
+
+	e_i.coeff = rng.diameter();
+}
+
+void affine::make_numeric_constant() {
+
+	ASSERT(noise_vars.empty());
+
+	const interval rng = range();
+
+	ASSERT2(rng.degenerate() , "index, range: " << range_index << ", " << rng);
+
+	add_noise_var(0, rng.inf());
+}
+
+void affine::check_if_numeric_constant() {
+
+	ASSERT(noise_vars.size()==1);
+
+	ASSERT2(range().degenerate() , "index, range: " << range_index << ", " << range());
 }
 
 std::ostream& operator<<(std::ostream& os, const affine& x) {
@@ -74,10 +138,6 @@ const affine operator*(const affine& x, const affine& y) {
 const affine operator/(const affine& x, const affine& y) {
 
 	return affine();
-}
-
-void affine::assign(const affine& other) {
-
 }
 
 void affine::equals(double value) {

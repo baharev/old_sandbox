@@ -2,7 +2,7 @@
 //
 // This code is part of ASOL (nonlinear system solver using affine arithmetic)
 //
-// Copyright (C) 2010, 2011 Ali Baharev
+// Copyright (C) 2011 Ali Baharev
 // All rights reserved. E-mail: <my_first_name.my_last_name@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -20,21 +20,16 @@
 //
 //==============================================================================
 
-#ifndef EXAMPLES_HPP_
-#define EXAMPLES_HPP_
+#ifndef AFFINE_EXPR_GRAPH_TEST_HPP_
+#define AFFINE_EXPR_GRAPH_TEST_HPP_
+
+#include "builder.hpp"
+#include "problem.hpp"
 
 namespace asol {
 
-void run_search_procedure();
-
-void run_examples();
-
-void show_Jacobsen_sparsity();
-
-void index_recorder_test();
-
-void affine_expression_graph_test();
+void affine_expr_graph_test(const problem<builder>* prob);
 
 }
 
-#endif // EXAMPLES_HPP_
+#endif // AFFINE_EXPR_GRAPH_TEST_HPP_

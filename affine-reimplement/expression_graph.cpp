@@ -132,6 +132,12 @@ const T* expression_graph<T>::get_box() const {
 }
 
 template <typename T>
+std::vector<T>* expression_graph<T>::get_v() { // TODO Find a better way to do this
+
+	return &v;
+}
+
+template <typename T>
 void expression_graph<T>::evaluate_all() {
 
 	for_each(primitives.begin(), primitives.end(), mem_fun(&primitive<T>::evaluate));
@@ -560,18 +566,90 @@ const T& expression_graph<T>::last_value() const {
 	return v.at(v.size()-1);
 }
 
+template <typename T>
+expression_graph<T>::expression_graph(const problem_data* problem,
+const IntArray2D& constraint_index_sets) :
+v          (problem->peek_index()),
+n_vars     (problem->number_of_variables()),
+primitives (convert<T>(problem->get_primitives())),
+constants  (problem->get_numeric_constants().begin(), problem->get_numeric_constants().end()),
+index_sets (constraint_index_sets),
+constraints(problem->get_constraints()),
+tracker    (0)
+
+{
+	const int n = static_cast<int> (v.size());
+
+	for (int i=0; i<n; ++i) {
+
+		v.at(i).set_range_index(i);
+	}
+
+	for (int i=0; i<n_vars; ++i) {
+
+		v.at(i).make_variable();
+	}
+
+	const int m = static_cast<int> (constants.size());
+
+	for (int i=0; i<m; ++i) {
+
+		Pair p = constants.at(i);
+
+		v.at(p.first).make_numeric_constant();
+	}
+
+	primitive<T>::set_vector(&v);
+}
+
+template <typename T>
+void expression_graph<T>::reset_vars() {
+
+	T::reset_counter();
+
+	for (int i=0; i<n_vars; ++i) {
+
+		v.at(i).recompute_variable(i);
+	}
+
+	const int m = static_cast<int> (constants.size());
+
+	for (int i=0; i<m; ++i) {
+
+		Pair p = constants.at(i);
+
+		v.at(p.first).check_if_numeric_constant();
+	}
+}
+
+template<> expression_graph<interval>::expression_graph(const problem_data*,const IntArray2D&);
+template<> void expression_graph<interval>::reset_vars();
+
 template class expression_graph<interval>;
 
-template<> void expression_graph<affine>::iterative_revision_save_gaps() { }
-template<> void expression_graph<affine>::probing() { }
-template<> void expression_graph<affine>::probe_in_constraint(const int ) { }
-template<> void expression_graph<affine>::save_hull() { }
-template<> bool expression_graph<affine>::compute_intersection() { return false; }
-template<> void expression_graph<affine>::probing2() { }
-template<> void expression_graph<affine>::save_containment_info() { }
-template<> void expression_graph<affine>::check_transitions_since_last_call() { }
-template<> void expression_graph<affine>::dump(const char* ) const { }
-template<> void expression_graph<affine>::load_from_previous_dump() { }
+template<> expression_graph<affine>::expression_graph(const problem_data*, const DoubleArray2D& , const IntArray2D& );
+template<> void expression_graph<affine>::set_variables();
+template<> void expression_graph<affine>::set_non_variables();
+template<> void expression_graph<affine>::set_constant(const Pair p);
+template<> void expression_graph<affine>::set_numeric_consts();
+template<> void expression_graph<affine>::set_box(const affine* , const int );
+template<> void expression_graph<affine>::revise_all();
+template<> void expression_graph<affine>::revise_all2();
+template<> void expression_graph<affine>::iterative_revision();
+template<> void expression_graph<affine>::iterative_revision_save_gaps();
+template<> void expression_graph<affine>::probing();
+template<> void expression_graph<affine>::probing2();
+template<> void expression_graph<affine>::probe_in_constraint(const int );
+template<> void expression_graph<affine>::iterative_revise_with_hull_saved();
+template<> void expression_graph<affine>::revise_up_to_with_hull_saved(const int);
+template<> void expression_graph<affine>::save_hull();
+template<> bool expression_graph<affine>::compute_intersection();
+template<> void expression_graph<affine>::compute_intersection_of_hull_and_orig();
+template<> bool expression_graph<affine>::intersect_hull_and_orig();
+template<> void expression_graph<affine>::save_containment_info();
+template<> void expression_graph<affine>::check_transitions_since_last_call();
+template<> void expression_graph<affine>::dump(const char* ) const;
+template<> void expression_graph<affine>::load_from_previous_dump();
 
 template class expression_graph<affine>;
 

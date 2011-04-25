@@ -25,7 +25,7 @@
 
 #include <iosfwd>
 #include <vector>
-#include <interval.hpp>
+#include "interval.hpp"
 
 namespace asol {
 
@@ -44,15 +44,21 @@ class affine {
 
 public:
 
-	affine();
+	affine() : range_index(-1) { }
 
-	explicit affine(double value);
+	void set_range_index(int i) { range_index = i; }
 
-	affine(double lb, double ub);
+	void make_variable();
+
+	void recompute_variable(int i);
+
+	void make_numeric_constant();
+
+	void check_if_numeric_constant();
 
 	~affine();
 
-	void assign(const affine& other);
+	void assign(const affine& other) { operator=(other); }
 
 	void equals(double value);
 
@@ -74,15 +80,23 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& , const affine& );
 
+	static void set_vector(std::vector<interval>* vec);
+
+	static void reset_counter();
+
 private:
 
 	int size() const { return static_cast<int>(noise_vars.size()); }
 
 	const interval range() const { return v->at(range_index); }
 
+	void add_noise_var(int index, double coeff);
+
+	void reset_var(int index, const interval& rng);
+
 	std::vector<epsilon> noise_vars;
 
-	int range_index;
+	int range_index; // TODO Range index can be eliminated
 
 	static int max_used_index;
 

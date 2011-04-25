@@ -34,6 +34,7 @@
 #include "builder.hpp"
 #include "interval.hpp"
 #include "search_procedure.hpp"
+#include "affine_expr_graph_test.hpp"
 
 using namespace std;
 
@@ -253,6 +254,11 @@ void run_search_procedure() {
 	search_procedure algorithm(new Jacobsen<builder> ());
 
 	algorithm.run();
+}
+
+void affine_expression_graph_test() {
+
+	affine_expr_graph_test(new Wilson16<builder> ());
 }
 
 }

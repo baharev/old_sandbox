@@ -44,9 +44,16 @@ public:
 			         const DoubleArray2D& solutions,
 			         const IntArray2D& constraint_index_sets = IntArray2D());
 
+	explicit expression_graph(const problem_data* problem,
+			                  const IntArray2D& constraint_index_sets);
+
 	void set_box(const T* box, const int length);
 
+	void reset_vars();
+
 	const T* get_box() const;
+
+	std::vector<T>* get_v(); // TODO Find a better way to do this
 
 	void evaluate_all();
 

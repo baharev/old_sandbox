@@ -473,10 +473,11 @@ template class common_subexpression<builder>;
 template class less_than_or_equal_to<builder>;
 
 
-template <> void primitive<affine>::set_gap_container(std::vector<gap_info<affine> >* ) { }
+template <> void primitive<affine>::set_gap_container(std::vector<gap_info<affine> >* );
 
 template class primitive<affine>;
 
+// TODO Design flaw: why force pure virtual revise() if it is not applicable
 template<> void addition<affine>::revise() const { }
 template<> void substraction<affine>::revise() const { }
 template<> void multiplication<affine>::revise() const { }

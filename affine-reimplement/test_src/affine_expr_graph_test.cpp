@@ -21,14 +21,56 @@
 //==============================================================================
 
 #include "affine.hpp"
+#include "builder.hpp"
+#include "diagnostics.hpp"
 #include "expression_graph.hpp"
+#include "interval.hpp"
+#include "problem.hpp"
+#include "problem_data.hpp"
 
-using namespace asol;
+namespace asol {
 
-void affine_expr_graph_test() {
+// FIXME Code triplication
+const problem_data* build_repr(const problem<builder>* prob) {
 
-	expression_graph<affine> aa_dag(0, DoubleArray2D());
+	builder::reset();
+
+	builder* x = prob->initial_box();
+
+	prob->evaluate(x);
+
+	delete[] x;
+
+	builder::finished();
+
+	const problem_data* representation = builder::get_problem_data();
+
+	ASSERT(representation->number_of_variables() == prob->number_of_variables());
+
+	return representation;
+}
+
+void affine_expr_graph_test(const problem<builder>* prob) {
+
+	const problem_data* representation = build_repr(prob);
+
+	expression_graph<interval> ia_dag(representation, DoubleArray2D());
+
+	ia_dag.evaluate_all();
+
+	affine::set_vector(ia_dag.get_v());
+
+	expression_graph<affine> aa_dag(representation, IntArray2D());
 
 	aa_dag.evaluate_all();
+
+	aa_dag.reset_vars();
+
+	aa_dag.evaluate_all();
+
+	delete prob;
+
+	builder::reset();
+}
 
 }

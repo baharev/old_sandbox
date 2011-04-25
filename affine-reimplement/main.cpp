@@ -35,6 +35,7 @@ namespace {
 const string SIMPLE_TESTS   = "simple_tests";
 const string SEARCH_PROC    = "search_procedure";
 const string INDEX_REC_TEST = "index_recorder";
+const string AA_EXPR_GRAPH  = "affine_expr_graph";
 
 }
 
@@ -70,6 +71,10 @@ int main(int argc, const char* argv[]) {
 	else if (argv[1]==INDEX_REC_TEST) {
 
 		index_recorder_test();
+	}
+	else if (argv[1]==AA_EXPR_GRAPH) {
+
+		affine_expression_graph_test();
 	}
 	else {
 
