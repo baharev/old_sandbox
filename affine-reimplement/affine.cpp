@@ -148,7 +148,37 @@ void affine::less_than_or_equal_to(affine& rhs) {
 
 }
 
+const affine unary_op(const affine& arg, double alpha, double zeta, double delta) {
+
+	ASSERT2(delta > 0, "delta: " << delta);
+
+	const std::vector<epsilon>& x = arg.noise_vars;
+
+	affine z;
+
+	const int n = arg.size();
+
+	z.noise_vars.reserve(n+1);
+
+	for (int i=0; i<n; ++i) {
+
+		const epsilon& e = x.at(i);
+
+		z.add_noise_var(e.index, alpha*e.coeff);
+	}
+
+	z.add_noise_var(++affine::max_used_index, delta);
+
+	z.noise_vars.at(0).coeff += zeta;
+
+	// FIXME Range index?
+
+	return z;
+}
+
 const affine exp(const affine& x) {
+
+	x.dbg_consistency();
 
 	return affine();
 }
@@ -161,6 +191,13 @@ const affine log(const affine& x) {
 const affine sqr(const affine& x) {
 
 	return affine();
+}
+
+void affine::dbg_consistency() const {
+
+	ASSERT(range_index>=0);
+	ASSERT(!noise_vars.empty());
+	ASSERT(noise_vars.at(0).index==0);
 }
 
 affine::~affine() {

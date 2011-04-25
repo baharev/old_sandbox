@@ -80,6 +80,10 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& , const affine& );
 
+	void dbg_consistency() const;
+
+	friend const affine unary_op(const affine& x, double alpha, double zeta, double delta);
+
 	static void set_vector(std::vector<interval>* vec);
 
 	static void reset_counter();
