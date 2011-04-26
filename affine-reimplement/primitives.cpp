@@ -24,6 +24,7 @@
 #include "affine.hpp"
 #include "builder.hpp"
 #include "diagnostics.hpp"
+#include "evaluate.hpp"
 #include "gap_info.hpp"
 #include "interval.hpp"
 #include "recorder.hpp"
@@ -114,7 +115,8 @@ binary_primitive<T>(z, x, y)
 template <typename T>
 void addition<T>::evaluate() const {
 
-	this->val().assign( this->arg1() + this->arg2() );
+	add(this->val(), this->arg1(), this->arg2());
+	//this->val().assign( this->arg1() + this->arg2() );
 }
 
 template <typename T>
