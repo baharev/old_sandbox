@@ -80,21 +80,27 @@ public:
 
 	void dbg_consistency() const;
 
-	friend void unary_op(affine& z, const affine& x, double alpha, double zeta, double delta);
+	friend void dbg_consistency(const affine& z, const affine& x);
 
 	static void set_vector(std::vector<interval>* vec);
 
 	static void reset_counter();
 
+	friend class affine_pair_iterator;
+
+	template <typename> friend class binary_operation;
+
+	const interval range() const { return v->at(range_index); }
+
 private:
 
 	int size() const { return static_cast<int>(noise_vars.size()); }
 
-	const interval range() const { return v->at(range_index); }
-
 	void intersect_range(double lb, double ub) { v->at(range_index).intersect(lb, ub); }
 
 	void intersect_range(const interval& new_range) { v->at(range_index).intersect(new_range); }
+
+	void unary_op(const affine& x, double alpha, double zeta, double delta);
 
 	void add_noise_var(int index, double coeff);
 
@@ -109,7 +115,7 @@ private:
 	static std::vector<interval>* v;
 };
 
-void dbg_consistency(const affine& x, const affine& y);
+void dbg_consistency(const affine& z, const affine& x, const affine& y);
 
 }
 

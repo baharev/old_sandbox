@@ -23,6 +23,7 @@
 #include <cmath>
 #include <iostream>
 #include "affine.hpp"
+#include "affine_pair_iterator.hpp"
 #include "diagnostics.hpp"
 
 namespace asol {
@@ -121,12 +122,106 @@ std::ostream& operator<<(std::ostream& os, const affine& x) {
 	return os;
 }
 
+template <typename T>
+void binary_op(const affine& x, const affine& y, T bin_op) {
+
+	affine_pair_iterator itr(x, y);
+
+	bin_op.init_z0(itr.x_i(), itr.y_i());
+
+	while ( itr.increment() ) {
+
+		bin_op.set_zi(itr.index(), itr.x_i(), itr.y_i());
+	}
+
+	bin_op.finish(x.range(), y.range());
+}
+
+template <typename T>
+class binary_operation {
+
+public:
+
+	binary_operation(affine& z) : z(z), rad(0.0) { this->z.noise_vars.clear(); }
+
+	void init_z0(double x0, double y0);
+
+	void set_zi(int index, double x_i, double y_i);
+
+	void finish(const interval& x, const interval& y);
+
+private:
+
+	void intersect_range() {
+
+		const double mid = z.noise_vars.at(0).coeff;
+
+		z.intersect_range(mid - rad, mid + rad);
+	}
+
+	void process_zi(int index, double tmp) {
+
+		z.add_noise_var(index, tmp);
+
+		rad += std::fabs(tmp);
+	}
+
+	affine& z;
+	double rad;
+};
+
+struct Add { };
+
+template <>
+inline void binary_operation<Add>::init_z0(double x0, double y0) {
+
+	z.add_noise_var(0, x0+y0);
+}
+
+template <>
+inline void binary_operation<Add>::set_zi(int index, double x_i, double y_i) {
+
+	process_zi(index, x_i+y_i);
+}
+
+template <>
+inline void binary_operation<Add>::finish(const interval& x, const interval& y) {
+
+	z.intersect_range(x+y);
+
+	intersect_range();
+}
+
+struct Sub { };
+
+template <>
+inline void binary_operation<Sub>::init_z0(double x0, double y0) {
+
+	z.add_noise_var(0, x0-y0);
+}
+
+template <>
+inline void binary_operation<Sub>::set_zi(int index, double x_i, double y_i) {
+
+	process_zi(index, x_i-y_i);
+}
+
+template <>
+inline void binary_operation<Sub>::finish(const interval& x, const interval& y) {
+
+	z.intersect_range(x-y);
+
+	intersect_range();
+}
+
 void aa_addition(affine& z, const affine& x, const affine& y) {
 
+	binary_op(x, y, binary_operation<Add>(z));
 }
 
 void aa_substraction(affine& z, const affine& x, const affine& y) {
 
+	binary_op(x, y, binary_operation<Sub>(z));
 }
 
 void aa_multiplication(affine& z, const affine& x, const affine& y) {
@@ -145,7 +240,7 @@ void affine::less_than_or_equal_to(affine& rhs) {
 
 }
 
-void unary_op(affine& z, const affine& arg, double alpha, double zeta, double delta) {
+void affine::unary_op(const affine& arg, double alpha, double zeta, double delta) {
 
 	ASSERT2(delta > 0, "delta: " << delta);
 
@@ -153,20 +248,20 @@ void unary_op(affine& z, const affine& arg, double alpha, double zeta, double de
 
 	const int n = arg.size();
 
-	z.noise_vars.clear();
+	noise_vars.clear();
 
-	z.noise_vars.reserve(n+1);
+	noise_vars.reserve(n+1);
 
 	for (int i=0; i<n; ++i) {
 
 		const epsilon& e = x.at(i);
 
-		z.add_noise_var(e.index, alpha*e.coeff);
+		add_noise_var(e.index, alpha*e.coeff);
 	}
 
-	z.add_noise_var(++affine::max_used_index, delta);
+	add_noise_var(++affine::max_used_index, delta);
 
-	z.noise_vars.at(0).coeff += zeta;
+	noise_vars.at(0).coeff += zeta;
 
 	// TODO Intersect with the range of the AA form?
 }
@@ -197,7 +292,7 @@ void aa_exp(affine& z, const affine& x) {
 
 	z.intersect_range(e_a, e_b);
 
-	unary_op(z, x, alpha, zeta, delta);
+	z.unary_op(x, alpha, zeta, delta);
 }
 
 void aa_log(affine& z, const affine& x) {
@@ -228,7 +323,7 @@ void aa_log(affine& z, const affine& x) {
 
 	z.intersect_range(std::log(a), log_b);
 
-	unary_op(z, x, alpha, zeta, delta);
+	z.unary_op(x, alpha, zeta, delta);
 }
 
 void aa_sqr(affine& z, const affine& x) {
@@ -255,20 +350,27 @@ void aa_sqr(affine& z, const affine& x) {
 
 	z.intersect_range(sqr(x_rng));
 
-	unary_op(z, x, alpha, zeta, delta);
+	z.unary_op(x, alpha, zeta, delta);
 }
 
 void affine::dbg_consistency() const {
 
 	ASSERT(range_index>=0);
-	// TODO These give false alarm in case of z, what shall I do?
-	//ASSERT(!noise_vars.empty());
-	//ASSERT(noise_vars.at(0).index==0);
+    ASSERT(!noise_vars.empty());
+	ASSERT(noise_vars.at(0).index==0);
 }
 
-void dbg_consistency(const affine& x, const affine& y) {
+void dbg_consistency(const affine& z, const affine& x) {
+
+	ASSERT(z.range_index>=0);
 
 	x.dbg_consistency();
+}
+
+void dbg_consistency(const affine& z, const affine& x, const affine& y) {
+
+	dbg_consistency(z, x);
+
 	y.dbg_consistency();
 }
 
