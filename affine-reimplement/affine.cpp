@@ -20,6 +20,7 @@
 //
 //==============================================================================
 
+#include <cmath>
 #include <iostream>
 #include "affine.hpp"
 #include "diagnostics.hpp"
@@ -124,19 +125,16 @@ void aa_addition(affine& z, const affine& x, const affine& y) {
 
 }
 
-const affine operator-(const affine& x, const affine& y) {
+void aa_substraction(affine& z, const affine& x, const affine& y) {
 
-	return affine();
 }
 
-const affine operator*(const affine& x, const affine& y) {
+void aa_multiplication(affine& z, const affine& x, const affine& y) {
 
-	return affine();
 }
 
-const affine operator/(const affine& x, const affine& y) {
+void aa_division(affine& z, const affine& x, const affine& y) {
 
-	return affine();
 }
 
 void affine::equals(double value) {
@@ -155,6 +153,8 @@ void unary_op(affine& z, const affine& arg, double alpha, double zeta, double de
 
 	const int n = arg.size();
 
+	z.noise_vars.clear();
+
 	z.noise_vars.reserve(n+1);
 
 	for (int i=0; i<n; ++i) {
@@ -168,29 +168,102 @@ void unary_op(affine& z, const affine& arg, double alpha, double zeta, double de
 
 	z.noise_vars.at(0).coeff += zeta;
 
-	// FIXME Range index?
+	// TODO Intersect with the range of the AA form?
 }
 
 void aa_exp(affine& z, const affine& x) {
 
 	dbg_consistency(z, x);
+
+	const interval x_rng = x.range();
+
+	ASSERT(!x_rng.degenerate());
+
+	const double a = x_rng.inf();
+
+	const double b = x_rng.sup();
+
+	const double e_a = std::exp(a);
+
+	const double e_b = std::exp(b);
+
+	const double alpha = (e_b-e_a)/(b-a);
+
+	const double ln_alpha = std::log(alpha);
+
+	const double zeta  = (-alpha*ln_alpha+e_b-alpha*b+alpha)/2.0;
+
+	const double delta = ( alpha*ln_alpha+e_b-alpha*b-alpha)/2.0;
+
+	z.intersect_range(e_a, e_b);
+
+	unary_op(z, x, alpha, zeta, delta);
 }
 
 void aa_log(affine& z, const affine& x) {
 
 	dbg_consistency(z, x);
+
+	const interval x_rng = x.range();
+
+	ASSERT(!x_rng.degenerate());
+
+	const double a = x_rng.inf();
+
+	const double b = x_rng.sup();
+
+	ASSERT2( a > 0, "invalid argument in ln(): " << x_rng);
+
+	const double log_b =  std::log(b);
+
+	const double alpha =  std::log(a/b)/(a-b);
+
+	const double fu    = -std::log(alpha);
+
+	const double ru    = -b*alpha+log_b+1.0;
+
+	const double zeta  =  (fu+ru)/2.0-1.0;
+
+	const double delta =  (fu-ru)/2.0;
+
+	z.intersect_range(std::log(a), log_b);
+
+	unary_op(z, x, alpha, zeta, delta);
 }
 
 void aa_sqr(affine& z, const affine& x) {
 
 	dbg_consistency(z, x);
+
+	const interval x_rng = x.range();
+
+	ASSERT(!x_rng.degenerate());
+
+	const double a = x_rng.inf();
+
+	const double b = x_rng.sup();
+
+	const double a_2_p_b_2 = std::pow(a, 2)+std::pow(b, 2);
+
+	const double a_b = a*b;
+
+	const double alpha = a + b;
+
+	const double zeta  =  -(a_2_p_b_2+6.0*a_b)/8.0;
+
+	const double delta =   (a_2_p_b_2-2.0*a_b)/8.0;
+
+	z.intersect_range(sqr(x_rng));
+
+	unary_op(z, x, alpha, zeta, delta);
 }
 
 void affine::dbg_consistency() const {
 
 	ASSERT(range_index>=0);
-	ASSERT(!noise_vars.empty());
-	ASSERT(noise_vars.at(0).index==0);
+	// TODO These give false alarm in case of z, what shall I do?
+	//ASSERT(!noise_vars.empty());
+	//ASSERT(noise_vars.at(0).index==0);
 }
 
 void dbg_consistency(const affine& x, const affine& y) {

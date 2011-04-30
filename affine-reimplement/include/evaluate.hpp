@@ -36,6 +36,24 @@ inline void add(T& z, const T& x, const T& y) {
 }
 
 template <typename T>
+inline void sub(T& z, const T& x, const T& y) {
+
+	z.assign(x-y);
+}
+
+template <typename T>
+inline void mul(T& z, const T& x, const T& y) {
+
+	z.assign(x*y);
+}
+
+template <typename T>
+inline void div(T& z, const T& x, const T& y) {
+
+	z.assign(x/y);
+}
+
+template <typename T>
 inline void exp(T& z, const T& x) {
 
 	z.assign(exp(x));
@@ -57,6 +75,24 @@ template <>
 inline void add<affine>(affine& z, const affine& x, const affine& y) {
 
 	aa_addition(z, x, y);
+}
+
+template <>
+inline void sub<affine>(affine& z, const affine& x, const affine& y) {
+
+	aa_substraction(z, x, y);
+}
+
+template <>
+inline void mul<affine>(affine& z, const affine& x, const affine& y) {
+
+	aa_multiplication(z, x, y);
+}
+
+template <>
+inline void div<affine>(affine& z, const affine& x, const affine& y) {
+
+	aa_division(z, x, y);
 }
 
 template <>

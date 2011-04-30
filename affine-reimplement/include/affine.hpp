@@ -58,8 +58,6 @@ public:
 
 	~affine();
 
-	void assign(const affine& other) { operator=(other); }
-
 	void equals(double value);
 
 	void less_than_or_equal_to(affine& rhs);
@@ -72,11 +70,11 @@ public:
 
 	friend void aa_addition(affine& z, const affine& x, const affine& y);
 
-	friend const affine operator-(const affine& x, const affine& y);
+	friend void aa_substraction(affine& z, const affine& x, const affine& y);
 
-	friend const affine operator*(const affine& x, const affine& y);
+	friend void aa_multiplication(affine& z, const affine& x, const affine& y);
 
-	friend const affine operator/(const affine& x, const affine& y);
+	friend void aa_division(affine& z, const affine& x, const affine& y);
 
 	friend std::ostream& operator<<(std::ostream& , const affine& );
 
@@ -93,6 +91,10 @@ private:
 	int size() const { return static_cast<int>(noise_vars.size()); }
 
 	const interval range() const { return v->at(range_index); }
+
+	void intersect_range(double lb, double ub) { v->at(range_index).intersect(lb, ub); }
+
+	void intersect_range(const interval& new_range) { v->at(range_index).intersect(new_range); }
 
 	void add_noise_var(int index, double coeff);
 

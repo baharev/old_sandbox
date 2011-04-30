@@ -21,12 +21,9 @@
 //==============================================================================
 
 #include "primitives.hpp"
-#include "affine.hpp"
-#include "builder.hpp"
 #include "diagnostics.hpp"
 #include "evaluate.hpp"
 #include "gap_info.hpp"
-#include "interval.hpp"
 #include "recorder.hpp"
 
 namespace asol {
@@ -146,7 +143,7 @@ binary_primitive<T>(z, x, y)
 template <typename T>
 void substraction<T>::evaluate() const {
 
-	this->val().assign( this->arg1() - this->arg2() );
+	sub(this->val(), this->arg1(), this->arg2());
 }
 
 template <typename T>
@@ -177,7 +174,7 @@ binary_primitive<T>(z, x, y)
 template <typename T>
 void multiplication<T>::evaluate() const {
 
-	this->val().assign( this->arg1() * (this->arg2()) );
+	mul(this->val(), this->arg1(), this->arg2());
 }
 
 template <typename T>
@@ -226,7 +223,7 @@ binary_primitive<T>(z, x, y)
 template <typename T>
 void division<T>::evaluate() const {
 	// Arg2 cannot contain zero, extended division is not applicable
-	this->val().assign( this->arg1() / this->arg2() );
+	div(this->val(), this->arg1(), this->arg2());
 }
 
 template <typename T>
