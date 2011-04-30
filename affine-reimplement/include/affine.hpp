@@ -64,13 +64,13 @@ public:
 
 	void less_than_or_equal_to(affine& rhs);
 
-	friend const affine exp(const affine& x);
+	friend void aa_exp(affine& z, const affine& x);
 
-	friend const affine log(const affine& x);
+	friend void aa_log(affine& z, const affine& x);
 
-	friend const affine sqr(const affine& x);
+	friend void aa_sqr(affine& z, const affine& x);
 
-	friend const affine operator+(const affine& x, const affine& y);
+	friend void aa_addition(affine& z, const affine& x, const affine& y);
 
 	friend const affine operator-(const affine& x, const affine& y);
 
@@ -82,7 +82,7 @@ public:
 
 	void dbg_consistency() const;
 
-	friend const affine unary_op(const affine& x, double alpha, double zeta, double delta);
+	friend void unary_op(affine& z, const affine& x, double alpha, double zeta, double delta);
 
 	static void set_vector(std::vector<interval>* vec);
 
@@ -96,7 +96,7 @@ private:
 
 	void add_noise_var(int index, double coeff);
 
-	void reset_var(int index, const interval& rng);
+	void set_var_range(int index, const interval& rng);
 
 	std::vector<epsilon> noise_vars;
 
@@ -106,6 +106,8 @@ private:
 
 	static std::vector<interval>* v;
 };
+
+void dbg_consistency(const affine& x, const affine& y);
 
 }
 

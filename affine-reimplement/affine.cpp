@@ -70,10 +70,10 @@ void affine::recompute_variable(int i) {
 
 	ASSERT2(!rng.degenerate() , "index, range: " << range_index << ", " << rng);
 
-	reset_var(++max_used_index, rng);
+	set_var_range(++max_used_index, rng);
 }
 
-void affine::reset_var(int index, const interval& rng) {
+void affine::set_var_range(int index, const interval& rng) {
 
 	epsilon& e_0 = noise_vars.at(0);
 
@@ -120,9 +120,8 @@ std::ostream& operator<<(std::ostream& os, const affine& x) {
 	return os;
 }
 
-const affine operator+(const affine& x, const affine& y) {
+void aa_addition(affine& z, const affine& x, const affine& y) {
 
-	return affine();
 }
 
 const affine operator-(const affine& x, const affine& y) {
@@ -148,13 +147,11 @@ void affine::less_than_or_equal_to(affine& rhs) {
 
 }
 
-const affine unary_op(const affine& arg, double alpha, double zeta, double delta) {
+void unary_op(affine& z, const affine& arg, double alpha, double zeta, double delta) {
 
 	ASSERT2(delta > 0, "delta: " << delta);
 
 	const std::vector<epsilon>& x = arg.noise_vars;
-
-	affine z;
 
 	const int n = arg.size();
 
@@ -172,25 +169,21 @@ const affine unary_op(const affine& arg, double alpha, double zeta, double delta
 	z.noise_vars.at(0).coeff += zeta;
 
 	// FIXME Range index?
-
-	return z;
 }
 
-const affine exp(const affine& x) {
+void aa_exp(affine& z, const affine& x) {
 
-	x.dbg_consistency();
-
-	return affine();
+	dbg_consistency(z, x);
 }
 
-const affine log(const affine& x) {
+void aa_log(affine& z, const affine& x) {
 
-	return affine();
+	dbg_consistency(z, x);
 }
 
-const affine sqr(const affine& x) {
+void aa_sqr(affine& z, const affine& x) {
 
-	return affine();
+	dbg_consistency(z, x);
 }
 
 void affine::dbg_consistency() const {
@@ -198,6 +191,12 @@ void affine::dbg_consistency() const {
 	ASSERT(range_index>=0);
 	ASSERT(!noise_vars.empty());
 	ASSERT(noise_vars.at(0).index==0);
+}
+
+void dbg_consistency(const affine& x, const affine& y) {
+
+	x.dbg_consistency();
+	y.dbg_consistency();
 }
 
 affine::~affine() {

@@ -116,7 +116,6 @@ template <typename T>
 void addition<T>::evaluate() const {
 
 	add(this->val(), this->arg1(), this->arg2());
-	//this->val().assign( this->arg1() + this->arg2() );
 }
 
 template <typename T>
@@ -261,7 +260,7 @@ square<T>::square(int value, int arg) : unary_primitive<T>(value, arg) { }
 template <typename T>
 void square<T>::evaluate() const {
 
-	this->val().assign( sqr(this->arg()) );
+	sqr(this->val(), this->arg());
 }
 
 template <typename T>
@@ -295,7 +294,7 @@ exponential<T>::exponential(int z, int x) : unary_primitive<T>(z, x) { }
 template <typename T>
 void exponential<T>::evaluate() const {
 
-	this->val().assign( exp(this->arg()) );
+	exp(this->val(), this->arg());
 }
 
 template <typename T>
@@ -322,7 +321,7 @@ logarithm<T>::logarithm(int z, int x) : unary_primitive<T>(z, x) { }
 template <typename T>
 void logarithm<T>::evaluate() const {
 
-	this->val().assign( log(this->arg()) );
+	log(this->val(), this->arg());
 }
 
 template <typename T>

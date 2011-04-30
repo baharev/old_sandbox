@@ -35,29 +35,47 @@ inline void add(T& z, const T& x, const T& y) {
 	z.assign(x+y);
 }
 
-void affine_add_friend();
+template <typename T>
+inline void exp(T& z, const T& x) {
+
+	z.assign(exp(x));
+}
+
+template <typename T>
+inline void log(T& z, const T& x) {
+
+	z.assign(log(x));
+}
+
+template <typename T>
+inline void sqr(T& z, const T& x) {
+
+	z.assign(sqr(x));
+}
 
 template <>
 inline void add<affine>(affine& z, const affine& x, const affine& y) {
 
-	affine_add_friend();
+	aa_addition(z, x, y);
 }
 
-/*
-inline void add(interval& z, const interval& x, const interval& y) {
+template <>
+inline void exp<affine>(affine& z, const affine& x) {
 
-	z.assign(x+y);
+	aa_exp(z, x);
 }
 
-inline void add(builder& z, const builder& x, const builder& y) {
+template <>
+inline void log<affine>(affine& z, const affine& x) {
 
-	z.assign(x+y);
+	aa_log(z, x);
 }
 
-inline void add(affine& z, const affine& x, const affine& y) {
+template <>
+inline void sqr<affine>(affine& z, const affine& x) {
 
+	aa_sqr(z, x);
 }
-*/
 
 }
 
