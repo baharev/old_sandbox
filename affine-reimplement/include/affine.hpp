@@ -40,6 +40,7 @@ struct epsilon {
 	double coeff;
 };
 
+// TODO Consistency checks in each operation and throw numerical_error in degenerate cases
 class affine {
 
 public:
@@ -68,9 +69,7 @@ public:
 
 	friend void aa_sqr(affine& z, const affine& x);
 
-	friend void aa_addition(affine& z, const affine& x, const affine& y);
-
-	friend void aa_substraction(affine& z, const affine& x, const affine& y);
+	friend void aa_reciprocal(affine& z, const affine& x);
 
 	friend void aa_multiplication(affine& z, const affine& x, const affine& y);
 
@@ -100,6 +99,7 @@ private:
 
 	const interval& get_range() const { return range_index>=0 ? v->at(range_index) : ia_range; }
 
+	// TODO Needs a force_range too
 	void intersect_range(double lb, double ub) { get_range().intersect(lb, ub); }
 
 	void intersect_range(const interval& new_range) { get_range().intersect(new_range); }
@@ -109,6 +109,8 @@ private:
 	void add_noise_var(int index, double coeff);
 
 	void set_var_range(int index, const interval& rng);
+
+	void condense_last_two_noise_vars();
 
 	std::vector<epsilon> noise_vars;
 
@@ -120,6 +122,10 @@ private:
 
 	static std::vector<interval>* v;
 };
+
+void aa_addition(affine& z, const affine& x, const affine& y);
+
+void aa_substraction(affine& z, const affine& x, const affine& y);
 
 void dbg_consistency(const affine& z, const affine& x, const affine& y);
 

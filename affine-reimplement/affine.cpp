@@ -142,7 +142,7 @@ class binary_operation {
 
 public:
 
-	binary_operation(affine& z) : z(z), rad(0.0) { this->z.noise_vars.clear(); }
+	binary_operation(affine& z) : z(z), rad(0), c(0) { this->z.noise_vars.clear(); }
 
 	void init_z0(double x0, double y0);
 
@@ -168,6 +168,7 @@ private:
 
 	affine& z;
 	double rad;
+	double c; // Only DivP uses this
 };
 
 struct Add { };
@@ -226,18 +227,146 @@ void aa_substraction(affine& z, const affine& x, const affine& y) {
 
 void aa_multiplication(affine& z, const affine& x, const affine& y) {
 
+	z.noise_vars.clear();
+	z.noise_vars.reserve(x.size()+y.size()+1);
+
+	affine_pair_iterator itr(x, y);
+
+	const double x0 = itr.x_i();
+	const double y0 = itr.y_i();
+
+	double rad(0), rad_x(0), rad_y(0), c(0);
+
+	z.add_noise_var(0, 0);
+
+	while ( itr.increment() ) {
+
+		const double x_i = itr.x_i();
+		const double y_i = itr.y_i();
+
+		c += x_i*y_i;
+
+		const double tmp = x0*y_i+y0*x_i;
+
+		z.add_noise_var(itr.index(), tmp);
+
+	    rad   += std::fabs(tmp);
+		rad_x += std::fabs(x_i);
+		rad_y += std::fabs(y_i);
+	}
+
+	c /= 2.0;
+
+	const double mid = x0*y0 + c;
+
+	z.noise_vars.at(0).coeff = mid;
+
+	const double delta = rad_x*rad_y - std::fabs(c);
+
+	ASSERT(delta >= 0.0);
+
+	z.add_noise_var(++affine::max_used_index, delta);
+
+	rad += delta;
+
+	z.intersect_range(mid-rad, mid+rad);
+	z.intersect_range(x.range()*y.range());
+}
+
+struct DivP { };
+
+template <>
+inline void binary_operation<DivP>::init_z0(double x0, double y0) {
+
+	c = x0/y0; // TODO Check for +/-Inf and NaN
+
+	z.add_noise_var(0, 0);
+}
+
+template <>
+inline void binary_operation<DivP>::set_zi(int index, double x_i, double y_i) {
+
+	process_zi(index, x_i-c*y_i);
+}
+
+template <>
+inline void binary_operation<DivP>::set_z_range(const interval& x, const interval& y) {
+
+	z.intersect_range(x-c*y);
+
+	intersect_range();
 }
 
 void aa_division(affine& z, const affine& x, const affine& y) {
 
+	const int start_index = affine::max_used_index;
+
+	const interval ANYTHING(-1.0e+150, 1.0e+150);
+
+	affine P;
+
+	P.ia_range = ANYTHING; // FIXME
+
+	binary_op(x, y, binary_operation<DivP>(P));
+
+	affine Q;
+
+	Q.ia_range = ANYTHING; // FIXME
+
+	aa_reciprocal(Q, y);
+
+	const interval z_old_range = z.range();
+
+	z.get_range() = ANYTHING; // FIXME
+
+	aa_multiplication(z, P, Q);
+
+	const double c = x.noise_vars.at(0).coeff / y.noise_vars.at(0).coeff; // FIXME
+
+	z.noise_vars.at(0).coeff += c;
+
+	z.get_range() = z.range() + c;
+
+	z.intersect_range(x.range()/y.range());
+
+	const int new_indices = affine::max_used_index - start_index;
+
+	if (new_indices == 2) {
+
+		z.condense_last_two_noise_vars();
+	}
 }
 
+void affine::condense_last_two_noise_vars() {
+
+	--affine::max_used_index;
+
+	epsilon& before_last = noise_vars.at(size()-2);
+
+	ASSERT(before_last.index == affine::max_used_index);
+
+	ASSERT(std::fabs(before_last.coeff) < 1.0e-12);
+
+	const double last_value = noise_vars.back().coeff;
+
+	ASSERT(last_value >= 0);
+
+	before_last.coeff += last_value;
+
+	noise_vars.pop_back();
+}
+
+// TODO Finish
 void affine::equals(double value) {
 
+	// FIXME interval.equals should force lb and ub to value
+	get_range().equals(value);
 }
 
+// TODO Finish
 void affine::less_than_or_equal_to(affine& rhs) {
 
+	get_range().less_than_or_equal_to(rhs.get_range());
 }
 
 void affine::unary_op(const affine& arg, double alpha, double zeta, double delta) {
@@ -351,6 +480,43 @@ void aa_sqr(affine& z, const affine& x) {
 	z.intersect_range(sqr(x_rng));
 
 	z.unary_op(x, alpha, zeta, delta);
+}
+
+//----------------------------------------------------------------------
+//  Reciprocal function using minimax / Chebysev approximation
+//  The implementation is based on the paper of L. V. Kolev
+//  "An improved interval linearization for solving non-linear problems"
+//  Numerical Algorithms, 37, pp.213-224 (2004)
+
+void aa_reciprocal(affine& z, const affine& y) {
+
+	y.dbg_consistency();
+
+	const interval y_rng = y.range();
+
+	ASSERT (!y_rng.degenerate());
+	ASSERT2(!y_rng.contains(0),"division by zero: "<<y_rng);
+
+	const double y_inf = y_rng.inf();
+	const double y_sup = y_rng.sup();
+
+	const double s  = -1.0/(y_inf*y_sup);
+
+	const double y1 = -std::sqrt(-1.0/s);
+	const double y2 = -y1;
+
+	const double ys = (y_inf > 0.0) ? y2 : y1;
+
+	const double f_inf = 1.0/ys    - s*ys   ;
+	const double f_sup = 1.0/y_inf - s*y_inf;
+
+	const double f0 = (f_inf + f_sup) / 2.0;
+
+	const double rf = f_sup-f0;
+
+	z.intersect_range(1.0/y_sup, 1.0/y_inf);
+
+	z.unary_op(y, s, f0, rf);
 }
 
 void affine::dbg_consistency() const {
