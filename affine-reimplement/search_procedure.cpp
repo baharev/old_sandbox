@@ -25,6 +25,7 @@
 #include <iostream>
 #include <iterator>
 #include "search_procedure.hpp"
+#include "affine.hpp"
 #include "builder.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
@@ -46,10 +47,7 @@ search_procedure::search_procedure(const problem<builder>* p)
 {
 	build_problem_representation();
 
-	expr_graph = new expression_graph<interval>(representation, prob->solutions(), index_sets());
-
-	push_initial_box_to_deque();
-	//dbg_initial_box_from_dump();
+	init_dags();
 
 	solutions_found = splits = boxes_processed = 0;
 
@@ -64,7 +62,7 @@ search_procedure::search_procedure(const problem<builder>* p)
 
 search_procedure::~search_procedure() {
 
-	delete expr_graph;
+	delete ia_dag;
 }
 
 void search_procedure::build_problem_representation() {
@@ -87,6 +85,20 @@ void search_procedure::evaluate_with_builder() const {
 	delete[] x;
 
 	builder::finished();
+}
+
+void search_procedure::init_dags() {
+
+	const IntArray2D index_set = index_sets();
+
+	ia_dag = new expression_graph<interval>(representation, prob->solutions(), index_set);
+
+	push_initial_box_to_deque();
+	//dbg_initial_box_from_dump();
+
+	affine::set_vector(ia_dag->get_v());
+
+	aa_dag = new expression_graph<affine>(representation, index_set);
 }
 
 struct pair2interval {
@@ -184,7 +196,7 @@ void search_procedure::print_statistics() const {
 	cout << "Number of splits: " << splits << ", solutions: ";
 	cout << solutions_found << endl;
 
-	expr_graph->print_found_solutions();
+	ia_dag->print_found_solutions();
 }
 
 void search_procedure::process_box() {
@@ -236,11 +248,11 @@ void search_procedure::iteration_step() {
 
 void search_procedure::dbg_check_infeasibilty() const {
 
-	if(expr_graph->contains_solution()) {
+	if(ia_dag->contains_solution()) {
 
-		expr_graph->dump_trackers_previous();
+		ia_dag->dump_trackers_previous();
 
-		expr_graph->dump("v_current_dump.txt");
+		ia_dag->dump("v_current_dump.txt");
 
 		ASSERT(false);
 	}
@@ -248,22 +260,29 @@ void search_procedure::dbg_check_infeasibilty() const {
 
 void search_procedure::dbg_solution_count() {
 
-	expr_graph->increment_found_solution_counters();
+	ia_dag->increment_found_solution_counters();
 }
 
 void search_procedure::contracting_step() {
 
-	expr_graph->set_box(box_orig, n_vars);
+	ia_dag->set_box(box_orig, n_vars);
 
-	expr_graph->save_containment_info();
+	ia_dag->save_containment_info();
 	// TODO Check index sets!
-	expr_graph->probing2();
+	ia_dag->probing2();
 
-	//expr_graph->iterative_revision();
+	//ia_dag->iterative_revision();
 
-	expr_graph->check_transitions_since_last_call();
+	ia_dag->check_transitions_since_last_call();
 
 	check_convergence();
+
+	// TODO Continue from here!
+	aa_dag->reset_vars();
+
+	aa_dag->evaluate_all();
+
+	ia_dag->check_transitions_since_last_call();
 }
 
 const double CONVERGENCE_TOL = 0.05; // FIXME Just for testing
@@ -276,7 +295,7 @@ struct wide {
 void search_procedure::check_convergence() {
 
 	// TODO Move convergence check to expression_graph?
-	const interval* const box = expr_graph->get_box();
+	const interval* const box = ia_dag->get_box();
 
 	const interval* const elem = std::find_if(box, box+n_vars, wide());
 
@@ -301,7 +320,7 @@ void search_procedure::delete_box() {
 
 void search_procedure::print_box() const {
 
-	expr_graph->show_variables(cout);
+	ia_dag->show_variables(cout);
 }
 
 bool search_procedure::sufficient(const double max_progress) const {
@@ -321,7 +340,7 @@ bool search_procedure::sufficient_progress() {
 		cout << "-----------------------------------------------------" << endl;
 	}
 
-	const interval* const box = expr_graph->get_box();
+	const interval* const box = ia_dag->get_box();
 
 	std::copy(box, box+n_vars, box_orig);
 
@@ -342,7 +361,7 @@ struct diam_reduction {
 
 double search_procedure::compute_max_progress() const {
 
-	const interval* const box_contracted = expr_graph->get_box();
+	const interval* const box_contracted = ia_dag->get_box();
 
 	double reduction[n_vars];
 

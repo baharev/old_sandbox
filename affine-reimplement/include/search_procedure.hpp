@@ -28,8 +28,9 @@
 
 namespace asol {
 
-template <typename T> class expression_graph;
-template <typename T> class problem;
+template <typename> class expression_graph;
+template <typename> class problem;
+class affine;
 class builder;
 class interval;
 class problem_data;
@@ -50,6 +51,7 @@ private:
 	search_procedure& operator=(const search_procedure& );
 
 	void build_problem_representation();
+	void init_dags();
 	void evaluate_with_builder() const;
 	void push_initial_box_to_deque();
 	std::vector<std::vector<int> > index_sets() const;
@@ -83,7 +85,9 @@ private:
 
 	const problem_data* representation;
 
-	expression_graph<interval>* expr_graph;
+	expression_graph<interval>* ia_dag;
+
+	expression_graph<affine>* aa_dag;
 
 	std::deque<interval*> pending_boxes;
 
