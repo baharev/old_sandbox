@@ -134,7 +134,7 @@ void binary_op(const affine& x, const affine& y, T bin_op) {
 		bin_op.set_zi(itr.index(), itr.x_i(), itr.y_i());
 	}
 
-	bin_op.finish(x.range(), y.range());
+	bin_op.set_z_range(x.range(), y.range());
 }
 
 template <typename T>
@@ -148,7 +148,7 @@ public:
 
 	void set_zi(int index, double x_i, double y_i);
 
-	void finish(const interval& x, const interval& y);
+	void set_z_range(const interval& x, const interval& y);
 
 private:
 
@@ -185,7 +185,7 @@ inline void binary_operation<Add>::set_zi(int index, double x_i, double y_i) {
 }
 
 template <>
-inline void binary_operation<Add>::finish(const interval& x, const interval& y) {
+inline void binary_operation<Add>::set_z_range(const interval& x, const interval& y) {
 
 	z.intersect_range(x+y);
 
@@ -207,7 +207,7 @@ inline void binary_operation<Sub>::set_zi(int index, double x_i, double y_i) {
 }
 
 template <>
-inline void binary_operation<Sub>::finish(const interval& x, const interval& y) {
+inline void binary_operation<Sub>::set_z_range(const interval& x, const interval& y) {
 
 	z.intersect_range(x-y);
 
@@ -355,7 +355,7 @@ void aa_sqr(affine& z, const affine& x) {
 
 void affine::dbg_consistency() const {
 
-	ASSERT(range_index>=0);
+	ASSERT(get_range().valid());
     ASSERT(!noise_vars.empty());
 	ASSERT(noise_vars.at(0).index==0);
 }

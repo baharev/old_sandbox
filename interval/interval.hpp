@@ -112,6 +112,8 @@ public:
 
 	double unchecked_sup() const;
 
+	bool valid() const;
+
 	friend std::ostream& operator<<(std::ostream& , const interval& );
 
 private:

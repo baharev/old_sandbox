@@ -90,15 +90,19 @@ public:
 
 	template <typename> friend class binary_operation;
 
-	const interval range() const { return v->at(range_index); }
+	const interval range() const { return get_range(); }
 
 private:
 
 	int size() const { return static_cast<int>(noise_vars.size()); }
 
-	void intersect_range(double lb, double ub) { v->at(range_index).intersect(lb, ub); }
+	interval& get_range() {	return range_index>=0 ? v->at(range_index) : ia_range; }
 
-	void intersect_range(const interval& new_range) { v->at(range_index).intersect(new_range); }
+	const interval& get_range() const { return range_index>=0 ? v->at(range_index) : ia_range; }
+
+	void intersect_range(double lb, double ub) { get_range().intersect(lb, ub); }
+
+	void intersect_range(const interval& new_range) { get_range().intersect(new_range); }
 
 	void unary_op(const affine& x, double alpha, double zeta, double delta);
 
@@ -108,7 +112,9 @@ private:
 
 	std::vector<epsilon> noise_vars;
 
-	int range_index; // TODO Range index can be eliminated
+	int range_index;
+
+	interval ia_range;
 
 	static int max_used_index;
 
