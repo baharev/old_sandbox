@@ -278,7 +278,7 @@ struct DivP { };
 template <>
 inline void binary_operation<DivP>::init_z0(double x0, double y0) {
 
-	c = x0/y0; // TODO Check for +/-Inf and NaN
+	c = x0/y0; // y.central_value has already been checked
 
 	z.add_noise_var(0, 0);
 }
@@ -299,6 +299,8 @@ inline void binary_operation<DivP>::set_z_range(const interval& x, const interva
 
 void aa_division(affine& z, const affine& x, const affine& y) {
 
+	ASSERT(y.central_value()!=0.0);
+
 	const int start_index = affine::max_used_index;
 
 	affine P(interval::ANY_REAL());
@@ -311,7 +313,7 @@ void aa_division(affine& z, const affine& x, const affine& y) {
 
 	const interval z_old_range = z.range();
 
-	z.get_range() = interval::ANY_REAL(); // FIXME
+	z.get_range() = interval::ANY_REAL();
 
 	aa_multiplication(z, P, Q);
 
@@ -320,6 +322,8 @@ void aa_division(affine& z, const affine& x, const affine& y) {
 	z.central_value() += c;
 
 	z.get_range() += c;
+
+	z.intersect_range(z_old_range);
 
 	z.intersect_range(x.range()/y.range());
 
