@@ -28,7 +28,7 @@
 
 // TODO What is a macro in a namespace anyway?
 
-#ifndef ASOL_DISABLE_ASSERTS
+#ifdef ASOL_ENABLE_ASSERTS
 #ifdef __GNUG__
 #define FUNCTION_ __PRETTY_FUNCTION__
 #else
@@ -55,11 +55,15 @@
 		throw std::logic_error(os__.str()); \
 	} \
 }
-#else
+#elif defined ASOL_DISABLE_ASSERTS
 
 #define ASSERT(condition) (void) 0;
 
 #define ASSERT2(condition, message) (void) 0;
+
+#else
+
+#error ASSERT should be enabled or disabled
 
 #endif
 
