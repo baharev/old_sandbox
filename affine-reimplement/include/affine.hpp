@@ -126,6 +126,8 @@ private:
 	static int max_used_index;
 
 	static std::vector<interval>* v;
+
+	static const double NARROW;
 };
 
 void aa_addition(affine& z, const affine& x, const affine& y);

@@ -25,12 +25,15 @@
 #include "affine.hpp"
 #include "affine_pair_iterator.hpp"
 #include "diagnostics.hpp"
+#include "exceptions.hpp"
 
 namespace asol {
 
 int affine::max_used_index(0);
 
 std::vector<interval>* affine::v(0);
+
+const double affine::NARROW(1.0e-6);
 
 void affine::set_vector(std::vector<interval>* vec) {
 
@@ -359,13 +362,13 @@ void affine::condense_last_two_noise_vars() {
 // TODO Finish
 void affine::equals(double value) {
 
-	// FIXME interval.equals should force lb and ub to value
-	get_range().equals(value);
+	get_range().force_intersection(value, value);
 }
 
 // TODO Finish
 void affine::less_than_or_equal_to(affine& rhs) {
 
+	// TODO Not exactly forced
 	get_range().less_than_or_equal_to(rhs.get_range());
 }
 
@@ -401,6 +404,11 @@ void aa_exp(affine& z, const affine& x) {
 
 	ASSERT(!x_rng.degenerate());
 
+	if (x_rng.radius()<affine::NARROW) {
+
+		throw numerical_problems();
+	}
+
 	const double a = x_rng.inf();
 
 	const double b = x_rng.sup();
@@ -429,6 +437,11 @@ void aa_log(affine& z, const affine& x) {
 	const interval x_rng = x.range();
 
 	ASSERT(!x_rng.degenerate());
+
+	if (x_rng.radius()<affine::NARROW) {
+
+		throw numerical_problems();
+	}
 
 	const double a = x_rng.inf();
 
