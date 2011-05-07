@@ -379,16 +379,28 @@ void affine::unary_op(const affine& arg, double alpha, double zeta, double delta
 
 	noise_vars.reserve(n+1);
 
-	for (int i=0; i<n; ++i) {
+	add_noise_var(0, alpha*(x.at(0).coeff));
+
+	double rad(0.0);
+
+	for (int i=1; i<n; ++i) {
 
 		const epsilon& e = x.at(i);
 
-		add_noise_var(e.index, alpha*e.coeff);
+		const double value = alpha*e.coeff;
+
+		add_noise_var(e.index, value);
+
+		rad += std::fabs(value);
 	}
 
 	add_noise_var(++affine::max_used_index, delta);
 
 	central_value() += zeta;
+
+	const double mid = central_value();
+
+	intersect_range(mid - rad, mid + rad);
 
 	// TODO Intersect with the range of the AA form?
 }
