@@ -93,11 +93,17 @@ public:
 
 private:
 
+	explicit affine(const interval& range) : range_index(-1), ia_range(range) { }
+
 	int size() const { return static_cast<int>(noise_vars.size()); }
 
 	interval& get_range() {	return range_index>=0 ? v->at(range_index) : ia_range; }
 
 	const interval& get_range() const { return range_index>=0 ? v->at(range_index) : ia_range; }
+
+	double  central_value() const { return noise_vars.at(0).coeff; }
+
+	double& central_value()       { return noise_vars.at(0).coeff; }
 
 	// TODO Needs a force_range too
 	void intersect_range(double lb, double ub) { get_range().intersect(lb, ub); }

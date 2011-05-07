@@ -142,7 +142,7 @@ class binary_operation {
 
 public:
 
-	binary_operation(affine& z) : z(z), rad(0), c(0) { this->z.noise_vars.clear(); }
+	binary_operation(affine& z) : z(z), rad(0), c(0) { z.noise_vars.clear(); }
 
 	void init_z0(double x0, double y0);
 
@@ -154,7 +154,7 @@ private:
 
 	void intersect_range() {
 
-		const double mid = z.noise_vars.at(0).coeff;
+		const double mid = z.central_value();
 
 		z.intersect_range(mid - rad, mid + rad);
 	}
@@ -259,7 +259,7 @@ void aa_multiplication(affine& z, const affine& x, const affine& y) {
 
 	const double mid = x0*y0 + c;
 
-	z.noise_vars.at(0).coeff = mid;
+	z.central_value() = mid;
 
 	const double delta = rad_x*rad_y - std::fabs(c);
 
@@ -301,31 +301,25 @@ void aa_division(affine& z, const affine& x, const affine& y) {
 
 	const int start_index = affine::max_used_index;
 
-	const interval ANYTHING(-1.0e+150, 1.0e+150);
-
-	affine P;
-
-	P.ia_range = ANYTHING; // FIXME
+	affine P(interval::ANY_REAL());
 
 	binary_op(x, y, binary_operation<DivP>(P));
 
-	affine Q;
-
-	Q.ia_range = ANYTHING; // FIXME
+	affine Q(interval::ANY_REAL());
 
 	aa_reciprocal(Q, y);
 
 	const interval z_old_range = z.range();
 
-	z.get_range() = ANYTHING; // FIXME
+	z.get_range() = interval::ANY_REAL(); // FIXME
 
 	aa_multiplication(z, P, Q);
 
-	const double c = x.noise_vars.at(0).coeff / y.noise_vars.at(0).coeff; // FIXME
+	const double c = x.central_value() / y.central_value();
 
-	z.noise_vars.at(0).coeff += c;
+	z.central_value() += c;
 
-	z.get_range() = z.range() + c;
+	z.get_range() += c;
 
 	z.intersect_range(x.range()/y.range());
 
@@ -390,7 +384,7 @@ void affine::unary_op(const affine& arg, double alpha, double zeta, double delta
 
 	add_noise_var(++affine::max_used_index, delta);
 
-	noise_vars.at(0).coeff += zeta;
+	central_value() += zeta;
 
 	// TODO Intersect with the range of the AA form?
 }

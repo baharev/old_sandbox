@@ -93,9 +93,7 @@ void expression_graph<T>::set_variables() {
 template <typename T>
 void expression_graph<T>::set_non_variables() {
 
-	const double DMAX(1.0e+150);
-
-	fill(v.begin()+n_vars, v.end(), T(-DMAX, DMAX));
+	fill(v.begin()+n_vars, v.end(), T::ANY_REAL());
 }
 
 template <typename T>

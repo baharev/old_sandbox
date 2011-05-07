@@ -63,6 +63,15 @@ interval& interval::operator+=(const interval& x) {
 	return *this;
 }
 
+interval& interval::operator+=(double x) {
+
+	ASSERT2(lb <= ub, *this);
+
+	lb += x;
+	ub += x;
+	return *this;
+}
+
 const interval operator+(const interval& x, const interval& y) {
 
 	ASSERT2(x.lb<=x.ub && y.lb<=y.ub, "x: "<<x<<", y: "<<y);

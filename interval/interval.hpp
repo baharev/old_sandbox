@@ -52,6 +52,8 @@ public:
 
 	interval& operator+=(const interval& x);
 
+	interval& operator+=(double x);
+
 	friend const interval operator+(const interval& x, const interval& y);
 
 	friend const interval operator+(const interval& x, double y);
@@ -115,6 +117,8 @@ public:
 	bool valid() const;
 
 	friend std::ostream& operator<<(std::ostream& , const interval& );
+
+	static const interval ANY_REAL() { return interval(-1.0e+150, 1.0e+150); }
 
 private:
 
