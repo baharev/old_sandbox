@@ -63,6 +63,10 @@ search_procedure::search_procedure(const problem<builder>* p)
 search_procedure::~search_procedure() {
 
 	delete ia_dag;
+
+	delete aa_dag;
+
+	affine::release_all();
 }
 
 void search_procedure::build_problem_representation() {

@@ -40,7 +40,8 @@ struct epsilon {
 	double coeff;
 };
 
-// TODO Consistency checks in each operation and throw numerical_error in degenerate cases
+class lp_solver;
+
 class affine {
 
 public:
@@ -85,6 +86,8 @@ public:
 
 	static void reset_counter();
 
+	static void release_all();
+
 	friend class affine_pair_iterator;
 
 	template <typename> friend class binary_operation;
@@ -126,6 +129,8 @@ private:
 	static int max_used_index;
 
 	static std::vector<interval>* v;
+
+	static lp_solver* lp;
 
 	static const double NARROW;
 };

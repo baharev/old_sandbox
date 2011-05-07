@@ -26,12 +26,15 @@
 #include "affine_pair_iterator.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
+#include "lp_solver.hpp"
 
 namespace asol {
 
 int affine::max_used_index(0);
 
 std::vector<interval>* affine::v(0);
+
+lp_solver* affine::lp(new lp_solver);
 
 const double affine::NARROW(1.0e-6);
 
@@ -554,6 +557,16 @@ void dbg_consistency(const affine& z, const affine& x, const affine& y) {
 
 affine::~affine() {
 	// Out of line dtor to make the compiler shut up
+}
+
+void affine::release_all() {
+
+	delete lp;
+	lp = 0;
+
+	lp_solver::free_environment();
+
+	v = 0;
 }
 
 }
