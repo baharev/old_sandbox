@@ -236,7 +236,7 @@ void search_procedure::iteration_step() {
 	}
 	catch (numerical_problems& ) {
 
-		ASSERT2(false,"implementation not updated properly");
+		roll_back();
 	}
 	catch (convergence_reached& ) {
 
@@ -261,6 +261,13 @@ void search_procedure::dbg_check_infeasibilty() const {
 void search_procedure::dbg_solution_count() {
 
 	ia_dag->increment_found_solution_counters();
+}
+
+void search_procedure::roll_back() {
+
+	cout << "Warning: numerical problems, rolling back!" << endl;
+
+	ia_dag->set_box(box_orig, n_vars);
 }
 
 void search_procedure::contracting_step() {

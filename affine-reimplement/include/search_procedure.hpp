@@ -62,6 +62,7 @@ private:
 	void split_if_not_discarded();
 	void print_statistics() const;
 
+	void roll_back();
 	void iteration_step();
 	bool not_done_with_box() const;
 	bool sufficient_progress();

@@ -404,7 +404,8 @@ void aa_exp(affine& z, const affine& x) {
 
 	ASSERT(!x_rng.degenerate());
 
-	if (x_rng.radius()<affine::NARROW) {
+	// TODO Either use derivative instead of slope or use only the ia_dag in the search_procedure
+	if (x_rng.diameter() < affine::NARROW) {
 
 		throw numerical_problems();
 	}
@@ -438,7 +439,7 @@ void aa_log(affine& z, const affine& x) {
 
 	ASSERT(!x_rng.degenerate());
 
-	if (x_rng.radius()<affine::NARROW) {
+	if (x_rng.diameter() < affine::NARROW) {
 
 		throw numerical_problems();
 	}
