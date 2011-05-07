@@ -21,7 +21,7 @@
 //==============================================================================
 
 #include <cmath>
-#include <iostream>
+#include <ostream>
 #include "affine.hpp"
 #include "affine_pair_iterator.hpp"
 #include "diagnostics.hpp"
@@ -87,7 +87,7 @@ void affine::set_var_range(int index, const interval& rng) {
 
 	ASSERT(e_i.index==index);
 
-	e_i.coeff = rng.diameter();
+	e_i.coeff = rng.radius();
 }
 
 void affine::make_numeric_constant() {
