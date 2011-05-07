@@ -156,7 +156,7 @@ private:
 
 		const double mid = z.central_value();
 
-		z.intersect_range(mid - rad, mid + rad);
+		z.force_intersection(mid - rad, mid + rad);
 	}
 
 	void process_zi(int index, double tmp) {
@@ -188,7 +188,7 @@ inline void binary_operation<Add>::set_zi(int index, double x_i, double y_i) {
 template <>
 inline void binary_operation<Add>::set_z_range(const interval& x, const interval& y) {
 
-	z.intersect_range(x+y);
+	z.force_intersection(x+y);
 
 	intersect_range();
 }
@@ -210,7 +210,7 @@ inline void binary_operation<Sub>::set_zi(int index, double x_i, double y_i) {
 template <>
 inline void binary_operation<Sub>::set_z_range(const interval& x, const interval& y) {
 
-	z.intersect_range(x-y);
+	z.force_intersection(x-y);
 
 	intersect_range();
 }
@@ -269,8 +269,8 @@ void aa_multiplication(affine& z, const affine& x, const affine& y) {
 
 	rad += delta;
 
-	z.intersect_range(mid-rad, mid+rad);
-	z.intersect_range(x.range()*y.range());
+	z.force_intersection(mid-rad, mid+rad);
+	z.force_intersection(x.range()*y.range());
 }
 
 struct DivP { };
@@ -278,7 +278,7 @@ struct DivP { };
 template <>
 inline void binary_operation<DivP>::init_z0(double x0, double y0) {
 
-	c = x0/y0; // y.central_value has already been checked
+	c = x0/y0; // y.central_value() != 0.0 has already been checked
 
 	z.add_noise_var(0, 0);
 }
@@ -292,7 +292,7 @@ inline void binary_operation<DivP>::set_zi(int index, double x_i, double y_i) {
 template <>
 inline void binary_operation<DivP>::set_z_range(const interval& x, const interval& y) {
 
-	z.intersect_range(x-c*y);
+	z.force_intersection(x-c*y);
 
 	intersect_range();
 }
@@ -323,9 +323,9 @@ void aa_division(affine& z, const affine& x, const affine& y) {
 
 	z.get_range() += c;
 
-	z.intersect_range(z_old_range);
+	z.force_intersection(z_old_range);
 
-	z.intersect_range(x.range()/y.range());
+	z.force_intersection(x.range()/y.range());
 
 	const int new_indices = affine::max_used_index - start_index;
 
@@ -336,6 +336,8 @@ void aa_division(affine& z, const affine& x, const affine& y) {
 }
 
 void affine::condense_last_two_noise_vars() {
+
+	ASSERT(affine::max_used_index == noise_vars.back().index);
 
 	--affine::max_used_index;
 
@@ -415,7 +417,7 @@ void aa_exp(affine& z, const affine& x) {
 
 	const double delta = ( alpha*ln_alpha+e_b-alpha*b-alpha)/2.0;
 
-	z.intersect_range(e_a, e_b);
+	z.force_intersection(e_a, e_b);
 
 	z.unary_op(x, alpha, zeta, delta);
 }
@@ -446,7 +448,7 @@ void aa_log(affine& z, const affine& x) {
 
 	const double delta =  (fu-ru)/2.0;
 
-	z.intersect_range(std::log(a), log_b);
+	z.force_intersection(std::log(a), log_b);
 
 	z.unary_op(x, alpha, zeta, delta);
 }
@@ -473,7 +475,7 @@ void aa_sqr(affine& z, const affine& x) {
 
 	const double delta =   (a_2_p_b_2-2.0*a_b)/8.0;
 
-	z.intersect_range(sqr(x_rng));
+	z.force_intersection(sqr(x_rng));
 
 	z.unary_op(x, alpha, zeta, delta);
 }
@@ -510,7 +512,7 @@ void aa_reciprocal(affine& z, const affine& y) {
 
 	const double rf = f_sup-f0;
 
-	z.intersect_range(1.0/y_sup, 1.0/y_inf);
+	z.force_intersection(1.0/y_sup, 1.0/y_inf);
 
 	z.unary_op(y, s, f0, rf);
 }

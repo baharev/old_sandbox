@@ -421,6 +421,23 @@ bool interval::intersect(const double l, const double u) {
 	return improved;
 }
 
+void interval::force_intersection(const double l, const double u) {
+
+	ASSERT2(l <= u, "l: "<<l<<", u: "<<u);
+
+	if (l > lb) {
+		lb = l;
+	}
+
+	if (u < ub) {
+		ub = u;
+	}
+
+	if (lb > ub) {
+		throw infeasible_problem();
+	}
+}
+
 bool interval::prechecked_intersection(const double l, const double u) {
 
 	ASSERT2(lb <= ub, *this);

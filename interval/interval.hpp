@@ -41,6 +41,10 @@ public:
 
 	bool intersect(const interval& x) { return intersect(x.lb, x.ub); } // Profiler says...
 
+	void force_intersection(const double l, const double u);
+
+	void force_intersection(const interval& x) { force_intersection(x.lb, x.ub); }
+
 	bool prechecked_intersection(const double l, const double u);
 
 	// Used by the primitives

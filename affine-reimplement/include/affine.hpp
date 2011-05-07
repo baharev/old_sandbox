@@ -105,10 +105,9 @@ private:
 
 	double& central_value()       { return noise_vars.at(0).coeff; }
 
-	// TODO Needs a force_range too
-	void intersect_range(double lb, double ub) { get_range().intersect(lb, ub); }
+	void force_intersection(double lb, double ub) { get_range().force_intersection(lb, ub); }
 
-	void intersect_range(const interval& new_range) { get_range().intersect(new_range); }
+	void force_intersection(const interval& new_range) { get_range().force_intersection(new_range); }
 
 	void unary_op(const affine& x, double alpha, double zeta, double delta);
 
