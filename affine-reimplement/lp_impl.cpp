@@ -20,6 +20,7 @@
 //
 //==============================================================================
 
+#include <iostream>
 #include "lp_impl.hpp"
 
 namespace asol {
@@ -56,6 +57,30 @@ void lp_impl::init() {
 	parm->msg_lev = GLP_MSG_ON;
 
 	//parm->meth = GLP_DUAL;
+}
+
+void lp_impl::reset() {
+
+	glp_erase_prob(lp);
+}
+
+void lp_impl::add_cols(int n) {
+
+	glp_add_cols(lp, n);
+}
+
+void lp_impl::add_eq_row(const int index[], const double value[], int length) {
+
+	using namespace std;
+
+	for (int i=1; i<=length; ++i) {
+
+		cout << "index: " << index[i] << ", value: " << value[i] << endl;
+	}
+
+	const int row = glp_add_rows(lp, 1);
+
+	glp_set_mat_row(lp, row, length, index, value);
 }
 
 }

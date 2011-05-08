@@ -38,6 +38,8 @@ public:
 
 	~lp_solver();
 
+	void reset();
+
 	void add_equality_constraint(const affine& x, const double value);
 
 	void set_number_of_vars(int n);
@@ -49,8 +51,26 @@ private:
 	lp_solver(const lp_solver& );
 	lp_solver& operator=(const lp_solver& );
 
+	struct row_info {
+		row_info(double lb, double ub, double tiny) : lb(lb), ub(ub), tiny(tiny) { }
+		double lb;
+		double ub;
+		double tiny;
+	};
+
+	struct row_rad_max_aij {
+		row_rad_max_aij(double rad, double max_aij) : rad(rad), max_aij(max_aij) { }
+		double rad;
+		double max_aij;
+	};
+
+	const row_info compute_row_info(const affine& x, const double value) const;
+
+	const row_rad_max_aij get_row_rad_max_aij(const affine& x) const;
+
 	void reset_col_arrays();
 	void reserve_col_arrays(int size);
+	int  col_size() const;
 
 	lp_impl* lp;
 	int N_VARS;

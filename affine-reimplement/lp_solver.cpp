@@ -21,6 +21,7 @@
 //==============================================================================
 
 #include <cmath>
+#include <iostream>
 #include <limits>
 #include "lp_solver.hpp"
 #include "affine.hpp"
@@ -33,6 +34,13 @@ namespace asol {
 
 lp_solver::lp_solver() : lp(new lp_impl), N_VARS(-1), TINY(1.0e-7) {
 
+}
+
+void lp_solver::reset() {
+
+	lp->reset();
+
+	lp->add_cols(N_VARS);
 }
 
 void lp_solver::set_number_of_vars(int n) {
@@ -60,11 +68,24 @@ void lp_solver::reserve_col_arrays(int size) {
 	col_coeff.reserve(size);
 }
 
+int lp_solver::col_size() const {
+
+	ASSERT(col_index.size()==col_coeff.size());
+
+	return static_cast<int>(col_index.size());
+}
+
 void lp_solver::add_equality_constraint(const affine& x, const double value) {
+
+	std::cout << "x:\n" << x << std::endl;
+
+	const row_info row = compute_row_info(x, value);
+
+	reset_col_arrays();
 
 	const int n = x.size();
 
-	double max_aij = 0.0;
+	reserve_col_arrays(n);
 
 	int i=1;
 
@@ -77,43 +98,63 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 			break;
 		}
 
-		const double aij = fabs(e.coeff);
-
-		if (aij > max_aij) {
-
-			max_aij = aij;
-		}
+		col_index.push_back(e.index);
+		col_coeff.push_back(e.coeff);
 	}
 
-	double rad = 0.0;
+	ASSERT2(i == col_size(), "i, size: "<<i<<", "<<col_size());
 
-	for ( ; i<n; ++i) {
+	lp->add_eq_row(&col_index.at(0), &col_coeff.at(0), i-1);
 
-		const epsilon& e = x.noise_vars.at(i);
+}
 
-		const double aij = fabs(e.coeff);
+const lp_solver::row_info lp_solver::compute_row_info(const affine& x, const double value) const {
 
-		rad += aij;
-	}
+	const row_rad_max_aij row = get_row_rad_max_aij(x);
 
-	const double mid = x.central_value();
+	const double mid = value - x.central_value();
 
-	const double row_lb = -mid - rad;
+	const double row_lb = mid - row.rad;
 
-	const double row_ub = -mid + rad;
+	const double row_ub = mid + row.rad;
 
 	const double row_max = std::max(fabs(row_lb), fabs(row_ub));
+
+	double max_aij = row.max_aij;
 
 	if (row_max > max_aij) {
 
 		max_aij = row_max;
 	}
 
-	ASSERT(max_aij > 0);
+	ASSERT(max_aij > 0.0);
 
-	reset_col_arrays();
+	return row_info(row_lb, row_ub, max_aij*TINY);
+}
 
-	reserve_col_arrays(n);
+const lp_solver::row_rad_max_aij lp_solver::get_row_rad_max_aij(const affine& x) const {
+
+	double max_aij = 0.0;
+
+	double rad = 0.0;
+
+	for (int i=1; i<x.size(); ++i) {
+
+		const epsilon& e = x.noise_vars.at(i);
+
+		const double aij = fabs(e.coeff);
+
+		if (e.index > N_VARS) { // condense non-vars, needed for row bounds
+
+			rad += aij;
+		}
+		else if (aij > max_aij) { // e.index <= N_VARS, find max a_ij
+
+			max_aij = aij;
+		}
+	}
+
+	return row_rad_max_aij(rad, max_aij);
 }
 
 lp_solver::~lp_solver() {

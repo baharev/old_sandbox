@@ -295,6 +295,7 @@ void search_procedure::contracting_step() {
 
 	check_convergence();
 
+	lp->reset();
 	// TODO Continue from here!
 	aa_dag->reset_vars();
 

@@ -35,6 +35,13 @@ public:
 
 	~lp_impl();
 
+	void reset();
+
+	void add_cols(int n);
+
+	// index[1] ... index[length]
+	void add_eq_row(const int index[], const double value[], int length);
+
 	static void free_environment();
 
 private:
