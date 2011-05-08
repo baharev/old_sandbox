@@ -34,13 +34,18 @@ int affine::max_used_index(0);
 
 std::vector<interval>* affine::v(0);
 
-lp_solver* affine::lp(new lp_solver);
+lp_solver* affine::lp(0);
 
 const double affine::NARROW(1.0e-6);
 
 void affine::set_vector(std::vector<interval>* vec) {
 
 	v = vec;
+}
+
+void affine::set_lp_solver(lp_solver* solver) {
+
+	lp = solver;
 }
 
 void affine::reset_counter() {
@@ -366,6 +371,8 @@ void affine::condense_last_two_noise_vars() {
 void affine::equals(double value) {
 
 	get_range().force_intersection(value, value);
+
+	lp->add_equality_constraint(*this, value);
 }
 
 // TODO Finish
@@ -557,16 +564,6 @@ void dbg_consistency(const affine& z, const affine& x, const affine& y) {
 
 affine::~affine() {
 	// Out of line dtor to make the compiler shut up
-}
-
-void affine::release_all() {
-
-	delete lp;
-	lp = 0;
-
-	lp_solver::free_environment();
-
-	v = 0;
 }
 
 }

@@ -23,6 +23,8 @@
 #ifndef LP_SOLVER_HPP_
 #define LP_SOLVER_HPP_
 
+#include <vector>
+
 namespace asol {
 
 class affine;
@@ -36,6 +38,10 @@ public:
 
 	~lp_solver();
 
+	void add_equality_constraint(const affine& x, const double value);
+
+	void set_number_of_vars(int n);
+
 	static void free_environment();
 
 private:
@@ -43,8 +49,15 @@ private:
 	lp_solver(const lp_solver& );
 	lp_solver& operator=(const lp_solver& );
 
-	lp_impl* lp;
+	void reset_col_arrays();
+	void reserve_col_arrays(int size);
 
+	lp_impl* lp;
+	int N_VARS;
+	const double TINY;
+
+	std::vector<int>    col_index;
+	std::vector<double> col_coeff;
 };
 
 }

@@ -84,13 +84,15 @@ public:
 
 	static void set_vector(std::vector<interval>* vec);
 
-	static void reset_counter();
+	static void set_lp_solver(lp_solver* lp);
 
-	static void release_all();
+	static void reset_counter();
 
 	friend class affine_pair_iterator;
 
 	template <typename> friend class binary_operation;
+
+	friend class lp_solver;
 
 	const interval range() const { return get_range(); }
 

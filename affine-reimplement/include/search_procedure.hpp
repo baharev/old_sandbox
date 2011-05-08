@@ -33,6 +33,7 @@ template <typename> class problem;
 class affine;
 class builder;
 class interval;
+class lp_solver;
 class problem_data;
 
 class search_procedure {
@@ -89,6 +90,8 @@ private:
 	expression_graph<interval>* ia_dag;
 
 	expression_graph<affine>* aa_dag;
+
+	lp_solver* lp;
 
 	std::deque<interval*> pending_boxes;
 

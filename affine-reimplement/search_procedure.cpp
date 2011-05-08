@@ -32,6 +32,7 @@
 #include "expression_graph.hpp"
 #include "index_recorder.hpp"
 #include "interval.hpp"
+#include "lp_solver.hpp"
 #include "problem.hpp"
 #include "problem_data.hpp"
 #include "vector_dump.hpp"
@@ -43,7 +44,7 @@ using std::fabs;
 namespace asol {
 
 search_procedure::search_procedure(const problem<builder>* p)
-: prob(p), n_vars(prob->number_of_variables()), representation(0), box_orig(0)
+: prob(p), n_vars(prob->number_of_variables()), representation(0), lp(new lp_solver), box_orig(0)
 {
 	build_problem_representation();
 
@@ -66,7 +67,9 @@ search_procedure::~search_procedure() {
 
 	delete aa_dag;
 
-	affine::release_all();
+	delete lp;
+
+	lp_solver::free_environment();
 }
 
 void search_procedure::build_problem_representation() {
@@ -103,6 +106,10 @@ void search_procedure::init_dags() {
 	affine::set_vector(ia_dag->get_v());
 
 	aa_dag = new expression_graph<affine>(representation, index_set);
+
+	lp->set_number_of_vars(n_vars);
+
+	affine::set_lp_solver(lp);
 }
 
 struct pair2interval {
