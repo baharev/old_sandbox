@@ -103,6 +103,9 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 	ASSERT2(i >= col_size(), "i, size: "<<i<<", "<<col_size());
 
 	lp->add_eq_row(&col_index.at(0), &col_coeff.at(0), col_size()-1, row.lb, row.ub);
+
+	// TODO Call dual simplex here!
+	lp->check_feasibility();
 }
 
 const lp_solver::row_info lp_solver::compute_row_info(const affine& x, const double value) const {
@@ -154,6 +157,7 @@ const lp_solver::row_rad_max_aij lp_solver::get_row_rad_max_aij(const affine& x)
 	return row_rad_max_aij(rad, max_aij);
 }
 
+// TODO Rename it to refresh?
 void lp_solver::check_feasibility() {
 
 	lp->check_feasibility();

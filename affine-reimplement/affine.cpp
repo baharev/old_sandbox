@@ -372,6 +372,8 @@ void affine::equals(double value) {
 
 	get_range().force_intersection(value, value);
 
+	ASSERT(merge().contains(value));
+
 	lp->add_equality_constraint(*this, value);
 }
 
@@ -539,6 +541,22 @@ void aa_reciprocal(affine& z, const affine& y) {
 	z.force_intersection(1.0/y_sup, 1.0/y_inf);
 
 	z.unary_op(y, s, f0, rf);
+}
+
+const interval affine::merge() const {
+
+	const int n = size();
+
+	double rad(0.0);
+
+	for (int i=1; i<n; ++i) {
+
+		rad += std::fabs(noise_vars.at(i).coeff);
+	}
+
+	const double mid = central_value();
+
+	return interval(mid-rad, mid+rad);
 }
 
 void affine::dbg_consistency() const {

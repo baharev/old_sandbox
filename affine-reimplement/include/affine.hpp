@@ -96,6 +96,8 @@ public:
 
 	const interval range() const { return get_range(); }
 
+	const interval merge() const;
+
 private:
 
 	explicit affine(const interval& range) : range_index(-1), ia_range(range) { }
