@@ -42,6 +42,8 @@ public:
 
 	void add_equality_constraint(const affine& x, const double value);
 
+	void check_feasibility();
+
 	void set_number_of_vars(int n);
 
 	static void free_environment();
@@ -68,8 +70,7 @@ private:
 
 	const row_rad_max_aij get_row_rad_max_aij(const affine& x) const;
 
-	void reset_col_arrays();
-	void reserve_col_arrays(int size);
+	void reset_col_arrays(int size);
 	int  col_size() const;
 
 	lp_impl* lp;

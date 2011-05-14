@@ -40,7 +40,9 @@ public:
 	void add_cols(int n);
 
 	// index[1] ... index[length]
-	void add_eq_row(const int index[], const double value[], int length);
+	void add_eq_row(const int index[], const double value[], int length, double lb, double ub);
+
+	void check_feasibility();
 
 	static void free_environment();
 
@@ -51,6 +53,8 @@ private:
 	lp_impl& operator=(const lp_impl& );
 
 	void init();
+
+	void scale_prob();
 
 	glp_prob* lp;
 

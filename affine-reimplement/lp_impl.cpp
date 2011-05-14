@@ -22,6 +22,8 @@
 
 #include <iostream>
 #include "lp_impl.hpp"
+#include "diagnostics.hpp"
+#include "exceptions.hpp"
 
 namespace asol {
 
@@ -54,7 +56,7 @@ void lp_impl::init() {
 
 	parm->presolve = GLP_OFF;
 
-	parm->msg_lev = GLP_MSG_ON;
+	parm->msg_lev = GLP_MSG_ALL;
 
 	//parm->meth = GLP_DUAL;
 }
@@ -69,18 +71,66 @@ void lp_impl::add_cols(int n) {
 	glp_add_cols(lp, n);
 }
 
-void lp_impl::add_eq_row(const int index[], const double value[], int length) {
+void lp_impl::add_eq_row(const int index[], const double value[], int length, double lb, double ub) {
 
 	using namespace std;
 
-	for (int i=1; i<=length; ++i) {
+	//for (int i=1; i<=length; ++i) {
 
-		cout << "index: " << index[i] << ", value: " << value[i] << endl;
+	//	cout << "index: " << index[i] << ", value: " << value[i] << endl;
+	//}
+
+	const int row_index = glp_add_rows(lp, 1);
+
+	glp_set_mat_row(lp, row_index, length, index, value);
+
+	const int row_type = (lb==ub) ? GLP_FX : GLP_DB;
+
+	glp_set_row_bnds(lp, row_index, row_type, lb, ub);
+}
+
+void lp_impl::scale_prob() {
+
+	if (parm->msg_lev < GLP_MSG_ON) {
+
+		glp_term_out(GLP_OFF);
 	}
 
-	const int row = glp_add_rows(lp, 1);
+	glp_scale_prob(lp, GLP_SF_EQ);
 
-	glp_set_mat_row(lp, row, length, index, value);
+	if (parm->msg_lev < GLP_MSG_ON) {
+
+		glp_term_out(GLP_ON);
+	}
+}
+
+void lp_impl::check_feasibility() {
+
+	scale_prob();
+
+	glp_std_basis(lp);
+
+	const int error_code = glp_simplex(lp, parm);
+
+	if (error_code) {
+
+		throw numerical_problems();
+	}
+
+	const int status = glp_get_status(lp);
+
+	if (status==GLP_OPT) {
+
+		;
+	}
+	else if (status==GLP_INFEAS || status==GLP_NOFEAS) { // TODO What is NOFEAS?
+
+		throw infeasible_problem();
+	}
+	else {
+
+		ASSERT(false); // Not clear how we could get kere
+	}
 }
 
 }

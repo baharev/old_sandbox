@@ -301,6 +301,8 @@ void search_procedure::contracting_step() {
 
 	aa_dag->evaluate_all();
 
+	lp->check_feasibility();
+
 	ia_dag->check_transitions_since_last_call();
 }
 

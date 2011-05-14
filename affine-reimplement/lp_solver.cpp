@@ -51,21 +51,18 @@ void lp_solver::set_number_of_vars(int n) {
 	N_VARS = n;
 }
 
-void lp_solver::reset_col_arrays() {
+void lp_solver::reset_col_arrays(int size) {
 
 	col_index.clear();
 	col_coeff.clear();
-
-	col_index.push_back(0);
-	col_coeff.push_back(0.0);
-}
-
-void lp_solver::reserve_col_arrays(int size) {
 
 	ASSERT(size > 0);
 
 	col_index.reserve(size);
 	col_coeff.reserve(size);
+
+	col_index.push_back(0);
+	col_coeff.push_back(0.0);
 }
 
 int lp_solver::col_size() const {
@@ -77,15 +74,13 @@ int lp_solver::col_size() const {
 
 void lp_solver::add_equality_constraint(const affine& x, const double value) {
 
-	std::cout << "x:\n" << x << std::endl;
+	//std::cout << "x:\n" << x << std::endl;
 
 	const row_info row = compute_row_info(x, value);
 
-	reset_col_arrays();
-
 	const int n = x.size();
 
-	reserve_col_arrays(n);
+	reset_col_arrays(n);
 
 	int i=1;
 
@@ -98,14 +93,16 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 			break;
 		}
 
-		col_index.push_back(e.index);
-		col_coeff.push_back(e.coeff);
+		if (std::fabs(e.coeff) > row.tiny) {
+
+			col_index.push_back(e.index);
+			col_coeff.push_back(e.coeff);
+		}
 	}
 
-	ASSERT2(i == col_size(), "i, size: "<<i<<", "<<col_size());
+	ASSERT2(i >= col_size(), "i, size: "<<i<<", "<<col_size());
 
-	lp->add_eq_row(&col_index.at(0), &col_coeff.at(0), i-1);
-
+	lp->add_eq_row(&col_index.at(0), &col_coeff.at(0), col_size()-1, row.lb, row.ub);
 }
 
 const lp_solver::row_info lp_solver::compute_row_info(const affine& x, const double value) const {
@@ -155,6 +152,11 @@ const lp_solver::row_rad_max_aij lp_solver::get_row_rad_max_aij(const affine& x)
 	}
 
 	return row_rad_max_aij(rad, max_aij);
+}
+
+void lp_solver::check_feasibility() {
+
+	lp->check_feasibility();
 }
 
 lp_solver::~lp_solver() {
