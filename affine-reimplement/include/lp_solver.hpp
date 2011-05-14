@@ -70,7 +70,10 @@ private:
 
 	const row_rad_max_aij get_row_rad_max_aij(const affine& x) const;
 
+	void set_col_bounds();
+
 	void reset_col_arrays(int size);
+
 	int  col_size() const;
 
 	lp_impl* lp;

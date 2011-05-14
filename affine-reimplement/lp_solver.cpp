@@ -104,6 +104,8 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 
 	lp->add_eq_row(&col_index.at(0), &col_coeff.at(0), col_size()-1, row.lb, row.ub);
 
+	set_col_bounds();
+
 	// TODO Call dual simplex here!
 	lp->check_feasibility();
 }
@@ -161,6 +163,20 @@ const lp_solver::row_rad_max_aij lp_solver::get_row_rad_max_aij(const affine& x)
 void lp_solver::check_feasibility() {
 
 	lp->check_feasibility();
+}
+
+void lp_solver::set_col_bounds() {
+
+	int n = col_size() - 1;
+
+	for (int i=1; i<=n; ++i) {
+
+		const int index = col_index.at(i);
+
+		const interval& range = affine::v->at(index-1); // TODO Is it the best we can do?
+
+		lp->set_col_bounds(index, range.inf(), range.sup());
+	}
 }
 
 lp_solver::~lp_solver() {

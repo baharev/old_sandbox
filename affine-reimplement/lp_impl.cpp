@@ -89,6 +89,15 @@ void lp_impl::add_eq_row(const int index[], const double value[], int length, do
 	glp_set_row_bnds(lp, row_index, row_type, lb, ub);
 }
 
+void lp_impl::set_col_bounds(int index, const double lb, const double ub) {
+
+	ASSERT(lb < ub);
+
+	// FIXME Check if col bnds are better! Difficulty: lb=ub=0 by default
+
+	glp_set_col_bnds(lp, index, GLP_DB, lb, ub);
+}
+
 void lp_impl::scale_prob() {
 
 	if (parm->msg_lev < GLP_MSG_ON) {
