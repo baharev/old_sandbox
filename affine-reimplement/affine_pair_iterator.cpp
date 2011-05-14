@@ -40,6 +40,9 @@ affine_pair_iterator::affine_pair_iterator(const affine& x, const affine& y) :
 
 	x_k = i->coeff;
 	y_k = j->coeff;
+
+	++i;
+	++j;
 }
 
 bool affine_pair_iterator::increment() {
@@ -85,6 +88,8 @@ bool affine_pair_iterator::increment() {
 		++i;
 		++j;
 	}
+
+	ASSERT(k > 0);
 
 	return true;
 }
