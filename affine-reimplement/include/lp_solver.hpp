@@ -46,6 +46,8 @@ public:
 
 	void set_number_of_vars(int n);
 
+	void prune(const std::vector<int>& index_set);
+
 	void show_iteration_count() const;
 
 	static void free_environment();

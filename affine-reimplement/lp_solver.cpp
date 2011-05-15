@@ -27,6 +27,7 @@
 #include "affine.hpp"
 #include "diagnostics.hpp"
 #include "lp_impl.hpp"
+#include "lp_pruning.hpp"
 
 using std::fabs;
 
@@ -108,7 +109,7 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 	//lp->dump("lp_dump.txt");
 
 	// Neither primal nor dual feas: row added and col bounds probably changed
-	lp->check_feasibility();
+	lp->run_simplex();
 }
 
 const lp_solver::row_info lp_solver::compute_row_info(const affine& x, const double value) const {
@@ -160,10 +161,9 @@ const lp_solver::row_rad_max_aij lp_solver::get_row_rad_max_aij(const affine& x)
 	return row_rad_max_aij(rad, max_aij);
 }
 
-// TODO Rename it to refresh?
 void lp_solver::check_feasibility() {
 
-	lp->check_feasibility();
+	lp->run_simplex();
 }
 
 void lp_solver::set_col_bounds() {
@@ -176,6 +176,21 @@ void lp_solver::set_col_bounds() {
 
 		lp->set_col_bounds(index, -1, 1);
 	}
+}
+
+
+void lp_solver::prune(const std::vector<int>& ) {
+
+	// FIXME Temporary hack!
+
+	std::vector<int> index_set;
+
+	index_set.push_back(1);
+	index_set.push_back(16);
+
+	lp_pruning(lp, index_set);
+
+	// TODO Write back
 }
 
 void lp_solver::show_iteration_count() const {

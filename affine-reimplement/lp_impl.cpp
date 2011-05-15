@@ -197,7 +197,7 @@ void lp_impl::set_col_dual_status(const int j) {
 	}
 }
 
-void lp_impl::check_feasibility() {
+void lp_impl::run_simplex() {
 
 	scale_prob();
 
@@ -226,6 +226,55 @@ void lp_impl::check_feasibility() {
 	}
 }
 
+double lp_impl::solve_for(int index, int direction) {
+
+	glp_set_obj_dir(lp, direction);
+
+	glp_set_obj_coef(lp, index, 1.0);
+
+	if (parm->msg_lev >= GLP_MSG_ON) {
+
+		std::cout << (direction==GLP_MIN?"MIN":"MAX") << std::endl;
+	}
+
+	try {
+
+		run_simplex();
+	}
+	catch (...) {
+
+		glp_set_obj_coef(lp, index, 0.0);
+
+		throw;
+	}
+
+	return glp_get_col_prim(lp, index);
+}
+
+void lp_impl::tighten_col_lb(int i, double& lb) {
+
+	ASSERT2(!is_fixed(i),"i: " << i);
+
+	const double inf = solve_for(i, GLP_MIN);
+
+	if (inf > lb) {
+
+		lb = inf;
+	}
+}
+
+void lp_impl::tighten_col_ub(int i, double& ub) {
+
+	ASSERT2(!is_fixed(i),"i: " << i);
+
+	const double sup = solve_for(i, GLP_MAX);
+
+	if (sup < ub) {
+
+		ub = sup;
+	}
+}
+
 void lp_impl::dump(const char* file) const {
 
 	glp_write_lp(lp, NULL, file);
@@ -236,6 +285,81 @@ void lp_impl::show_iteration_count() const {
 	uint64_t count = previous_itr_count + lpx_get_int_parm(lp, LPX_K_ITCNT);
 
 	std::cout << "Simplex iterations: " << count << std::endl;
+}
+
+int lp_impl::num_cols() const {
+
+	return glp_get_num_cols(lp);
+}
+
+int lp_impl::num_rows() const {
+
+	return glp_get_num_rows(lp);
+}
+
+col_status lp_impl::col_stat(int i) const {
+
+	const int status = glp_get_col_stat(lp, i);
+
+	col_status res;
+
+	if (status==GLP_BS) {
+
+		res = BASIC;
+	}
+	else if (status==GLP_NL) {
+
+		res = NONBASIC_LB;
+	}
+	else if (status==GLP_NU) {
+
+		res = NONBASIC_UB;
+	}
+	else {
+
+		ASSERT2(false,"status: "<<status);
+	}
+
+	return res;
+}
+
+double lp_impl::col_val(int i) const {
+
+	double val = glp_get_col_prim(lp, i);
+
+	const double lb = glp_get_col_lb(lp, i);
+
+	const double ub = glp_get_col_ub(lp, i);
+
+	if (val < lb) {
+
+		ASSERT(val+1.0e-4 > lb);
+
+		val = lb;
+	}
+	else if (val > ub) {
+
+		ASSERT(val-1.0e-4 < ub);
+
+		val = ub;
+	}
+
+	return val;
+}
+
+double lp_impl::col_lb(int i) const {
+
+	return glp_get_col_lb(lp, i);
+}
+
+double lp_impl::col_ub(int i) const {
+
+	return glp_get_col_ub(lp, i);
+}
+
+bool lp_impl::is_fixed(int index) const {
+
+	return glp_get_col_type(lp, index)==GLP_FX;
 }
 
 }

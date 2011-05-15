@@ -28,6 +28,12 @@
 
 namespace asol {
 
+enum col_status {
+	BASIC,
+	NONBASIC_LB,
+	NONBASIC_UB
+};
+
 class lp_impl {
 
 public:
@@ -45,7 +51,25 @@ public:
 
 	void set_col_bounds(int index, const double lb, const double ub);
 
-	void check_feasibility();
+	void run_simplex();
+
+	void tighten_col_lb(int i, double& lb);
+
+	void tighten_col_ub(int i, double& ub);
+
+	int num_cols() const;
+
+	int num_rows() const;
+
+	col_status col_stat(int i) const;
+
+	double col_val(int i) const;
+
+	double col_lb(int i) const;
+
+	double col_ub(int i) const;
+
+	bool is_fixed(int index) const;
 
 	void dump(const char* file) const;
 
@@ -70,6 +94,8 @@ private:
 	void make_dual_feasible_basis();
 
 	void set_col_dual_status(const int j);
+
+	double solve_for(int index, int direction);
 
 	glp_prob* lp;
 

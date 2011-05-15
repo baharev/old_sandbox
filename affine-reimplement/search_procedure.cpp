@@ -302,7 +302,8 @@ void search_procedure::contracting_step() {
 
 	aa_dag->evaluate_all();
 
-	//lp->check_feasibility(); // FIXME The last constraint calls it anyhow
+	//lp->run_simplex(); // FIXME The last constraint calls it anyhow
+	lp->prune(std::vector<int>());
 
 	ia_dag->check_transitions_since_last_call();
 }
