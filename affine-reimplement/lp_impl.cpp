@@ -58,7 +58,7 @@ void lp_impl::init() {
 
 	parm->presolve = GLP_OFF;
 
-	parm->msg_lev = GLP_MSG_OFF;
+	parm->msg_lev = GLP_MSG_ALL;
 
 	//parm->meth = GLP_DUAL;
 }
@@ -68,6 +68,8 @@ void lp_impl::reset() {
 	previous_itr_count += lpx_get_int_parm(lp, LPX_K_ITCNT);
 
 	glp_erase_prob(lp);
+
+	init();
 }
 
 void lp_impl::add_cols(int n) {
@@ -117,12 +119,89 @@ void lp_impl::scale_prob() {
 	}
 }
 
+void lp_impl::warm_up_basis() {
+
+	int status = glp_warm_up(lp);
+
+	if (status==0) {
+
+		; // OK
+	}
+	else if (status==GLP_EBADB) {
+
+		glp_std_basis(lp);
+
+		std::cout << "Warning: bad basis!" << std::endl;
+
+		warm_up_basis();
+	}
+	else if (status==GLP_ESING || status==GLP_ECOND) {
+
+		throw numerical_problems();
+	}
+	else {
+
+		ASSERT2(false,"Unknown status returned: "<<status);
+	}
+}
+
+void lp_impl::make_basis() {
+
+	warm_up_basis();
+
+	if (parm->meth == GLP_PRIMAL) {
+
+		; // Intentionally nothing at the moment
+	}
+	else {
+
+		make_dual_feasible_basis();
+	}
+}
+
+void lp_impl::make_dual_feasible_basis() {
+
+	int status = glp_get_dual_stat(lp);
+
+	if (status==GLP_FEAS || status==GLP_OPT) {
+
+		return;
+	}
+
+	const int n = glp_get_num_cols(lp);
+
+	for (int j=1; j<=n; ++j) {
+
+		set_col_dual_status(j);
+	}
+
+	warm_up_basis();
+
+	// TODO What happens if DUALP is used and falls back to std_basis and PRIMAL?
+	status = glp_get_dual_stat(lp);
+
+	ASSERT2(status==GLP_FEAS || status==GLP_OPT,"status: " << status);
+}
+
+void lp_impl::set_col_dual_status(const int j) {
+
+	const int type = glp_get_col_type(lp, j);
+
+	if (type!=GLP_FX) {
+
+		const double d = glp_get_col_dual(lp, j);
+
+		const int stat = (d>=0)?GLP_NL:GLP_NU;
+
+		glp_set_col_stat(lp, j, stat);
+	}
+}
+
 void lp_impl::check_feasibility() {
 
 	scale_prob();
 
-	// TODO Make dual feasible basis
-	glp_std_basis(lp);
+	//make_basis(); // Redundant for PRIMAL, DUAL is unclear
 
 	const int error_code = glp_simplex(lp, parm);
 

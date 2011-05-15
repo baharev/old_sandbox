@@ -47,7 +47,6 @@ void lp_solver::set_number_of_vars(int n) {
 
 	ASSERT2( n>0 && N_VARS==-1, "n, N_VARS: " << n << ", " << N_VARS);
 
-	// TODO Add as many columns?
 	N_VARS = n;
 }
 
@@ -108,7 +107,7 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 
 	//lp->dump("lp_dump.txt");
 
-	// TODO Call dual simplex here!
+	// Neither primal nor dual feas: row added and col bounds probably changed
 	lp->check_feasibility();
 }
 

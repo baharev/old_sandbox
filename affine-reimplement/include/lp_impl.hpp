@@ -63,6 +63,14 @@ private:
 
 	void scale_prob();
 
+	void warm_up_basis();
+
+	void make_basis();
+
+	void make_dual_feasible_basis();
+
+	void set_col_dual_status(const int j);
+
 	glp_prob* lp;
 
 	glp_smcp* parm;
