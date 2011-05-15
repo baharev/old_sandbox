@@ -185,8 +185,10 @@ void lp_solver::prune(const std::vector<int>& ) {
 
 	std::vector<int> index_set;
 
-	index_set.push_back(1);
-	index_set.push_back(16);
+	for (int i=1; i<=16; ++i) {
+
+		index_set.push_back(i);
+	}
 
 	lp_pruning(lp, index_set);
 

@@ -331,15 +331,16 @@ double lp_impl::col_val(int i) const {
 
 	const double ub = glp_get_col_ub(lp, i);
 
-	if (val < lb) {
+	if ((val+1.0e-4 < lb) || (val > ub+1.0e-4)) {
 
-		ASSERT(val+1.0e-4 > lb);
+		throw numerical_problems();
+	}
+
+	if (val < lb) {
 
 		val = lb;
 	}
 	else if (val > ub) {
-
-		ASSERT(val-1.0e-4 < ub);
 
 		val = ub;
 	}

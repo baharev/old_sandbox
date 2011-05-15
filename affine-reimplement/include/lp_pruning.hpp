@@ -38,25 +38,24 @@ public:
 private:
 
 	lp_pruning(const lp_pruning& );
+
 	lp_pruning& operator=(const lp_pruning& );
 
-	enum decision { NO_CANDIDATE, LOWER_BND, UPPER_BND };
+	enum subroblem { NO_MORE, MIN_SUBPROBLEM, MAX_SUBPROBLEM };
 
 	void init_reverse_index_set();
+
 	void init_bounds();
+
 	void init_reduced_costs();
 
-	void examine_col(int i);
-	void examine_lb(int i, double val);
-	void examine_ub(int i, double val);
-	void mark_min_solved(int i);
-	void mark_max_solved(int i);
+	void examine_lb(int i);
 
-	void dbg_examine_results() const;
+	void examine_ub(int i);
 
-	double col_val_with_check(int i);
+	void dbg_selection_results() const;
 
-	decision select_candidate();
+	subroblem select_candidate();
 
 	void count_solved() const;
 
@@ -85,11 +84,14 @@ private:
 	std::vector<std::vector<double> > d_min;
 	std::vector<std::vector<double> > d_max;
 
-	int skipped;
+	size_t skipped;
+
 	int index_min;
 	int index_max;
+
 	double closest_min;
 	double closest_max;
+
 };
 
 }

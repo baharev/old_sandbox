@@ -107,151 +107,48 @@ void lp_pruning::init_reduced_costs() {
 	}
 }
 
-void lp_pruning::examine_col(int i) {
+void lp_pruning::prune_all() {
 
-	double val = col_val_with_check(i);
+	// TODO mark_narrow_solved();
 
-	if (min_solved.at(i)=='y' && max_solved.at(i)=='y') {
+	try {
 
-		return;
+		prune();
+	}
+	catch (infeasible_problem& ) {
+
+		throw numerical_problems();
 	}
 
-	examine_lb(i, val);
-
-	examine_ub(i, val);
+	count_solved();
 }
 
-double lp_pruning::col_val_with_check(int i) {
+void lp_pruning::prune() {
 
-	col_status status = lp->col_stat(index_set.at(i));
+	count_solved();
 
-	double val;
-	// Not sure this is needed...
-	if (status==NONBASIC_LB) {
+	size_t lp_call = 0;
 
-		mark_min_solved(i);
+	subroblem next;
 
-		val = lo.at(i);
-	}
-	else if (status==NONBASIC_UB) {
+	while ( (next=select_candidate()) != NO_MORE ) {
 
-		mark_max_solved(i);
+		count_solved();
 
-		val = up.at(i);
-	}
-	else if (status==BASIC) {
+		if (next == MIN_SUBPROBLEM) {
 
-		val = lp->col_val(index_set.at(i));
-	}
-	else {
+			solve_for_lb();
+		}
+		else {
 
-		ASSERT2(false,"status: "<<status);
+			solve_for_ub();
+		}
+
+		++lp_call;
 	}
 
-	return val;
+	ASSERT(lp_call+skipped==2*size);
 }
-
-void lp_pruning::mark_min_solved(int i) {
-
-	if (min_solved.at(i)=='n') {
-
-		++skipped;
-	}
-
-	min_solved.at(i) = 'y';
-}
-
-void lp_pruning::mark_max_solved(int i) {
-
-	if (max_solved.at(i)=='n') {
-
-		++skipped;
-	}
-
-	max_solved.at(i) = 'y';
-}
-
-void lp_pruning::examine_lb(int i, double val) {
-
-	if (min_solved.at(i)=='y') {
-
-		return;
-	}
-
-	double distance_from_lb = val-lo.at(i);
-
-	ASSERT(distance_from_lb >= 0);
-
-	if (distance_from_lb <= TOL_LP_PRUNING_SOLVED) {
-
-		min_solved.at(i) = 'y';
-
-		++skipped;
-	}
-	else if (distance_from_lb < closest_min) {
-
-		closest_min = distance_from_lb;
-
-		index_min = i;
-	}
-}
-
-void lp_pruning::examine_ub(int i, double val) {
-
-	if (max_solved.at(i)=='y') {
-
-		return;
-	}
-
-	double distance_from_ub = up.at(i)-val;
-
-	ASSERT(distance_from_ub >= 0);
-
-	if (distance_from_ub <= TOL_LP_PRUNING_SOLVED) {
-
-		max_solved.at(i) = 'y';
-
-		++skipped;
-	}
-	else if (distance_from_ub < closest_max) {
-
-		closest_max = distance_from_ub;
-
-		index_max = i;
-	}
-}
-
-lp_pruning::decision lp_pruning::select_candidate() {
-
-	closest_min = closest_max = std::numeric_limits<double>::max();
-
-	index_min = index_max = -1;
-
-	for (size_t i=0; i<size; ++i) {
-
-		examine_col(i);
-	}
-
-	dbg_examine_results();
-
-	decision ret_val;
-
-	if (closest_min < closest_max) {
-
-		ret_val = LOWER_BND;
-	}
-	else if (index_max!=-1){
-
-		ret_val = UPPER_BND;
-	}
-	else {
-
-		ret_val = NO_CANDIDATE;
-	}
-
-	return ret_val;
-}
-
 
 void lp_pruning::count_solved() const {
 
@@ -274,6 +171,93 @@ void lp_pruning::count_solved() const {
 	std::cout << "skipped: " << skipped << std::endl;
 }
 
+lp_pruning::subroblem lp_pruning::select_candidate() {
+
+	closest_min = closest_max = std::numeric_limits<double>::max();
+
+	index_min = index_max = -1;
+
+	for (size_t i=0; i<size; ++i) {
+
+		examine_lb(i);
+
+		examine_ub(i);
+	}
+
+	dbg_selection_results();
+
+	subroblem next;
+
+	if (closest_min < closest_max) {
+
+		next = MIN_SUBPROBLEM;
+	}
+	else if (index_max!=-1) { // closest_max <= closest_min
+
+		next = MAX_SUBPROBLEM;
+	}
+	else {
+
+		next = NO_MORE;
+	}
+
+	return next;
+}
+
+void lp_pruning::examine_lb(int i) {
+
+	if (min_solved.at(i)=='y') {
+
+		return;
+	}
+
+	double val = lp->col_val(index_set.at(i));
+
+	double distance_from_lb = val-lo.at(i);
+
+	ASSERT(distance_from_lb >= 0);
+
+	if (distance_from_lb <= TOL_LP_PRUNING_SOLVED) {
+
+		min_solved.at(i) = 'y';
+
+		++skipped;
+	}
+	else if (distance_from_lb < closest_min) {
+
+		closest_min = distance_from_lb;
+
+		index_min = i;
+	}
+}
+
+void lp_pruning::examine_ub(int i) {
+
+	if (max_solved.at(i)=='y') {
+
+		return;
+	}
+
+	double val = lp->col_val(index_set.at(i));
+
+	double distance_from_ub = up.at(i)-val;
+
+	ASSERT(distance_from_ub >= 0);
+
+	if (distance_from_ub <= TOL_LP_PRUNING_SOLVED) {
+
+		max_solved.at(i) = 'y';
+
+		++skipped;
+	}
+	else if (distance_from_ub < closest_max) {
+
+		closest_max = distance_from_ub;
+
+		index_max = i;
+	}
+}
+
 void lp_pruning::solve_for_lb() {
 
 	min_solved.at(index_min) = 'y';
@@ -288,49 +272,13 @@ void lp_pruning::solve_for_ub() {
 	lp->tighten_col_ub(index_set.at(index_max), up.at(index_max));
 }
 
-void lp_pruning::prune() {
-
-	count_solved();
-
-	decision candidate;
-
-	while ( (candidate=select_candidate()) != NO_CANDIDATE ) {
-
-		count_solved();
-
-		if (candidate == LOWER_BND) {
-
-			solve_for_lb();
-		}
-		else {
-
-			solve_for_ub();
-		}
-	}
-}
-
-void lp_pruning::prune_all() {
-
-	// TODO mark_narrow_solved();
-
-	try {
-
-		prune();
-	}
-	catch (infeasible_problem& ) {
-
-		throw numerical_problems();
-	}
-
-	count_solved();
-}
-
-void lp_pruning::dbg_examine_results() const {
+void lp_pruning::dbg_selection_results() const {
 
 	using namespace std;
+
 	cout << "min: ";
 	if (index_min!=-1) {
-		cout << index_min << ", val: " << closest_min << endl;
+		cout << index_set.at(index_min) << ", val: " << closest_min << endl;
 	}
 	else {
 		ASSERT(closest_min==numeric_limits<double>::max());
@@ -339,7 +287,7 @@ void lp_pruning::dbg_examine_results() const {
 
 	cout << "max: ";
 	if (index_max!=-1) {
-		cout << index_max << ", val: " << closest_max << endl;
+		cout << index_set.at(index_max) << ", val: " << closest_max << endl;
 	}
 	else {
 		ASSERT(closest_max==numeric_limits<double>::max());
@@ -348,4 +296,3 @@ void lp_pruning::dbg_examine_results() const {
 }
 
 }
-
