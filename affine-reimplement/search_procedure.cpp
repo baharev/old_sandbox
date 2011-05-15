@@ -287,9 +287,9 @@ void search_procedure::contracting_step() {
 
 	ia_dag->save_containment_info();
 	// TODO Check index sets!
-	ia_dag->probing2();
+	//ia_dag->probing2();
 
-	//ia_dag->iterative_revision();
+	ia_dag->iterative_revision();
 
 	ia_dag->check_transitions_since_last_call();
 

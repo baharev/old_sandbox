@@ -106,6 +106,8 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 
 	set_col_bounds();
 
+	//lp->dump("lp_dump.txt");
+
 	// TODO Call dual simplex here!
 	lp->check_feasibility();
 }
@@ -167,15 +169,13 @@ void lp_solver::check_feasibility() {
 
 void lp_solver::set_col_bounds() {
 
-	int n = col_size() - 1;
+	const int n = col_size() - 1;
 
 	for (int i=1; i<=n; ++i) {
 
 		const int index = col_index.at(i);
 
-		const interval& range = affine::v->at(index-1); // TODO Is it the best we can do?
-
-		lp->set_col_bounds(index, range.inf(), range.sup());
+		lp->set_col_bounds(index, -1, 1);
 	}
 }
 

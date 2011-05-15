@@ -46,6 +46,8 @@ public:
 
 	void check_feasibility();
 
+	void dump(const char* file);
+
 	static void free_environment();
 
 private:

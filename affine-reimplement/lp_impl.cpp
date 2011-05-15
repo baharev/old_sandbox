@@ -56,7 +56,7 @@ void lp_impl::init() {
 
 	parm->presolve = GLP_OFF;
 
-	parm->msg_lev = GLP_MSG_ALL;
+	parm->msg_lev = GLP_MSG_OFF;
 
 	//parm->meth = GLP_DUAL;
 }
@@ -140,6 +140,11 @@ void lp_impl::check_feasibility() {
 
 		ASSERT(false); // Not clear how we could get kere
 	}
+}
+
+void lp_impl::dump(const char* file) {
+
+	glp_write_lp(lp, NULL, file);
 }
 
 }
