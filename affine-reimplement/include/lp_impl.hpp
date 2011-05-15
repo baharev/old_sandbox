@@ -23,6 +23,7 @@
 #ifndef LP_IMPL_HPP_
 #define LP_IMPL_HPP_
 
+#include "stdint.h"
 #include "glpk.h"
 
 namespace asol {
@@ -46,7 +47,9 @@ public:
 
 	void check_feasibility();
 
-	void dump(const char* file);
+	void dump(const char* file) const;
+
+	void show_iteration_count() const;
 
 	static void free_environment();
 
@@ -63,6 +66,8 @@ private:
 	glp_prob* lp;
 
 	glp_smcp* parm;
+
+	uint64_t previous_itr_count;
 };
 
 }

@@ -179,6 +179,11 @@ void lp_solver::set_col_bounds() {
 	}
 }
 
+void lp_solver::show_iteration_count() const {
+
+	lp->show_iteration_count();
+}
+
 lp_solver::~lp_solver() {
 
 	delete lp;

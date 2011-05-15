@@ -35,6 +35,8 @@ lp_impl::lp_impl() {
 
 	glp_init_smcp(parm);
 
+	previous_itr_count = 0;
+
 	init();
 }
 
@@ -62,6 +64,8 @@ void lp_impl::init() {
 }
 
 void lp_impl::reset() {
+
+	previous_itr_count += lpx_get_int_parm(lp, LPX_K_ITCNT);
 
 	glp_erase_prob(lp);
 }
@@ -117,6 +121,7 @@ void lp_impl::check_feasibility() {
 
 	scale_prob();
 
+	// TODO Make dual feasible basis
 	glp_std_basis(lp);
 
 	const int error_code = glp_simplex(lp, parm);
@@ -142,9 +147,16 @@ void lp_impl::check_feasibility() {
 	}
 }
 
-void lp_impl::dump(const char* file) {
+void lp_impl::dump(const char* file) const {
 
 	glp_write_lp(lp, NULL, file);
+}
+
+void lp_impl::show_iteration_count() const {
+
+	uint64_t count = previous_itr_count + lpx_get_int_parm(lp, LPX_K_ITCNT);
+
+	std::cout << "Simplex iterations: " << count << std::endl;
 }
 
 }

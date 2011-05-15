@@ -207,6 +207,7 @@ void search_procedure::print_statistics() const {
 	cout << "Number of splits: " << splits << ", solutions: ";
 	cout << solutions_found << endl;
 
+	lp->show_iteration_count();
 	ia_dag->print_found_solutions();
 }
 
@@ -301,7 +302,7 @@ void search_procedure::contracting_step() {
 
 	aa_dag->evaluate_all();
 
-	lp->check_feasibility();
+	//lp->check_feasibility(); // FIXME The last constraint calls it anyhow
 
 	ia_dag->check_transitions_since_last_call();
 }
