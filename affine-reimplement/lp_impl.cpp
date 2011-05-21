@@ -358,6 +358,11 @@ double lp_impl::col_ub(int i) const {
 	return glp_get_col_ub(lp, i);
 }
 
+double lp_impl::col_dual_val(int i) const {
+
+	return glp_get_col_dual(lp, i);
+}
+
 bool lp_impl::is_fixed(int index) const {
 
 	return glp_get_col_type(lp, index)==GLP_FX;

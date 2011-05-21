@@ -95,12 +95,11 @@ void lp_pruning::init_bounds() {
 void lp_pruning::init_reduced_costs() {
 
 	const int n_cols = lp->num_cols();
-	const int n_rows = lp->num_rows();
 
-	d_min.resize(1+n_rows);
-	d_max.resize(1+n_rows);
+	d_min.resize(1+n_cols);
+	d_max.resize(1+n_cols);
 
-	for (int i=0; i<=n_rows; ++i) {
+	for (int i=0; i<=n_cols; ++i) {
 
 		d_min.at(i) = vector<double>(1+n_cols, 0.0);
 		d_max.at(i) = vector<double>(1+n_cols, 0.0);
@@ -148,6 +147,8 @@ void lp_pruning::prune() {
 	}
 
 	ASSERT(lp_call+skipped==2*size);
+
+	dump_reduced_costs();
 }
 
 void lp_pruning::count_solved() const {
@@ -262,14 +263,81 @@ void lp_pruning::solve_for_lb() {
 
 	min_solved.at(index_min) = 'y';
 
-	lp->tighten_col_lb(index_set.at(index_min), lo.at(index_min));
+	const int index = index_set.at(index_min);
+
+	lp->tighten_col_lb(index, lo.at(index_min));
+
+	save_reduced_costs(index, d_min);
 }
 
 void lp_pruning::solve_for_ub() {
 
 	max_solved.at(index_max) = 'y';
 
-	lp->tighten_col_ub(index_set.at(index_max), up.at(index_max));
+	const int index = index_set.at(index_max);
+
+	lp->tighten_col_ub(index, up.at(index_max));
+
+	save_reduced_costs(index, d_max);
+}
+
+void lp_pruning::save_reduced_costs(int index, vector<vector<double> >& d) {
+
+	vector<double>& reduced_cost = d.at(index);
+
+	ASSERT(reduced_cost.at(0)==0.0);
+
+	const int n_cols = lp->num_cols();
+
+	for (int i=1; i<=n_cols; ++i) {
+
+		reduced_cost.at(i) = lp->col_dual_val(i);
+	}
+
+	reduced_cost.at(0)=-1.0;
+}
+
+void lp_pruning::dump_reduced_costs() const {
+
+	using namespace std;
+
+	cout << "MIN reduced costs:\n";
+
+	dump_reduced_costs(d_min);
+
+	cout << "MAX reduced costs:\n";
+
+	dump_reduced_costs(d_max);
+
+	cout << flush;
+}
+
+void lp_pruning::dump_reduced_costs(const std::vector<std::vector<double> >& d) const {
+
+	using namespace std;
+
+	const int n_cols = lp->num_cols();
+
+	for (int i=1; i<=n_cols; ++i) {
+
+		cout << i << '\t';
+
+		dump_reduced_costs(d.at(i));
+
+		cout << '\n';
+	}
+}
+
+void lp_pruning::dump_reduced_costs(const vector<double>& reduced_costs) const {
+
+	using namespace std;
+
+	const int n_cols = lp->num_cols();
+
+	for (int j=1; j<=n_cols; ++j) {
+
+		cout << reduced_costs.at(j) << '\t';
+	}
 }
 
 void lp_pruning::dbg_selection_results() const {

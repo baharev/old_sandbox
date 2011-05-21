@@ -63,6 +63,14 @@ private:
 
 	void solve_for_ub();
 
+	void save_reduced_costs(int index, std::vector<std::vector<double> >& d);
+
+	void dump_reduced_costs() const;
+
+	void dump_reduced_costs(const std::vector<std::vector<double> >& d) const;
+
+	void dump_reduced_costs(const std::vector<double>& reduced_costs) const;
+
 	void prune();
 
 	void prune_all();

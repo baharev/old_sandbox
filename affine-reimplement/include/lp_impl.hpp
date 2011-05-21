@@ -69,6 +69,8 @@ public:
 
 	double col_ub(int i) const;
 
+	double col_dual_val(int i) const;
+
 	bool is_fixed(int index) const;
 
 	void dump(const char* file) const;
