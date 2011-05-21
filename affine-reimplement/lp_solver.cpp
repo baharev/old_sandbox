@@ -29,8 +29,6 @@
 #include "lp_impl.hpp"
 #include "lp_pruning.hpp"
 
-using std::fabs;
-
 namespace asol {
 
 lp_solver::lp_solver() : lp(new lp_impl), N_VARS(-1), TINY(1.0e-7) {
@@ -114,6 +112,8 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 
 const lp_solver::row_info lp_solver::compute_row_info(const affine& x, const double value) const {
 
+	using namespace std;
+
 	const row_rad_max_aij row = get_row_rad_max_aij(x);
 
 	const double mid = value - x.central_value();
@@ -122,7 +122,7 @@ const lp_solver::row_info lp_solver::compute_row_info(const affine& x, const dou
 
 	const double row_ub = mid + row.rad;
 
-	const double row_max = std::max(fabs(row_lb), fabs(row_ub));
+	const double row_max = max(fabs(row_lb), fabs(row_ub));
 
 	double max_aij = row.max_aij;
 
@@ -146,7 +146,7 @@ const lp_solver::row_rad_max_aij lp_solver::get_row_rad_max_aij(const affine& x)
 
 		const epsilon& e = x.noise_vars.at(i);
 
-		const double aij = fabs(e.coeff);
+		const double aij = std::fabs(e.coeff);
 
 		if (e.index > N_VARS) { // condense non-vars, needed for row bounds
 
@@ -177,7 +177,6 @@ void lp_solver::set_col_bounds() {
 		lp->set_col_bounds(index, -1, 1);
 	}
 }
-
 
 void lp_solver::prune(const std::vector<int>& ) {
 
