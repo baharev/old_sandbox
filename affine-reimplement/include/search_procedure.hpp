@@ -102,6 +102,8 @@ private:
 	int splits;
 
 	int boxes_processed;
+
+	int index_to_split;
 };
 
 }

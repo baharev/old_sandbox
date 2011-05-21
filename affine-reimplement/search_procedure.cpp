@@ -284,6 +284,8 @@ void search_procedure::roll_back() {
 
 void search_procedure::contracting_step() {
 
+	index_to_split = -1;
+
 	ia_dag->set_box(box_orig, n_vars);
 
 	ia_dag->save_containment_info();
@@ -303,7 +305,7 @@ void search_procedure::contracting_step() {
 	aa_dag->evaluate_all();
 
 	//lp->run_simplex(); // FIXME The last constraint calls it anyhow
-	lp->prune(std::vector<int>());
+	index_to_split = lp->prune(std::vector<int>());
 
 	ia_dag->check_transitions_since_last_call();
 }
@@ -409,9 +411,12 @@ void search_procedure::split() {
 	double x1 = box_orig[0].diameter();
 	double D  = box_orig[15].diameter();
 
-	int index = (x1 > D)? 0 : 15;
+	const int index = index_to_split!=-1 ? index_to_split : ((x1 > D)? 0 : 15);
+	//const int index = (x1 > D)? 0 : 15;
 
 	//const int index = select_index_to_split();
+
+	ASSERT2(0<=index && index < n_vars, "index: "<<index);
 
 	double lb  = box_orig[index].inf();
 	double ub  = box_orig[index].sup();

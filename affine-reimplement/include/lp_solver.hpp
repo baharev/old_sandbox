@@ -46,7 +46,8 @@ public:
 
 	void set_number_of_vars(int n);
 
-	void prune(const std::vector<int>& index_set);
+	// returns zero based index to be split, -1 if none selected
+	int prune(const std::vector<int>& index_set);
 
 	void show_iteration_count() const;
 

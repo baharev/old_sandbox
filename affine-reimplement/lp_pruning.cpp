@@ -20,6 +20,8 @@
 //
 //==============================================================================
 
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <limits>
 #include "lp_pruning.hpp"
@@ -122,9 +124,20 @@ void lp_pruning::prune_all() {
 	count_solved();
 }
 
+int lp_pruning::index_to_split() const {
+
+	using namespace std;
+
+	const index_value abs_max = max(max_abs(d_min), max_abs(d_max));
+
+	cout << "Abs max: " << abs_max.index << ", " << abs_max.value << '\n' << flush;
+
+	return abs_max.value > 1.01 ? abs_max.index-1 : -1;
+}
+
 void lp_pruning::prune() {
 
-	count_solved();
+	//count_solved();
 
 	size_t lp_call = 0;
 
@@ -132,7 +145,7 @@ void lp_pruning::prune() {
 
 	while ( (next=select_candidate()) != NO_MORE ) {
 
-		count_solved();
+		//count_solved();
 
 		if (next == MIN_SUBPROBLEM) {
 
@@ -148,7 +161,7 @@ void lp_pruning::prune() {
 
 	ASSERT(lp_call+skipped==2*size);
 
-	dump_reduced_costs();
+	//dump_reduced_costs();
 }
 
 void lp_pruning::count_solved() const {
@@ -312,7 +325,7 @@ void lp_pruning::dump_reduced_costs() const {
 	cout << flush;
 }
 
-void lp_pruning::dump_reduced_costs(const std::vector<std::vector<double> >& d) const {
+void lp_pruning::dump_reduced_costs(const vector<vector<double> >& d) const {
 
 	using namespace std;
 
@@ -338,6 +351,46 @@ void lp_pruning::dump_reduced_costs(const vector<double>& reduced_costs) const {
 
 		cout << reduced_costs.at(j) << '\t';
 	}
+}
+
+// TODO There is no need for these to be members
+const lp_pruning::index_value lp_pruning::max_abs(const vector<vector<double> >& d) const {
+
+	index_value absmax(-1, 0.0);
+
+	const int n_cols = lp->num_cols();
+
+	for (int i=1; i<=n_cols; ++i) {
+
+		const index_value max_i = max_abs(d.at(i));
+
+		ASSERT(max_i.value>=0.0);
+
+		if (absmax < max_i) {
+
+			absmax = max_i;
+		}
+	}
+
+	return absmax;
+}
+
+struct abs_cmp {
+
+	bool operator()(const double x, const double y) const {
+
+		return std::fabs(x) < std::fabs(y);
+	}
+};
+
+const lp_pruning::index_value lp_pruning::max_abs(const vector<double>& reduced_costs) const {
+
+	vector<double>::const_iterator i =
+
+			std::max_element(reduced_costs.begin()+1, reduced_costs.end(), abs_cmp());
+
+	// TODO This index computation knows memory layout
+	return index_value( i-reduced_costs.begin(), std::fabs(*i) );
 }
 
 void lp_pruning::dbg_selection_results() const {

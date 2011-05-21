@@ -35,6 +35,8 @@ public:
 
 	lp_pruning(lp_impl* lp, const std::vector<int>& index_set);
 
+	int index_to_split() const; // zero based index to be split, -1 if none selected
+
 private:
 
 	lp_pruning(const lp_pruning& );
@@ -42,6 +44,13 @@ private:
 	lp_pruning& operator=(const lp_pruning& );
 
 	enum subroblem { NO_MORE, MIN_SUBPROBLEM, MAX_SUBPROBLEM };
+
+	struct index_value {
+		int    index;
+		double value;
+		index_value(int i, double v) : index(i), value(v) { }
+		bool operator<(const index_value& other) const { return value < other.value; }
+	};
 
 	void init_reverse_index_set();
 
@@ -70,6 +79,10 @@ private:
 	void dump_reduced_costs(const std::vector<std::vector<double> >& d) const;
 
 	void dump_reduced_costs(const std::vector<double>& reduced_costs) const;
+
+	const index_value max_abs(const std::vector<std::vector<double> >& d) const;
+
+	const index_value max_abs(const std::vector<double>& reduced_costs) const;
 
 	void prune();
 

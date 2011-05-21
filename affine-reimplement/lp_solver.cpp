@@ -178,7 +178,7 @@ void lp_solver::set_col_bounds() {
 	}
 }
 
-void lp_solver::prune(const std::vector<int>& ) {
+int lp_solver::prune(const std::vector<int>& ) {
 
 	// FIXME Temporary hack!
 
@@ -189,9 +189,11 @@ void lp_solver::prune(const std::vector<int>& ) {
 		index_set.push_back(i);
 	}
 
-	lp_pruning(lp, index_set);
+	lp_pruning pruning(lp, index_set);
 
 	// TODO Write back
+
+	return pruning.index_to_split();
 }
 
 void lp_solver::show_iteration_count() const {
