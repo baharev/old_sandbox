@@ -162,6 +162,7 @@ void lp_pruning::prune() {
 	ASSERT(lp_call+skipped==2*size);
 
 	//dump_reduced_costs();
+	lp->dump("lp_problem.txt");
 }
 
 void lp_pruning::count_solved() const {
