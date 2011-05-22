@@ -132,7 +132,7 @@ int lp_pruning::index_to_split() const {
 
 	cout << "Abs max: " << abs_max.index << ", " << abs_max.value << '\n' << flush;
 
-	return abs_max.value > 1.01 ? abs_max.index-1 : -1;
+	return abs_max.value > 2.0 ? abs_max.index-1 : -1;
 }
 
 void lp_pruning::prune() {
