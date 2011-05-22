@@ -21,9 +21,23 @@
 //==============================================================================
 
 #include <iostream>
+#include <sstream>
 #include "lp_impl.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
+
+namespace {
+
+const std::string filename(const char* direction, int i) {
+
+	std::ostringstream os;
+
+	os << "sens_" << direction << "_" << (i+1) << ".txt";
+
+	return os.str();
+}
+
+}
 
 namespace asol {
 
@@ -228,10 +242,6 @@ void lp_impl::run_simplex() {
 
 double lp_impl::solve_for(int index, int direction) {
 
-	glp_set_obj_dir(lp, direction);
-
-	glp_set_obj_coef(lp, index, 1.0);
-
 	if (parm->msg_lev >= GLP_MSG_ON) {
 
 		std::cout << (direction==GLP_MIN?"MIN":"MAX") << std::endl;
@@ -239,7 +249,15 @@ double lp_impl::solve_for(int index, int direction) {
 
 	try {
 
+		glp_set_obj_dir(lp, direction);
+
+		glp_set_obj_coef(lp, index, 1.0);
+
 		run_simplex();
+
+		glp_print_ranges(lp, 0, NULL, 0, filename(direction==GLP_MIN?"min":"MAX", index).c_str() );
+
+		glp_set_obj_coef(lp, index, 0.0);
 	}
 	catch (...) {
 

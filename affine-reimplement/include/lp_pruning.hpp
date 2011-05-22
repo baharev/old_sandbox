@@ -35,7 +35,7 @@ public:
 
 	lp_pruning(lp_impl* lp, const std::vector<int>& index_set);
 
-	int index_to_split() const; // zero based index to be split, -1 if none selected
+	int index_to_split() const; // zero based index to be split, negative if none selected
 
 private:
 

@@ -410,13 +410,13 @@ void search_procedure::split() {
 
 	double x1 = box_orig[0].diameter();
 	double D  = box_orig[15].diameter();
-	double tmp= (index_to_split!=-1) ? box_orig[index_to_split].diameter() : 0.0;
+	double tmp= (index_to_split>=0) ? box_orig[index_to_split].diameter() : 0.0;
 
 	int    index = (x1 > D)? 0 : 15;
 	double value = (x1 > D)? x1: D ;
 
 	if (tmp > value) {
-		index = index_to_split;
+		//index = index_to_split;
 	}
 	//const int index = (x1 > D)? 0 : 15;
 
