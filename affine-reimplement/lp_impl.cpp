@@ -72,7 +72,7 @@ void lp_impl::init() {
 
 	parm->presolve = GLP_OFF;
 
-	parm->msg_lev = GLP_MSG_ALL;
+	parm->msg_lev = GLP_MSG_ERR;
 
 	//parm->meth = GLP_DUAL;
 }
@@ -255,7 +255,8 @@ double lp_impl::solve_for(int index, int direction) {
 
 		run_simplex();
 
-		glp_print_ranges(lp, 0, NULL, 0, filename(direction==GLP_MIN?"min":"MAX", index).c_str() );
+		// dump sensitivity reports
+		//glp_print_ranges(lp, 0, NULL, 0, filename(direction==GLP_MIN?"min":"MAX", index).c_str() );
 
 		glp_set_obj_coef(lp, index, 0.0);
 	}

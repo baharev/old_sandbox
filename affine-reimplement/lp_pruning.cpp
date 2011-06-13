@@ -141,7 +141,7 @@ void lp_pruning::prune() {
 
 	size_t lp_call = 0;
 
-	subroblem next;
+	subproblem next;
 
 	while ( (next=select_candidate()) != NO_MORE ) {
 
@@ -162,7 +162,7 @@ void lp_pruning::prune() {
 	ASSERT(lp_call+skipped==2*size);
 
 	//dump_reduced_costs();
-	lp->dump("lp_problem.txt");
+	//lp->dump("lp_problem.txt");
 }
 
 void lp_pruning::count_solved() const {
@@ -186,7 +186,7 @@ void lp_pruning::count_solved() const {
 	std::cout << "skipped: " << skipped << std::endl;
 }
 
-lp_pruning::subroblem lp_pruning::select_candidate() {
+lp_pruning::subproblem lp_pruning::select_candidate() {
 
 	closest_min = closest_max = std::numeric_limits<double>::max();
 
@@ -201,7 +201,7 @@ lp_pruning::subroblem lp_pruning::select_candidate() {
 
 	dbg_selection_results();
 
-	subroblem next;
+	subproblem next;
 
 	if (closest_min < closest_max) {
 

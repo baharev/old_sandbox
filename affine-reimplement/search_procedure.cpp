@@ -176,6 +176,8 @@ void search_procedure::run() {
 
 		process_box();
 
+		ia_dag->show_variables(cout);
+
 		split_if_not_discarded();
 	}
 
@@ -305,7 +307,7 @@ void search_procedure::contracting_step() {
 	aa_dag->evaluate_all();
 
 	//lp->run_simplex(); // FIXME The last constraint calls it anyhow
-	index_to_split = lp->prune(std::vector<int>());
+	index_to_split = lp->prune(std::vector<int>(), *(aa_dag->get_v()));
 
 	ia_dag->check_transitions_since_last_call();
 }

@@ -37,13 +37,17 @@ public:
 
 	int index_to_split() const; // zero based index to be split, negative if none selected
 
+	const std::vector<double>& new_lb_for_epsilon() const { return lo; }
+
+	const std::vector<double>& new_ub_for_epsilon() const { return up; }
+
 private:
 
 	lp_pruning(const lp_pruning& );
 
 	lp_pruning& operator=(const lp_pruning& );
 
-	enum subroblem { NO_MORE, MIN_SUBPROBLEM, MAX_SUBPROBLEM };
+	enum subproblem { NO_MORE, MIN_SUBPROBLEM, MAX_SUBPROBLEM };
 
 	struct index_value {
 		int    index;
@@ -64,7 +68,7 @@ private:
 
 	void dbg_selection_results() const;
 
-	subroblem select_candidate();
+	subproblem select_candidate();
 
 	void count_solved() const;
 

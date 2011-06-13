@@ -178,10 +178,9 @@ void lp_solver::set_col_bounds() {
 	}
 }
 
-int lp_solver::prune(const std::vector<int>& ) {
+int lp_solver::prune(const std::vector<int>& , std::vector<affine>& v) {
 
 	// FIXME Temporary hack!
-
 	std::vector<int> index_set;
 
 	for (int i=1; i<=16; ++i) {
@@ -189,11 +188,20 @@ int lp_solver::prune(const std::vector<int>& ) {
 		index_set.push_back(i);
 	}
 
-	lp_pruning pruning(lp, index_set);
+	lp_pruning contractor(lp, index_set);
 
-	// TODO Write back
+	const std::vector<double>& lo = contractor.new_lb_for_epsilon();
 
-	return pruning.index_to_split();
+	const std::vector<double>& up = contractor.new_ub_for_epsilon();
+
+	for (int i=0; i<N_VARS; ++i) {
+
+		affine& a = v.at(i);
+
+		a.renormalize(lo.at(i), up.at(i));
+	}
+
+	return contractor.index_to_split();
 }
 
 void lp_solver::show_iteration_count() const {

@@ -119,6 +119,37 @@ void affine::check_if_numeric_constant() {
 	ASSERT2(range().degenerate() , "index, range: " << range_index << ", " << range());
 }
 
+void affine::renormalize(const double lb, const double ub) {
+
+	ASSERT(lb>=-1 && ub<=1 && lb <= ub);
+
+	ASSERT(noise_vars.size()==2);
+
+	if (lb == -1 && ub == 1) {
+
+		return;
+	}
+
+	const double x0 = noise_vars.at(0).coeff;
+
+	const double x1 = noise_vars.at(1).coeff;
+
+	ASSERT(x1 >= 0);
+
+	const double new_lb = x0 + x1*lb;
+
+	const double new_ub = x0 + x1*ub;
+
+	interval new_range(new_lb, new_ub);
+
+	// TODO Not needed as aa_dag is not used in this iteration anymore
+	noise_vars.at(0).coeff = new_range.midpoint();
+
+	noise_vars.at(1).coeff = new_range.radius();
+
+	get_range().intersect(new_range);
+}
+
 std::ostream& operator<<(std::ostream& os, const affine& x) {
 
 	for (int i=0; i<x.size(); ++i) {

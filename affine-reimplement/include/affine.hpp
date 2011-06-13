@@ -58,6 +58,8 @@ public:
 
 	void check_if_numeric_constant();
 
+	void renormalize(const double lb, const double ub);
+
 	~affine();
 
 	void equals(double value);
