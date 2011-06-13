@@ -554,7 +554,7 @@ void expression_graph<T>::show_variables(ostream& out) const {
 
 	for (int i=0; i<n_vars; ++i) {
 
-		out << i << ": " << v.at(i) << endl;
+		out << i+1 << ": " << v.at(i) << endl;
 	}
 }
 

@@ -32,7 +32,7 @@ const std::string filename(const char* direction, int i) {
 
 	std::ostringstream os;
 
-	os << "sens_" << direction << "_" << i << ".txt";
+	os << direction << "_x_" << i << ".txt";
 
 	return os.str();
 }
