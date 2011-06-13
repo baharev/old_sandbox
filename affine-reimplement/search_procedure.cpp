@@ -310,6 +310,10 @@ void search_procedure::contracting_step() {
 	index_to_split = lp->prune(std::vector<int>(), *(aa_dag->get_v()));
 
 	ia_dag->check_transitions_since_last_call();
+
+	ia_dag->iterative_revision();
+
+	ia_dag->check_transitions_since_last_call();
 }
 
 const double CONVERGENCE_TOL = 0.05; // FIXME Just for testing
