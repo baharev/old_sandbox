@@ -72,7 +72,7 @@ void lp_impl::init() {
 
 	parm->presolve = GLP_OFF;
 
-	parm->msg_lev = GLP_MSG_ERR;
+	parm->msg_lev = GLP_MSG_ALL;
 
 	//parm->meth = GLP_DUAL;
 }
@@ -236,7 +236,7 @@ void lp_impl::run_simplex() {
 	}
 	else {
 
-		ASSERT(false); // Not clear how we could get kere
+		ASSERT(false); // Not clear how we could get here
 	}
 }
 
