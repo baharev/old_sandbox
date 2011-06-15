@@ -53,8 +53,9 @@ index_recorder::index_recorder(const problem_data* prob) {
 	ASSERT2(current.empty(),"problem must be closed by a constraint");
 
 	compute_constraint_index_set();
-
 	// TODO Check if all variables and def_vars are really contained in the index set
+
+	compute_lp_index_set();
 }
 
 int index_recorder::primitive_index() const {
@@ -102,7 +103,7 @@ void index_recorder::resolve_def_var_dependecies() {
 
 		const set<int>& dependencies = indices.at(k->second);
 
-		const set<int> vars = extract_variables(dependencies); // recursively resolve def_vars ?
+		const set<int> vars = extract_variables(dependencies);
 
 		current.insert(vars.begin(), vars.end());
 	}
@@ -110,7 +111,7 @@ void index_recorder::resolve_def_var_dependecies() {
 
 void index_recorder::push_back_current() {
 
-	resolve_def_var_dependecies();
+	resolve_def_var_dependecies(); // avoiding recursive calls to resolve def var dependencies
 
 	indices.push_back(current);
 
@@ -180,9 +181,18 @@ void dump(const vector<T>& index, const vector<int>& last_primitive) {
 
 void index_recorder::dump() const {
 	// TODO Ask on SO why asol:: is needed
+
+	cout << "Indices in constraints AND defined variables, last primitive in bracket" << endl;
+
 	asol::dump(indices, boundary);
 
+	cout << "Indices in constraints" << endl;
+
 	asol::dump(constraint_indices, constraint_end);
+
+	cout << "Indices involved in LP pruning" << endl;
+
+	asol::dump(lp_indices, constraint_end);
 }
 
 void index_recorder::compute_constraint_index_set() {
@@ -224,6 +234,51 @@ void index_recorder::merge_up_to(const int end) {
 const vector<vector<int> >& index_recorder::constraint_index_sets() const {
 
 	return constraint_indices;
+}
+
+void index_recorder::compute_lp_index_set() {
+
+	ASSERT(constraint_indices.size()==constraint_end.size());
+
+	const int n = constraint_end.size();
+
+	lp_indices.resize(n);
+
+	for (int i=0; i<n-1; ++i) {
+
+		lp_indices.at(i) = prune_indices_after_constraint(i);
+	}
+
+	vector<int>& all_vars = lp_indices.at(n-1);
+
+	all_vars.resize(n_vars);
+
+	for (int i=0; i<n_vars; ++i) {
+
+		all_vars.at(i) = i;
+	}
+}
+
+const vector<int> index_recorder::prune_indices_after_constraint(const int k) const {
+
+	vector<int> result;
+
+	set<int> used;
+
+	for (int i=0; i<=k; ++i) {
+
+		const vector<int>& con_idx = constraint_indices.at(i);
+
+		used.insert(con_idx.begin(), con_idx.end());
+	}
+
+	const vector<int>& next = constraint_indices.at(k+1);
+
+	set_intersection(used.begin(), used.end(),
+			         next.begin(), next.end(),
+			         back_inserter(result));
+
+	return result;
 }
 
 void index_recorder::record_unary_primitive(int z, int x) {

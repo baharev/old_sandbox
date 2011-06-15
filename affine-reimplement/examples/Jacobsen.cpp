@@ -210,16 +210,6 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 
 	Lw.equals(0.96);
 
-	//--------------------------------------------------------------------------
-
-	const T HV1 = H_Vap(x1);
-
-	const T HL0 = H_Liq(y1);
-
-	const T Q = V1*(HV1 - HL0) + D*HL0; // HL0*(D - V1) + HV1*V1 is worse...
-
-	Q.mark_as_common_subexpression();
-
 	//==========================================================================
 
 	const T M8 = (1.0-D)*x8 + d;
@@ -237,6 +227,16 @@ void Jacobsen<T>::evaluate(const T v[]) const {
 	const T M7 = 3.0*y8-L7*x7-d;
 
 	M7.equals(-0.5);
+
+	//--------------------------------------------------------------------------
+
+	const T HV1 = H_Vap(x1);
+
+	const T HL0 = H_Liq(y1);
+
+	const T Q = V1*(HV1 - HL0) + D*HL0; // HL0*(D - V1) + HV1*V1 is worse...
+
+	Q.mark_as_common_subexpression();
 
 	//--------------------------------------------------------------------------
 

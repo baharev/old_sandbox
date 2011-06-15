@@ -68,7 +68,9 @@ private:
 	const std::set<int> extract_variables(const std::set<int>& index_set);
 	void push_back_current();
 	void compute_constraint_index_set();
-	void merge_up_to(const int last_primitive_index);
+	void merge_up_to(const int last_primitive_index); // def var index set merged into con index set
+	void compute_lp_index_set();
+	const std::vector<int> prune_indices_after_constraint(const int k) const;
 
 	int  primitive_index() const;
 	bool is_numeric_constant(const int index) const;
@@ -81,6 +83,9 @@ private:
 
 	std::vector<int> constraint_end;     // last primitive index in con ONLY
 	std::vector<std::vector<int> > constraint_indices; // indices occurring in con ONLY
+
+	std::vector<std::vector<int> > lp_indices; // vars already used and appearing in the next con
+	                                           // last set is all var indices 0..n_vars-1
 
 	std::map<int,double> numeric_const; // numeric constants
 	int n_vars;                         // number of variables
