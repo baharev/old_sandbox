@@ -41,6 +41,8 @@ public:
 
 	const std::vector<std::vector<int> >& constraint_index_sets() const;
 
+	const std::vector<std::vector<int> >& lp_pruning_index_sets() const;
+
 	void dump() const;
 
 	~index_recorder();
@@ -85,7 +87,6 @@ private:
 	std::vector<std::vector<int> > constraint_indices; // indices occurring in con ONLY
 
 	std::vector<std::vector<int> > lp_indices; // vars already used and appearing in the next con
-	                                           // last set is all var indices 0..n_vars-1
 
 	std::map<int,double> numeric_const; // numeric constants
 	int n_vars;                         // number of variables

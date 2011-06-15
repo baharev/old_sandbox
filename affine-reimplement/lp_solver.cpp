@@ -29,9 +29,11 @@
 #include "lp_impl.hpp"
 #include "lp_pruning.hpp"
 
+using std::vector;
+
 namespace asol {
 
-lp_solver::lp_solver() : lp(new lp_impl), N_VARS(-1), TINY(1.0e-7) {
+lp_solver::lp_solver() : lp(new lp_impl), N_VARS(-1), TINY(1.0e-7), v(0) {
 
 }
 
@@ -47,6 +49,59 @@ void lp_solver::set_number_of_vars(int n) {
 	ASSERT2( n>0 && N_VARS==-1, "n, N_VARS: " << n << ", " << N_VARS);
 
 	N_VARS = n;
+}
+
+void lp_solver::set_affine_vars(std::vector<affine>* v_of_expression_graph) {
+
+	v = v_of_expression_graph;
+}
+
+void lp_solver::set_pruning_indices(const vector<vector<int> >& indices_to_prune_after_constraint) {
+
+	pruning_indices = indices_to_prune_after_constraint;
+
+	make_index_set_one_based();
+}
+
+void lp_solver::make_index_set_one_based() {
+
+	for (size_t i=0; i<pruning_indices.size(); ++i) {
+
+		vector<int>& con = pruning_indices.at(i);
+
+		for (size_t j=0; j<con.size(); ++j) {
+
+			++con.at(j);
+		}
+	}
+}
+
+void lp_solver::prune_upcoming_variables() {
+
+	const int last_constraint_index = lp->num_rows() - 1;
+
+	// FIXME Find a better way when prune() is ready
+	if (last_constraint_index == N_VARS - 1) {
+
+		return;
+	}
+
+	const vector<int>& index_set = pruning_indices.at(last_constraint_index);
+
+	lp_pruning contractor(lp, index_set);
+
+	const vector<double>& lo = contractor.new_lb_for_epsilon();
+
+	const vector<double>& up = contractor.new_ub_for_epsilon();
+
+	for (size_t i=0; i<index_set.size(); ++i) {
+
+		const int index = index_set.at(i);
+
+		affine& a = v->at(index-1);
+
+		a.set_range_with_epsilon_bounds(lo.at(i), up.at(i));
+	}
 }
 
 void lp_solver::reset_col_arrays(int size) {
@@ -178,10 +233,10 @@ void lp_solver::set_col_bounds() {
 	}
 }
 
-int lp_solver::prune(const std::vector<int>& , std::vector<affine>& v) {
+int lp_solver::prune(const vector<int>& ) {
 
 	// FIXME Temporary hack!
-	std::vector<int> index_set;
+	vector<int> index_set;
 
 	for (int i=1; i<=16; ++i) {
 
@@ -190,13 +245,13 @@ int lp_solver::prune(const std::vector<int>& , std::vector<affine>& v) {
 
 	lp_pruning contractor(lp, index_set);
 
-	const std::vector<double>& lo = contractor.new_lb_for_epsilon();
+	const vector<double>& lo = contractor.new_lb_for_epsilon();
 
-	const std::vector<double>& up = contractor.new_ub_for_epsilon();
+	const vector<double>& up = contractor.new_ub_for_epsilon();
 
 	for (int i=0; i<N_VARS; ++i) {
 
-		affine& a = v.at(i);
+		affine& a = v->at(i);
 
 		a.renormalize(lo.at(i), up.at(i));
 	}

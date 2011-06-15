@@ -236,26 +236,22 @@ const vector<vector<int> >& index_recorder::constraint_index_sets() const {
 	return constraint_indices;
 }
 
+const vector<vector<int> >& index_recorder::lp_pruning_index_sets() const {
+
+	return lp_indices;
+}
+
 void index_recorder::compute_lp_index_set() {
 
 	ASSERT(constraint_indices.size()==constraint_end.size());
 
 	const int n = constraint_end.size();
 
-	lp_indices.resize(n);
+	lp_indices.resize(n-1);
 
 	for (int i=0; i<n-1; ++i) {
 
 		lp_indices.at(i) = prune_indices_after_constraint(i);
-	}
-
-	vector<int>& all_vars = lp_indices.at(n-1);
-
-	all_vars.resize(n_vars);
-
-	for (int i=0; i<n_vars; ++i) {
-
-		all_vars.at(i) = i;
 	}
 }
 

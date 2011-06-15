@@ -42,12 +42,18 @@ public:
 
 	void add_equality_constraint(const affine& x, const double value);
 
+	void prune_upcoming_variables();
+
 	void check_feasibility();
 
 	void set_number_of_vars(int n);
 
+	void set_affine_vars(std::vector<affine>* v);
+
+	void set_pruning_indices(const std::vector<std::vector<int> >& indices_to_prune_after_constraint);
+
 	// returns zero based index to be split, negative if none selected
-	int prune(const std::vector<int>& index_set, std::vector<affine>& v);
+	int prune(const std::vector<int>& index_set);
 
 	void show_iteration_count() const;
 
@@ -57,6 +63,8 @@ private:
 
 	lp_solver(const lp_solver& );
 	lp_solver& operator=(const lp_solver& );
+
+	void make_index_set_one_based();
 
 	struct row_info {
 		row_info(double lb, double ub, double tiny) : lb(lb), ub(ub), tiny(tiny) { }
@@ -84,6 +92,9 @@ private:
 	lp_impl* lp;
 	int N_VARS;
 	const double TINY;
+	std::vector<std::vector<int> > pruning_indices;
+
+	std::vector<affine>* v;
 
 	std::vector<int>    col_index;
 	std::vector<double> col_coeff;

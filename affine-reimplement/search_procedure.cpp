@@ -50,6 +50,8 @@ search_procedure::search_procedure(const problem<builder>* p)
 
 	init_dags();
 
+	init_lp_solver();
+
 	solutions_found = splits = boxes_processed = 0;
 
 	representation = 0;
@@ -106,8 +108,17 @@ void search_procedure::init_dags() {
 	affine::set_vector(ia_dag->get_v());
 
 	aa_dag = new expression_graph<affine>(representation, index_set);
+}
+
+void search_procedure::init_lp_solver() {
+
+	index_recorder rec(representation);
+
+	lp->set_pruning_indices(rec.lp_pruning_index_sets());
 
 	lp->set_number_of_vars(n_vars);
+
+	lp->set_affine_vars(aa_dag->get_v());
 
 	affine::set_lp_solver(lp);
 }
@@ -307,7 +318,7 @@ void search_procedure::contracting_step() {
 	aa_dag->evaluate_all();
 
 	//lp->run_simplex(); // FIXME The last constraint calls it anyhow
-	index_to_split = lp->prune(std::vector<int>(), *(aa_dag->get_v()));
+	index_to_split = lp->prune(std::vector<int>());
 
 	ia_dag->check_transitions_since_last_call();
 

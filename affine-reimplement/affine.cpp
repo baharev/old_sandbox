@@ -121,6 +121,21 @@ void affine::check_if_numeric_constant() {
 
 void affine::renormalize(const double lb, const double ub) {
 
+	set_range_with_epsilon_bounds(lb, ub);
+
+	if (lb == -1 && ub == 1) {
+
+		return;
+	}
+
+	// TODO Not needed as aa_dag is not used in this iteration anymore
+	noise_vars.at(0).coeff = get_range().midpoint();
+
+	noise_vars.at(1).coeff = get_range().radius();
+}
+
+void affine::set_range_with_epsilon_bounds(const double lb, const double ub) {
+
 	ASSERT(lb>=-1 && ub<=1 && lb <= ub);
 
 	ASSERT(noise_vars.size()==2);
@@ -140,14 +155,7 @@ void affine::renormalize(const double lb, const double ub) {
 
 	const double new_ub = x0 + x1*ub;
 
-	interval new_range(new_lb, new_ub);
-
-	// TODO Not needed as aa_dag is not used in this iteration anymore
-	noise_vars.at(0).coeff = new_range.midpoint();
-
-	noise_vars.at(1).coeff = new_range.radius();
-
-	get_range().intersect(new_range);
+	get_range().intersect(new_lb, new_ub);
 }
 
 std::ostream& operator<<(std::ostream& os, const affine& x) {
@@ -406,6 +414,8 @@ void affine::equals(double value) {
 	ASSERT(merge().contains(value));
 
 	lp->add_equality_constraint(*this, value);
+
+	lp->prune_upcoming_variables();
 }
 
 // TODO Finish

@@ -53,6 +53,7 @@ private:
 
 	void build_problem_representation();
 	void init_dags();
+	void init_lp_solver();
 	void evaluate_with_builder() const;
 	void push_initial_box_to_deque();
 	std::vector<std::vector<int> > index_sets() const;

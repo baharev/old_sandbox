@@ -58,6 +58,8 @@ public:
 
 	void check_if_numeric_constant();
 
+	void set_range_with_epsilon_bounds(const double lb, const double ub);
+
 	void renormalize(const double lb, const double ub);
 
 	~affine();
