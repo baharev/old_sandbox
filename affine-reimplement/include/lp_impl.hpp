@@ -49,7 +49,7 @@ public:
 	// index[1] ... index[length]
 	void add_eq_row(const int index[], const double value[], int length, double lb, double ub);
 
-	void set_col_bounds(int index, const double lb, const double ub);
+	void set_col_bounds(int index, double lb, double ub);
 
 	void run_simplex();
 

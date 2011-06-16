@@ -109,11 +109,22 @@ void lp_impl::add_eq_row(const int index[], const double value[], int length, do
 	glp_set_row_bnds(lp, row_index, row_type, lb, ub);
 }
 
-void lp_impl::set_col_bounds(int index, const double lb, const double ub) {
+void lp_impl::set_col_bounds(int index, double lb, double ub) {
 
 	ASSERT(lb < ub);
 
-	// FIXME Check if col bnds are better! Difficulty: lb=ub=0 by default
+	const double l = glp_get_col_lb(lp, index);
+
+	const double u = glp_get_col_ub(lp, index);
+
+	if (l!=0 && u!=0) { // if bounds are set, do not set worse bounds then the existing ones
+
+		if (lb < l ) lb = l;
+
+		if (u  < ub) ub = u;
+	}
+
+	ASSERT(lb < ub);
 
 	glp_set_col_bnds(lp, index, GLP_DB, lb, ub);
 }

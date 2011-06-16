@@ -80,10 +80,9 @@ void lp_solver::prune_upcoming_variables() {
 
 	const int last_constraint_index = lp->num_rows() - 1;
 
-	// FIXME Find a better way when prune() is ready
 	if (last_constraint_index == N_VARS - 1) {
 
-		return;
+		return; // TODO Find a better way when prune() is ready
 	}
 
 	const vector<int>& index_set = pruning_indices.at(last_constraint_index);
@@ -98,9 +97,15 @@ void lp_solver::prune_upcoming_variables() {
 
 		const int index = index_set.at(i);
 
+		const double lb = lo.at(i);
+
+		const double ub = up.at(i);
+
+		lp->set_col_bounds(index, lb, ub);
+
 		affine& a = v->at(index-1);
 
-		a.set_range_with_epsilon_bounds(lo.at(i), up.at(i));
+		a.set_range_with_epsilon_bounds(lb, ub);
 	}
 }
 
@@ -155,9 +160,9 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 
 	ASSERT2(i >= col_size(), "i, size: "<<i<<", "<<col_size());
 
-	lp->add_eq_row(&col_index.at(0), &col_coeff.at(0), col_size()-1, row.lb, row.ub);
-
 	set_col_bounds();
+
+	lp->add_eq_row(&col_index.at(0), &col_coeff.at(0), col_size()-1, row.lb, row.ub);
 
 	//lp->dump("lp_dump.txt");
 
