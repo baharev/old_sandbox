@@ -304,7 +304,6 @@ void search_procedure::contracting_step() {
 	ia_dag->save_containment_info();
 	// TODO Check index sets!
 	//ia_dag->probing2();
-there:
 
 	ia_dag->iterative_revision();
 
@@ -316,18 +315,7 @@ there:
 
 	aa_dag->reset_vars();
 
-	try {
-
-		aa_dag->evaluate_all();
-	}
-	catch (excellent_progress& ) {
-
-		check_convergence();
-
-		goto there;
-	}
-
-	check_convergence();
+	aa_dag->evaluate_all();
 
 	lp->check_feasibility();
 
