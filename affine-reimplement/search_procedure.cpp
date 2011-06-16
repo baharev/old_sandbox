@@ -304,6 +304,7 @@ void search_procedure::contracting_step() {
 	ia_dag->save_containment_info();
 	// TODO Check index sets!
 	//ia_dag->probing2();
+there:
 
 	ia_dag->iterative_revision();
 
@@ -315,16 +316,32 @@ void search_procedure::contracting_step() {
 
 	aa_dag->reset_vars();
 
-	aa_dag->evaluate_all();
+	try {
 
-	//lp->run_simplex(); // FIXME The last constraint calls it anyhow
+		aa_dag->evaluate_all();
+	}
+	catch (excellent_progress& ) {
+
+		check_convergence();
+
+		goto there;
+	}
+
+	check_convergence();
+
+	lp->check_feasibility();
+
 	index_to_split = lp->prune(std::vector<int>());
+
+	check_convergence();
 
 	ia_dag->check_transitions_since_last_call();
 
 	ia_dag->iterative_revision();
 
 	ia_dag->check_transitions_since_last_call();
+
+	check_convergence();
 }
 
 const double CONVERGENCE_TOL = 0.05; // FIXME Just for testing
@@ -367,7 +384,8 @@ void search_procedure::print_box() const {
 
 bool search_procedure::sufficient(const double max_progress) const {
 
-	return max_progress < 0.75; // TODO Introduce options class
+	return max_progress < 0.95; // TODO Introduce options class
+	                            // FIXME See also affine::excellent_progress_made
 }
 
 bool search_procedure::sufficient_progress() {
@@ -395,9 +413,14 @@ struct diam_reduction {
 
 		ASSERT(x.subset_of(y));
 
-		const double y_diam = y.diameter();
+		double result = 10; // TODO Magic number
 
-		return (y_diam == 0) ? 10 : x.diameter() / y_diam; // TODO Magic number
+		if (!x.is_narrow(CONVERGENCE_TOL) && y.diameter()!=0) {
+
+			result = x.diameter() / y.diameter();
+		}
+
+		return result;
 	}
 };
 

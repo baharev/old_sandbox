@@ -167,7 +167,7 @@ void lp_solver::add_equality_constraint(const affine& x, const double value) {
 	//lp->dump("lp_dump.txt");
 
 	// Neither primal nor dual feas: row added and col bounds probably changed
-	lp->run_simplex();
+	//lp->run_simplex();
 }
 
 const lp_solver::row_info lp_solver::compute_row_info(const affine& x, const double value) const {

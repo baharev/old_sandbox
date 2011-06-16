@@ -140,6 +140,8 @@ private:
 
 	static lp_solver* lp;
 
+	static bool excellent_progress_made;
+
 	static const double NARROW;
 };
 

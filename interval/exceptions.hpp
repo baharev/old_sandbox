@@ -25,22 +25,16 @@
 
 namespace asol {
 
-class convergence_reached {
+class convergence_reached { };
 
-};
+class excellent_progress { };
 
-class infeasible_problem {
+class infeasible_problem { };
 
-};
+class numerical_problems { };
 
-class numerical_problems {
-
-};
-
-class assertion_error {
-
-};
+class assertion_error { };
 
 }
 
-#endif /* EXCEPTIONS_HPP_ */
+#endif // EXCEPTIONS_HPP_

@@ -36,6 +36,8 @@ std::vector<interval>* affine::v(0);
 
 lp_solver* affine::lp(0);
 
+bool affine::excellent_progress_made(false);
+
 const double affine::NARROW(1.0e-6);
 
 void affine::set_vector(std::vector<interval>* vec) {
@@ -155,7 +157,17 @@ void affine::set_range_with_epsilon_bounds(const double lb, const double ub) {
 
 	const double new_ub = x0 + x1*ub;
 
+	interval y = get_range();
+
 	get_range().intersect(new_lb, new_ub);
+
+	interval x = get_range();
+
+	// FIXME Hideous and knows a lot about progress and termination computation
+	if (!x.is_narrow(0.05) && y.diameter()!=0 && x.diameter()/y.diameter()<0.749) {
+
+		excellent_progress_made = true;
+	}
 }
 
 std::ostream& operator<<(std::ostream& os, const affine& x) {
@@ -415,7 +427,16 @@ void affine::equals(double value) {
 
 	lp->add_equality_constraint(*this, value);
 
-	lp->prune_upcoming_variables();
+	affine::excellent_progress_made = false;
+
+	//lp->prune_upcoming_variables();
+
+	if (affine::excellent_progress_made) {
+
+		affine::excellent_progress_made = false;
+
+		throw excellent_progress();
+	}
 }
 
 // TODO Finish
