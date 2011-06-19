@@ -46,7 +46,8 @@ namespace asol {
 
 search_procedure::search_procedure(const problem<builder>* p)
 : prob(p),
-  split_strategy(new eco9_sparsity(prob->number_of_variables())),
+  split_strategy(new max_diam_selector(prob->number_of_variables())),
+  //split_strategy(new eco9_sparsity(prob->number_of_variables())),
   n_vars(prob->number_of_variables()),
   representation(0),
   lp(new lp_solver),

@@ -102,7 +102,7 @@ int eco9_sparsity::index_to_split(const interval* box) const {
 
 int eco9_sparsity::widest_containing_zero(const interval* box) const {
 
-	int index_set[] = { 0, 7, 1, 2, 3 };
+	int index_set[] = { 0, 7, 1, 2/*, 3 */};
 
 	const int size = sizeof index_set / sizeof index_set[0];
 

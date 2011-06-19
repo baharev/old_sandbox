@@ -231,23 +231,23 @@ void eco9<T>::evaluate(const T v[]) const {
 	const T& x7 = v[X7];
 	const T& x8 = v[X8];
 
-	const T eq1 = x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8;
-
-	eq1.equals(-1);
-
 	const T eq2 = x7 - x8*((7.0/8.0) - x1);
 
 	eq2.equals(0.0);
 
-	const T eq3 = x6 + x1*x7 - x8*((6.0/8.0) - x2);
+	const T eq3 = x6 + (x1*x7 - x8*((6.0/8.0) - x2));
 
 	eq3.equals(0.0);
 
-	const T eq4 = x5 + x1*x6 + x2*x7 - x8*((5.0/8.0) - x3);
+	const T eq4 = x5 + (x1*x6 + x2*x7 - x8*((5.0/8.0) - x3));
 
 	eq4.equals(0.0);
 
-	const T eq5 = x4 + x1*x5 + x2*x6 + x3*x7 - x8*((4.0/8.0) - x4);
+	const T eq1 = x4 + (x1 + x2 + x3 + x5 + x6 + x7 + x8);
+
+	eq1.equals(-1);
+
+	const T eq5 = x4 + (x1*x5 + x2*x6 + x3*x7 - x8*((4.0/8.0) - x4));
 
 	eq5.equals(0.0);
 
