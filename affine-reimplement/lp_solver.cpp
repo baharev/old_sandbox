@@ -243,7 +243,7 @@ int lp_solver::prune(const vector<int>& ) {
 	// FIXME Temporary hack!
 	vector<int> index_set;
 
-	for (int i=1; i<=16; ++i) {
+	for (int i=1; i<=N_VARS; ++i) {
 
 		index_set.push_back(i);
 	}

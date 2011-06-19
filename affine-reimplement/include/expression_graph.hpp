@@ -45,7 +45,7 @@ public:
 			         const IntArray2D& constraint_index_sets = IntArray2D());
 
 	explicit expression_graph(const problem_data* problem,
-			                  const IntArray2D& constraint_index_sets);
+			                  const IntArray2D& constraint_index_sets = IntArray2D());
 
 	void set_box(const T* box, const int length);
 

@@ -98,16 +98,16 @@ void search_procedure::evaluate_with_builder() const {
 
 void search_procedure::init_dags() {
 
-	const IntArray2D index_set = index_sets();
+	//const IntArray2D index_set = index_sets();
 
-	ia_dag = new expression_graph<interval>(representation, prob->solutions(), index_set);
+	ia_dag = new expression_graph<interval>(representation, prob->solutions());
 
 	push_initial_box_to_deque();
 	//dbg_initial_box_from_dump();
 
 	affine::set_vector(ia_dag->get_v());
 
-	aa_dag = new expression_graph<affine>(representation, index_set);
+	aa_dag = new expression_graph<affine>(representation);
 }
 
 void search_procedure::init_lp_solver() {
@@ -435,7 +435,7 @@ void search_procedure::split() {
 	interval* const box_new = new interval[n_vars];
 
 	std::copy(box_orig, box_orig+n_vars, box_new);
-
+/*
 	double x1 = box_orig[0].diameter();
 	double D  = box_orig[15].diameter();
 
@@ -448,8 +448,8 @@ void search_procedure::split() {
 		//index = 8;
 	}
 	//const int index = (x1 > D)? 0 : 15;
-
-	//const int index = select_index_to_split();
+*/
+	const int index = select_index_to_split();
 
 	ASSERT2(0<=index && index < n_vars, "index: "<<index);
 
