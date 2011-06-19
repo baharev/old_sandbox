@@ -31,6 +31,7 @@
 #include "exceptions.hpp"
 #include "expression_graph.hpp"
 #include "index_recorder.hpp"
+#include "splitting_strategy.hpp"
 #include "interval.hpp"
 #include "lp_solver.hpp"
 #include "problem.hpp"
@@ -44,7 +45,12 @@ using std::fabs;
 namespace asol {
 
 search_procedure::search_procedure(const problem<builder>* p)
-: prob(p), n_vars(prob->number_of_variables()), representation(0), lp(new lp_solver), box_orig(0)
+: prob(p),
+  split_strategy(new eco9_sparsity(prob->number_of_variables())),
+  n_vars(prob->number_of_variables()),
+  representation(0),
+  lp(new lp_solver),
+  box_orig(0)
 {
 	build_problem_representation();
 
@@ -390,7 +396,7 @@ bool search_procedure::sufficient_progress() {
 
 	const interval* const box = ia_dag->get_box();
 
-	std::copy(box, box+n_vars, box_orig);
+	std::copy(box, box+n_vars, box_orig); // FIXME Sort of hidden side-effect
 
 	return sufficient(best_reduction);
 }
@@ -435,21 +441,8 @@ void search_procedure::split() {
 	interval* const box_new = new interval[n_vars];
 
 	std::copy(box_orig, box_orig+n_vars, box_new);
-/*
-	double x1 = box_orig[0].diameter();
-	double D  = box_orig[15].diameter();
 
-	int    index = (x1 > D)? 0 : 15;
-	double value = (x1 > D)? x1: D ;
-
-	double V1 = box_orig[8].diameter();
-
-	if (V1 > value*2) {
-		//index = 8;
-	}
-	//const int index = (x1 > D)? 0 : 15;
-*/
-	const int index = select_index_to_split();
+	const int index = split_strategy->index_to_split(box_orig);
 
 	ASSERT2(0<=index && index < n_vars, "index: "<<index);
 
@@ -474,26 +467,6 @@ void search_procedure::split() {
 	++splits;
 
 	box_orig = 0;
-}
-
-struct width {
-
-	double operator()(const interval& x) { return x.diameter(); } // TODO rel diam?
-};
-
-int search_procedure::select_index_to_split() const {
-
-	double reldiam[n_vars];
-
-	std::transform(box_orig, box_orig+n_vars, reldiam, width());
-
-	int index = std::max_element(reldiam, reldiam+n_vars) - reldiam;
-
-	cout << "Splitting " << index << ", " << box_orig[index] << endl;
-
-	//ASSERT ( ! box_orig[index].is_narrow(CONVERGENCE_TOL) ); // TODO Inconsistent with width
-
-	return index;
 }
 
 }

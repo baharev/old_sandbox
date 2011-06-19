@@ -32,6 +32,7 @@ template <typename> class expression_graph;
 template <typename> class problem;
 class affine;
 class builder;
+class splitting_strategy;
 class interval;
 class lp_solver;
 class problem_data;
@@ -71,7 +72,6 @@ private:
 	bool sufficient(const double max_progress) const;
 	double compute_max_progress() const;
 	void split();
-	int select_index_to_split() const;
 
 	void delete_box();
 	void print_box() const;
@@ -83,6 +83,8 @@ private:
 	void dbg_initial_box_from_dump();
 
 	const problem<builder>* prob;
+
+	const splitting_strategy* split_strategy;
 
 	const int n_vars;
 
