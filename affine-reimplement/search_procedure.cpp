@@ -78,6 +78,8 @@ search_procedure::~search_procedure() {
 
 	delete lp;
 
+	delete split_strategy;
+
 	lp_solver::free_environment();
 }
 

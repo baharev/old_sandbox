@@ -88,6 +88,9 @@ void lp_pruning::init_bounds() {
 		const double ub = lp->col_ub(index);
 
 		ASSERT2(lb < ub, "lb, ub: "<<lb<<", "<<ub);
+		// FIXME Illegal hack, used when lb==ub for example in eco9
+		//if (lb == 0 && ub == 0)
+		//	throw infeasible_problem();
 
 		lo.at(i) = lb;
 		up.at(i) = ub;
