@@ -25,7 +25,7 @@
 #include <iostream>
 #include <limits>
 #include "lp_pruning.hpp"
-#include "lp_impl.hpp"
+#include "glpk_impl.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
 

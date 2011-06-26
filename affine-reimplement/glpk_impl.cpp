@@ -22,7 +22,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "lp_impl.hpp"
+#include "glpk_impl.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
 

@@ -26,7 +26,7 @@
 #include "lp_solver.hpp"
 #include "affine.hpp"
 #include "diagnostics.hpp"
-#include "lp_impl.hpp"
+#include "glpk_impl.hpp"
 #include "lp_pruning.hpp"
 
 using std::vector;

@@ -20,8 +20,8 @@
 //
 //==============================================================================
 
-#ifndef LP_IMPL_HPP_
-#define LP_IMPL_HPP_
+#ifndef GLPK_IMPL_HPP_
+#define GLPK_IMPL_HPP_
 
 #include "stdint.h"
 #include "glpk.h"
@@ -108,4 +108,4 @@ private:
 
 }
 
-#endif // LP_IMPL_HPP_
+#endif // GLPK_IMPL_HPP_
