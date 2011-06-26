@@ -28,15 +28,59 @@ extern "C" {
 
 void dlinpr_(double* A, int* M, int* N, int* IA, double* b, double* c, double* x, int* MAXITR, double* CTX, int* , double* SIMP, int* ISIMP, int* IE);
 
+void cprint_(
+		double* A,
+		int* M,
+		int* N,
+		int* IA,
+		double* B,
+		double* C,
+		double* X,
+		double* CTX,
+		int* IS,
+		double* SIMP,
+		int* ISIMP,
+		int* IE,
+		int* ITER,
+		int* IPTG,
+		int* IAG,
+		int* IAS,
+		double* U,
+		int* DONE)
+{
+	const int m = *M;
+	const int n = *N;
+
+	cout << "===========================================================" << endl;
+	cout << "Objective: " << *CTX << endl;
+	cout << "Iteration: " << *ITER << endl;
+	cout << "X: ";
+	for (int i=0; i<n; ++i) {
+		cout << X[i] << '\t';
+	}
+	cout << endl;
+
+	cout << "Residuals of constraints: " << endl;
+	for (int i=0; i<m; ++i) {
+		double Ax = 0;
+		for (int j=0; j<n; ++j) {
+			Ax += A[j*m+i]*X[j];
+		}
+		cout << (i+1) << ":  " << Ax-B[i] << endl;
+	}
+}
+
+void linpas_(double* A, int* M, int* N, int* IA, double* B, double* C, double* X, int* MAXITR, double* CTX, int* , double* SIMP, int* ISIMP, int* IE);
+
 }
 
 int main() {
 
-	int N = 8;
 	int M = 4;
+	int N = 2*M; // If all constraints are double-bounded
 
-	int IA = 4;
-	int IE = 4;
+	int IA = M;
+	int IE = M;
 
 	double A[] = {
 			2, 1, 4, 3,
@@ -51,10 +95,12 @@ int main() {
 
 	double b[] = { 1, 4, 4, 8 };
 
-	int ISIMP[2*N];
-	double SIMP[2*N];
+	int IS = 2*N;
 
-	for (int i=0; i<2*N; ++i) {
+	int ISIMP[IS];
+	double SIMP[IS];
+
+	for (int i=0; i<N; ++i) {
 
 		ISIMP[i] = i+1;
 		 SIMP[i] = -1;
@@ -65,15 +111,17 @@ int main() {
 
 	double c[] = { 12, 2, 10, 14, 0, 1, 2, 0 };
 
-	double x[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	//double x[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	//double x[] = { 1, 1, 1, 1, -1, 1, 1, -1 };
+	double x[] = { 1, 0.529412, 1, -0.705882, -1, 1, -0.529412, 0.647059 };
 
 	double CTX;
 
-	int IS = 2*N;
+	int MAXITR = 3*N;
 
-	int MAXITR = 15;
+	linpas_(A, &M, &N, &IA, b, c, x, &MAXITR, &CTX, &IS, SIMP, ISIMP, &IE);
 
-	dlinpr_(A, &M, &N, &IA, b, c, x, &MAXITR, &CTX, &IS, SIMP, ISIMP, &IE);
+	cout << "Objective: " << CTX << endl;
 
 	for (int i=0; i<N; ++i) {
 		cout << x[i] << endl;
