@@ -26,7 +26,7 @@ using namespace std;
 
 extern "C" {
 
-void dlinpr_(double* A, int* M, int* N, int* IA, double* b, double* c, double* x, double* CTX, int* , double* SIMP, int* ISIMP, int* IE);
+void dlinpr_(double* A, int* M, int* N, int* IA, double* b, double* c, double* x, int* MAXITR, double* CTX, int* , double* SIMP, int* ISIMP, int* IE);
 
 }
 
@@ -71,7 +71,9 @@ int main() {
 
 	int IS = 2*N;
 
-	dlinpr_(A, &M, &N, &IA, b, c, x, &CTX, &IS, SIMP, ISIMP, &IE);
+	int MAXITR = 15;
+
+	dlinpr_(A, &M, &N, &IA, b, c, x, &MAXITR, &CTX, &IS, SIMP, ISIMP, &IE);
 
 	for (int i=0; i<N; ++i) {
 		cout << x[i] << endl;
