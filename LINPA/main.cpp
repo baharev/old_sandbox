@@ -24,6 +24,16 @@
 
 using namespace std;
 
+namespace {
+	int itr_tmp = 0;
+	int sum_itr = 0;
+
+enum {
+	NO_FEASIBLE_SOLUTION = 8
+};
+
+}
+
 extern "C" {
 
 void dlinpr_(double* A, int* M, int* N, int* IA, double* b, double* c, double* x, int* MAXITR, double* CTX, int* , double* SIMP, int* ISIMP, int* IE);
@@ -48,12 +58,15 @@ void cprint_(
 		double* U,
 		int* DONE)
 {
+
+	itr_tmp = *ITER;
+
 	const int m = *M;
 	const int n = *N;
 
 	cout << "===========================================================" << endl;
-	cout << "Objective: " << *CTX << endl;
 	cout << "Iteration: " << *ITER << endl;
+	cout << "Objective: " << *CTX << endl;
 	cout << "X: ";
 	for (int i=0; i<n; ++i) {
 		cout << X[i] << '\t';
@@ -70,7 +83,7 @@ void cprint_(
 	}
 }
 
-void linpas_(double* A, int* M, int* N, int* IA, double* B, double* C, double* X, int* MAXITR, double* CTX, int* , double* SIMP, int* ISIMP, int* IE);
+void linpas_(double* A, int* M, int* N, int* IA, double* B, double* C, double* X, int* MAXITR, double* CTX, int* , double* SIMP, int* ISIMP, int* IE, int* ERRCOD);
 
 }
 
@@ -119,13 +132,15 @@ int main() {
 
 	int MAXITR = 3*N;
 
-	linpas_(A, &M, &N, &IA, b, c, x, &MAXITR, &CTX, &IS, SIMP, ISIMP, &IE);
+	int ERRCOD;
 
-	cout << "Objective: " << CTX << endl;
+	linpas_(A, &M, &N, &IA, b, c, x, &MAXITR, &CTX, &IS, SIMP, ISIMP, &IE, &ERRCOD);
 
-	for (int i=0; i<N; ++i) {
-		cout << x[i] << endl;
-	}
+	sum_itr += itr_tmp;
+
+	itr_tmp = 0;
+
+	cout << "Error code: " << ERRCOD << endl;
 
 	return 0;
 }
