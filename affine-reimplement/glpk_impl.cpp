@@ -41,7 +41,7 @@ const std::string filename(const char* direction, int i) {
 
 namespace asol {
 
-lp_impl::lp_impl() {
+glpk_impl::glpk_impl() {
 
 	lp = glp_create_prob();
 
@@ -54,19 +54,19 @@ lp_impl::lp_impl() {
 	init();
 }
 
-lp_impl::~lp_impl() {
+glpk_impl::~glpk_impl() {
 
 	delete parm;
 
 	glp_delete_prob(lp);
 }
 
-void lp_impl::free_environment() {
+void glpk_impl::free_environment() {
 
 	glp_free_env();
 }
 
-void lp_impl::init() {
+void glpk_impl::init() {
 
 	glp_set_obj_dir(lp, GLP_MIN);
 
@@ -77,7 +77,7 @@ void lp_impl::init() {
 	//parm->meth = GLP_DUAL;
 }
 
-void lp_impl::reset() {
+void glpk_impl::reset() {
 
 	previous_itr_count += lpx_get_int_parm(lp, LPX_K_ITCNT);
 
@@ -86,12 +86,12 @@ void lp_impl::reset() {
 	init();
 }
 
-void lp_impl::add_cols(int n) {
+void glpk_impl::add_cols(int n) {
 
 	glp_add_cols(lp, n);
 }
 
-void lp_impl::add_eq_row(const int index[], const double value[], int length, double lb, double ub) {
+void glpk_impl::add_eq_row(const int index[], const double value[], int length, double lb, double ub) {
 
 	using namespace std;
 
@@ -109,7 +109,7 @@ void lp_impl::add_eq_row(const int index[], const double value[], int length, do
 	glp_set_row_bnds(lp, row_index, row_type, lb, ub);
 }
 
-void lp_impl::set_col_bounds(int index, double lb, double ub) {
+void glpk_impl::set_col_bounds(int index, double lb, double ub) {
 
 	ASSERT(lb < ub);
 
@@ -129,7 +129,7 @@ void lp_impl::set_col_bounds(int index, double lb, double ub) {
 	glp_set_col_bnds(lp, index, GLP_DB, lb, ub);
 }
 
-void lp_impl::scale_prob() {
+void glpk_impl::scale_prob() {
 
 	if (parm->msg_lev < GLP_MSG_ON) {
 
@@ -144,7 +144,7 @@ void lp_impl::scale_prob() {
 	}
 }
 
-void lp_impl::warm_up_basis() {
+void glpk_impl::warm_up_basis() {
 
 	int status = glp_warm_up(lp);
 
@@ -170,7 +170,7 @@ void lp_impl::warm_up_basis() {
 	}
 }
 
-void lp_impl::make_basis() {
+void glpk_impl::make_basis() {
 
 	warm_up_basis();
 
@@ -184,7 +184,7 @@ void lp_impl::make_basis() {
 	}
 }
 
-void lp_impl::make_dual_feasible_basis() {
+void glpk_impl::make_dual_feasible_basis() {
 
 	int status = glp_get_dual_stat(lp);
 
@@ -208,7 +208,7 @@ void lp_impl::make_dual_feasible_basis() {
 	ASSERT2(status==GLP_FEAS || status==GLP_OPT,"status: " << status);
 }
 
-void lp_impl::set_col_dual_status(const int j) {
+void glpk_impl::set_col_dual_status(const int j) {
 
 	const int type = glp_get_col_type(lp, j);
 
@@ -222,7 +222,7 @@ void lp_impl::set_col_dual_status(const int j) {
 	}
 }
 
-void lp_impl::run_simplex() {
+void glpk_impl::run_simplex() {
 
 	scale_prob();
 
@@ -251,7 +251,7 @@ void lp_impl::run_simplex() {
 	}
 }
 
-double lp_impl::solve_for(int index, int direction) {
+double glpk_impl::solve_for(int index, int direction) {
 
 	if (parm->msg_lev >= GLP_MSG_ON) {
 
@@ -281,7 +281,7 @@ double lp_impl::solve_for(int index, int direction) {
 	return glp_get_col_prim(lp, index);
 }
 
-void lp_impl::tighten_col_lb(int i, double& lb) {
+void glpk_impl::tighten_col_lb(int i, double& lb) {
 
 	ASSERT2(!is_fixed(i),"i: " << i);
 
@@ -293,7 +293,7 @@ void lp_impl::tighten_col_lb(int i, double& lb) {
 	}
 }
 
-void lp_impl::tighten_col_ub(int i, double& ub) {
+void glpk_impl::tighten_col_ub(int i, double& ub) {
 
 	ASSERT2(!is_fixed(i),"i: " << i);
 
@@ -305,29 +305,29 @@ void lp_impl::tighten_col_ub(int i, double& ub) {
 	}
 }
 
-void lp_impl::dump(const char* file) const {
+void glpk_impl::dump(const char* file) const {
 
 	glp_write_lp(lp, NULL, file);
 }
 
-void lp_impl::show_iteration_count() const {
+void glpk_impl::show_iteration_count() const {
 
 	uint64_t count = previous_itr_count + lpx_get_int_parm(lp, LPX_K_ITCNT);
 
 	std::cout << "Simplex iterations: " << count << std::endl;
 }
 
-int lp_impl::num_cols() const {
+int glpk_impl::num_cols() const {
 
 	return glp_get_num_cols(lp);
 }
 
-int lp_impl::num_rows() const {
+int glpk_impl::num_rows() const {
 
 	return glp_get_num_rows(lp);
 }
 
-col_status lp_impl::col_stat(int i) const {
+col_status glpk_impl::col_stat(int i) const {
 
 	const int status = glp_get_col_stat(lp, i);
 
@@ -353,7 +353,7 @@ col_status lp_impl::col_stat(int i) const {
 	return res;
 }
 
-double lp_impl::col_val(int i) const {
+double glpk_impl::col_val(int i) const {
 
 	double val = glp_get_col_prim(lp, i);
 
@@ -378,22 +378,22 @@ double lp_impl::col_val(int i) const {
 	return val;
 }
 
-double lp_impl::col_lb(int i) const {
+double glpk_impl::col_lb(int i) const {
 
 	return glp_get_col_lb(lp, i);
 }
 
-double lp_impl::col_ub(int i) const {
+double glpk_impl::col_ub(int i) const {
 
 	return glp_get_col_ub(lp, i);
 }
 
-double lp_impl::col_dual_val(int i) const {
+double glpk_impl::col_dual_val(int i) const {
 
 	return glp_get_col_dual(lp, i);
 }
 
-bool lp_impl::is_fixed(int index) const {
+bool glpk_impl::is_fixed(int index) const {
 
 	return glp_get_col_type(lp, index)==GLP_FX;
 }

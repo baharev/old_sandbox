@@ -33,7 +33,7 @@ using std::vector;
 
 namespace asol {
 
-lp_solver::lp_solver() : lp(new lp_impl), N_VARS(-1), TINY(1.0e-7), v(0) {
+lp_solver::lp_solver() : lp(new glpk_impl), N_VARS(-1), TINY(1.0e-7), v(0) {
 
 }
 
@@ -276,7 +276,8 @@ lp_solver::~lp_solver() {
 
 void lp_solver::free_environment() {
 
-	lp_impl::free_environment();
+	// FIXME How can I clean-up if I do not know which solver is it?
+	//lp_impl::free_environment();
 }
 
 }

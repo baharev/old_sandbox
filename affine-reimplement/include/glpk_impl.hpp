@@ -23,67 +23,64 @@
 #ifndef GLPK_IMPL_HPP_
 #define GLPK_IMPL_HPP_
 
-#include "stdint.h"
+#include <stdint.h>
+#include "lp_impl.hpp"
 #include "glpk.h"
 
 namespace asol {
 
-enum col_status {
-	BASIC,
-	NONBASIC_LB,
-	NONBASIC_UB
-};
-
-class lp_impl {
+class glpk_impl : public lp_impl {
 
 public:
 
-	lp_impl();
-
-	~lp_impl();
-
-	void reset();
-
-	void add_cols(int n);
-
-	// index[1] ... index[length]
-	void add_eq_row(const int index[], const double value[], int length, double lb, double ub);
-
-	void set_col_bounds(int index, double lb, double ub);
-
-	void run_simplex();
-
-	void tighten_col_lb(int i, double& lb);
-
-	void tighten_col_ub(int i, double& ub);
-
-	int num_cols() const;
-
-	int num_rows() const;
-
-	col_status col_stat(int i) const;
-
-	double col_val(int i) const;
-
-	double col_lb(int i) const;
-
-	double col_ub(int i) const;
-
-	double col_dual_val(int i) const;
-
-	bool is_fixed(int index) const;
-
-	void dump(const char* file) const;
-
-	void show_iteration_count() const;
-
-	static void free_environment();
+	glpk_impl();
 
 private:
 
-	lp_impl(const lp_impl& );
+	virtual ~glpk_impl();
 
-	lp_impl& operator=(const lp_impl& );
+	virtual void reset();
+
+	virtual void add_cols(int n);
+
+	// index[1] ... index[length]
+	virtual void add_eq_row(const int index[], const double value[], int length, double lb, double ub);
+
+	virtual void set_col_bounds(int index, double lb, double ub);
+
+	virtual void run_simplex();
+
+	virtual void tighten_col_lb(int i, double& lb);
+
+	virtual void tighten_col_ub(int i, double& ub);
+
+	virtual int num_cols() const;
+
+	virtual int num_rows() const;
+
+	virtual col_status col_stat(int i) const;
+
+	virtual double col_val(int i) const;
+
+	virtual double col_lb(int i) const;
+
+	virtual double col_ub(int i) const;
+
+	virtual double col_dual_val(int i) const;
+
+	virtual bool is_fixed(int index) const;
+
+	virtual void dump(const char* file) const;
+
+	virtual void show_iteration_count() const;
+
+	static void free_environment();
+
+	//===================================
+
+	glpk_impl(const glpk_impl& );
+
+	glpk_impl& operator=(const glpk_impl& );
 
 	void init();
 
@@ -98,6 +95,8 @@ private:
 	void set_col_dual_status(const int j);
 
 	double solve_for(int index, int direction);
+
+	//===================================
 
 	glp_prob* lp;
 
