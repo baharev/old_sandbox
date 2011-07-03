@@ -49,9 +49,9 @@ private:
 
 	virtual void run_simplex();
 
-	virtual void tighten_col_lb(int i, double& lb);
+	virtual double tighten_col_lb(int i, const double lb);
 
-	virtual void tighten_col_ub(int i, double& ub);
+	virtual double tighten_col_ub(int i, const double ub);
 
 	virtual int num_cols() const;
 
@@ -81,7 +81,11 @@ private:
 
 	void init();
 
-	double solve_for(int index, int direction);
+	void set_simple_bounds(int index, double lb, double ub);
+
+	int find_index_position(int index) const;
+
+	void solve_max_x(int index, const double obj_coeff);
 
 	//===================================
 
