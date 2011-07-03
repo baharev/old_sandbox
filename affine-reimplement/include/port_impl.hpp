@@ -23,6 +23,7 @@
 #ifndef PORT_IMPL_HPP_
 #define PORT_IMPL_HPP_
 
+#include <vector>
 #include <stdint.h>
 #include "lp_impl.hpp"
 
@@ -89,25 +90,25 @@ private:
 	};
 
 	// Data chunk passed to the FORTRAN LP solver
-	double* A;    // Columns-major coefficient matrix, A[j*M+i]
-	int M;        // Number of rows, only equality constraints are implemented
-	int N;        // Number of columns including slack variables <= 2*M
-	int IA;       // Number of rows of the coefficient matrix A
-	double* B;    // Constraint RHS
-	double* C;    // Objective coefficients
-	double* X;    // Initial estimate / solution vector
-	int MAXITR;   // Doc recommends 3*N
-	double CTX;   // Objective, Ctranspose*X
-	int IS;       // Number of variable bounds (_S_imple bounds), 2*N
-	double* SIMP; // Variable bound, lower if ISIMP(I)>0, upper if ISIMP(I)<0
-	int* ISIMP;   // Index of var, SIMP(I) is lower boind if ISIMP(I)>0, upper if ISIMP(I)<0
-	int IE;       // IE = M, The ﬁrst IE constraints in A are equality constraints
-	int IERR;     // Error code returned
+	std::vector<double> A; // Columns-major coefficient matrix, A[j*M+i]
+	int M;  // Number of rows, only equality constraints are implemented
+	int N;  // Number of columns including slack variables <= 2*M
+	int IA; // Number of rows of the coefficient matrix A
+	std::vector<double> B; // Constraint RHS
+	std::vector<double> C; // Objective coefficients
+	std::vector<double> X; // Initial estimate / solution vector
+	int MAXITR; // Doc recommends 3*N
+	double CTX; // Objective, Ctranspose*X
+	int IS;     // Number of variable bounds (_S_imple bounds), 2*N
+	std::vector<double> SIMP; // Variable bound, lower if ISIMP(I)>0, upper if ISIMP(I)<0
+	std::vector<int>   ISIMP; // Index of var, SIMP(I) is lower boind if ISIMP(I)>0, upper if ISIMP(I)<0
+	int IE;   // IE = M, The ﬁrst IE constraints in A are equality constraints
+	int IERR; // Error code returned
 
 	int rows_added;
 	int slacks_added;
 
-	uint64_t previous_itr_count;
+	uint64_t sum_itr_count;
 };
 
 }

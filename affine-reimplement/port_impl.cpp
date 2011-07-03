@@ -36,70 +36,72 @@ void cprint_(double* A, int* M, int* N, int* IA, double* B, double* C, double* X
 
 namespace {
 
-int itr_tmp; // callback function cprint_ updates this at each iteration
+int itr_count; // callback function cprint_ updates this at each iteration
 }
 
 namespace asol {
 
 port_impl::port_impl() {
 
-	A  = 0;
+	init();
+
+	sum_itr_count = 0;
+}
+
+port_impl::~port_impl() {
+
+}
+
+void port_impl::init() {
+
 	M  = 0;
 	N  = 0;
 	IA = 0;
-	B  = 0;
-	C  = 0;
-	X  = 0;
+
 	MAXITR = 0;
 	CTX    = 0;
 	IS     = 0;
-	SIMP   = 0;
-	ISIMP  = 0;
+
 	IE     = 0;
 	IERR   = 0;
 
 	rows_added   = 0;
 	slacks_added = 0;
-
-	previous_itr_count = 0;
-}
-
-port_impl::~port_impl() {
-
-	delete[] A;
-	delete[] B;
-	delete[] C;
-	delete[] X;
-
-	delete[] SIMP;
-	delete[] ISIMP;
 }
 
 void port_impl::reset() {
 
-	previous_itr_count += itr_tmp;
+	sum_itr_count += itr_count;
 
-	itr_tmp = 0;
+	itr_count = 0;
 
-	// TODO Reset arrays to zero or allocate?
+	init();
 }
 
 void port_impl::add_cols(int n) {
-
-	ASSERT2(A==0,"Already initialized!");
 
 	// FIXME Assumes n==number of constraints, well defined system of equations
 	M = n;
 	N = 2*M; // at most, equality constraints won't require slack variables
 
-	A = new double[N*M]();
-	B = new double[M]();
-	C = new double[N]();
-	X = new double[N]();
+	A.assign(N*M, 0);
+	B.assign(M, 0);
+	C.assign(N, 0);
+	X.assign(N, 0);
 
 	IS = 2*N;
-	SIMP  = new double[IS]();
-	ISIMP = new int[IS]();
+
+	SIMP.assign( IS, 0);
+	ISIMP.assign(IS, 0);
+
+	for (int i=0; i<n; ++i) {
+
+		ISIMP.at(2*i) =  i+1;
+		SIMP.at( 2*i) = -1.0;
+
+		ISIMP.at(2*i+1) =-(i+1);
+		SIMP.at( 2*i+1) =  1.0;
+	}
 }
 
 // index[1] ... index[length]
@@ -112,30 +114,39 @@ void port_impl::add_eq_row(const int index[], const double value[], int length, 
 
 	for (int k=1; k<=length; ++k) {
 
-		int j    = index[k] - 1;
+		int j       = index[k] - 1;
 
-		A[j*M+i] = value[k];
+		A.at(j*M+i) = value[k];
 	}
 
 	if (lb < ub) {
 
 		int j = M+slacks_added;
 
-		A[j*M+i] = -1;
-		B[i] = 0;
-		// FIXME Store slack bound in ISIMP and SIMP; make them std::vector
+		A.at(j*M+i) = -1;
+		B.at(i) = 0;
+
+		ASSERT(ISIMP.at(2*j)==0 && SIMP.at(2*j)==0.0);
+
+		ISIMP.at(2*j) =  j+1;
+		SIMP.at( 2*j) =  lb;
+
+		ISIMP.at(2*j+1) =-(j+1);
+		SIMP.at( 2*j+1) =  ub;
+
 		++slacks_added;
 	}
 	else {
 
-		B[i] = lb; // == ub
+		B.at(i) = lb; // == ub, equality constraints do not require slacks
 	}
 
 	++rows_added;
 }
 
 void port_impl::set_col_bounds(int index, double lb, double ub) {
-
+	ASSERT(1<=index && index<=M);
+#warning Bounds for noise variables are hard-coded
 }
 
 void port_impl::run_simplex() {
@@ -152,7 +163,7 @@ void port_impl::tighten_col_ub(int i, double& ub) {
 
 int port_impl::num_cols() const {
 	// FIXME Eliminate as only used for saving dual costs and
-	// that should be changes too to save dual costs of rows
+	// that should be changed too to save dual costs of rows
 }
 
 int port_impl::num_rows() const {
@@ -194,13 +205,9 @@ void port_impl::dump(const char* file) const {
 
 void port_impl::show_iteration_count() const {
 
-	uint64_t count = previous_itr_count + itr_tmp;
+	uint64_t count = sum_itr_count + itr_count;
 
 	std::cout << "Simplex iterations: " << count << std::endl;
-}
-
-void port_impl::init() {
-	// Unused?
 }
 
 double port_impl::solve_for(int index, int direction) {
@@ -229,5 +236,5 @@ void cprint_(
 		double* U,
 		int* DONE)
 {
-	::itr_tmp = *ITER;
+	::itr_count = *ITER;
 }
