@@ -50,9 +50,9 @@ private:
 
 	virtual void run_simplex();
 
-	virtual void tighten_col_lb(int i, double& lb);
+	virtual double tighten_col_lb(int i, const double lb);
 
-	virtual void tighten_col_ub(int i, double& ub);
+	virtual double tighten_col_ub(int i, const double ub);
 
 	virtual int num_cols() const;
 

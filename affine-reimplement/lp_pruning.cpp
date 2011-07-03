@@ -39,7 +39,7 @@ const double TOL_LP_PRUNING_SOLVED = 1.0e-8;
 
 namespace asol {
 
-lp_pruning::lp_pruning(lp_impl* lp , const vector<int>& index_set)
+lp_pruning::lp_pruning(lp_impl* lp, const vector<int>& index_set)
 :
 lp(lp),
 index_set(index_set),
@@ -282,7 +282,9 @@ void lp_pruning::solve_for_lb() {
 
 	const int index = index_set.at(index_min);
 
-	lp->tighten_col_lb(index, lo.at(index_min));
+	const double old_lb = lo.at(index_min);
+
+	lo.at(index_min) = lp->tighten_col_lb(index, old_lb);
 
 	save_reduced_costs(index, d_min);
 }
@@ -293,7 +295,9 @@ void lp_pruning::solve_for_ub() {
 
 	const int index = index_set.at(index_max);
 
-	lp->tighten_col_ub(index, up.at(index_max));
+	const double old_ub = up.at(index_max);
+
+	up.at(index_max) = lp->tighten_col_ub(index, old_ub);
 
 	save_reduced_costs(index, d_max);
 }

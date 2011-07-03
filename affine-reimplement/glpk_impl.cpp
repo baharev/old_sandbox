@@ -281,28 +281,22 @@ double glpk_impl::solve_for(int index, int direction) {
 	return glp_get_col_prim(lp, index);
 }
 
-void glpk_impl::tighten_col_lb(int i, double& lb) {
+double glpk_impl::tighten_col_lb(int i, const double lb) {
 
 	ASSERT2(!is_fixed(i),"i: " << i);
 
 	const double inf = solve_for(i, GLP_MIN);
 
-	if (inf > lb) {
-
-		lb = inf;
-	}
+	return (inf > lb) ? inf : lb;
 }
 
-void glpk_impl::tighten_col_ub(int i, double& ub) {
+double glpk_impl::tighten_col_ub(int i, const double ub) {
 
 	ASSERT2(!is_fixed(i),"i: " << i);
 
 	const double sup = solve_for(i, GLP_MAX);
 
-	if (sup < ub) {
-
-		ub = sup;
-	}
+	return (sup < ub) ? sup : ub;
 }
 
 void glpk_impl::dump(const char* file) const {

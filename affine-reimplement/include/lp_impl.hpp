@@ -37,7 +37,7 @@ public:
 
 	virtual void reset() = 0;
 
-	virtual void add_cols(int n) = 0; // TODO Merge with reset?
+	virtual void add_cols(int n) = 0;
 
 	// index[1] ... index[length]
 	virtual void add_eq_row(const int index[], const double value[], int length, double lb, double ub) = 0;
@@ -46,9 +46,9 @@ public:
 
 	virtual void run_simplex() = 0;
 
-	virtual void tighten_col_lb(int i, double& lb) = 0; // TODO Return the new bound instead?
+	virtual double tighten_col_lb(int i, const double old_lb) = 0; // index i is 1-based
 
-	virtual void tighten_col_ub(int i, double& ub) = 0;
+	virtual double tighten_col_ub(int i, const double old_ub) = 0;
 
 	virtual int num_cols() const = 0;
 
