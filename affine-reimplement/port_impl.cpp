@@ -37,7 +37,7 @@ void cprint_(double* A, int* M, int* N, int* IA, double* B, double* C, double* X
 
 namespace {
 
-int itr_count; // callback function cprint_ updates this at each iteration
+int itr_count = 0; // callback function cprint_ updates this at each iteration
 }
 
 namespace asol {
@@ -61,7 +61,7 @@ void port_impl::init() {
 
 	MAXITR = 0;
 	CTX    = 0;
-	IS     = 0;
+//	IS     = 0;
 
 	IE     = 0;
 	IERR   = 0;
@@ -90,10 +90,10 @@ void port_impl::add_cols(int n) {
 	C.assign(N, 0);
 	X.assign(N, 0);
 
-	IS = 2*N;
+//	IS = 2*N;
 
-	SIMP.assign( IS, 0);
-	ISIMP.assign(IS, 0);
+	SIMP.assign( 2*N, 0);
+	ISIMP.assign(2*N, 0);
 
 	for (int i=0; i<n; ++i) {
 
@@ -219,7 +219,7 @@ double port_impl::col_val(int i) const {
 
 	const double ub = col_ub(i);
 
-	ASSERT2(lb<=ub,"lb, ub: "<<lb<<", "<<ub);
+	ASSERT2(lb<ub,"lb, ub: "<<lb<<", "<<ub);
 
 	if ((val+1.0e-4 < lb) || (val > ub+1.0e-4)) {
 

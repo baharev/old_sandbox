@@ -30,6 +30,7 @@
 namespace asol {
 
 class port_impl : public lp_impl {
+
 public:
 
 	port_impl();
@@ -103,7 +104,7 @@ private:
 	std::vector<double> X; // Initial estimate / solution vector
 	int MAXITR; // Doc recommends 3*N
 	double CTX; // Objective, Ctranspose*X
-	int IS;     // Number of variable bounds (_S_imple bounds), 2*N
+//	int IS;     // Number of variable bounds (_S_imple bounds), 2*N
 	std::vector<double> SIMP; // Variable bound, lower if ISIMP(I)>0, upper if ISIMP(I)<0
 	std::vector<int>   ISIMP; // Index of var, SIMP(I) is lower boind if ISIMP(I)>0, upper if ISIMP(I)<0
 	int IE;   // IE = M, The ﬁrst IE constraints in A are equality constraints
