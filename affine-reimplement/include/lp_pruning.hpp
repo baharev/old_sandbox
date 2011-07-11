@@ -35,7 +35,7 @@ public:
 
 	lp_pruning(lp_impl* lp, const std::vector<int>& index_set);
 
-	int index_to_split() const; // zero based index to be split, negative if none selected
+//	int index_to_split() const; // zero based index to be split, negative if none selected
 
 	const std::vector<double>& new_lb_for_epsilon() const { return lo; }
 
@@ -62,9 +62,9 @@ private:
 
 	void init_reduced_costs();
 
-	void examine_lb(int i);
+	void examine_lb(int i, double val);
 
-	void examine_ub(int i);
+	void examine_ub(int i, double val);
 
 	void dbg_selection_results() const;
 

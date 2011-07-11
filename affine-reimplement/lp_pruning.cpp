@@ -25,7 +25,7 @@
 #include <iostream>
 #include <limits>
 #include "lp_pruning.hpp"
-#include "glpk_impl.hpp"
+#include "lp_impl.hpp"
 #include "diagnostics.hpp"
 #include "exceptions.hpp"
 
@@ -59,7 +59,8 @@ skipped(0)
 
 	init_bounds();
 
-	init_reduced_costs();
+// FIXME save dual costs of rows
+//	init_reduced_costs();
 
 	prune_all();
 }
@@ -127,16 +128,16 @@ void lp_pruning::prune_all() {
 	count_solved();
 }
 
-int lp_pruning::index_to_split() const {
-
-	using namespace std;
-
-	const index_value abs_max = max(max_abs(d_min), max_abs(d_max));
-
-	cout << "Abs max: " << abs_max.index << ", " << abs_max.value << '\n' << flush;
-
-	return abs_max.index-1;
-}
+//int lp_pruning::index_to_split() const {
+//
+//	using namespace std;
+//
+//	const index_value abs_max = max(max_abs(d_min), max_abs(d_max));
+//
+//	cout << "Abs max: " << abs_max.index << ", " << abs_max.value << '\n' << flush;
+//
+//	return abs_max.index-1;
+//}
 
 void lp_pruning::prune() {
 
@@ -197,9 +198,11 @@ lp_pruning::subproblem lp_pruning::select_candidate() {
 
 	for (size_t i=0; i<size; ++i) {
 
-		examine_lb(i);
+		double val = lp->col_val(index_set.at(i));
 
-		examine_ub(i);
+		examine_lb(i, val);
+
+		examine_ub(i, val);
 	}
 
 	dbg_selection_results();
@@ -222,14 +225,12 @@ lp_pruning::subproblem lp_pruning::select_candidate() {
 	return next;
 }
 
-void lp_pruning::examine_lb(int i) {
+void lp_pruning::examine_lb(int i, double val) {
 
 	if (min_solved.at(i)=='y') {
 
 		return;
 	}
-
-	double val = lp->col_val(index_set.at(i));
 
 	double distance_from_lb = val-lo.at(i);
 
@@ -249,14 +250,12 @@ void lp_pruning::examine_lb(int i) {
 	}
 }
 
-void lp_pruning::examine_ub(int i) {
+void lp_pruning::examine_ub(int i, double val) {
 
 	if (max_solved.at(i)=='y') {
 
 		return;
 	}
-
-	double val = lp->col_val(index_set.at(i));
 
 	double distance_from_ub = up.at(i)-val;
 
@@ -286,7 +285,7 @@ void lp_pruning::solve_for_lb() {
 
 	lo.at(index_min) = lp->tighten_col_lb(index, old_lb);
 
-	save_reduced_costs(index, d_min);
+//	save_reduced_costs(index, d_min);
 }
 
 void lp_pruning::solve_for_ub() {
@@ -299,7 +298,7 @@ void lp_pruning::solve_for_ub() {
 
 	up.at(index_max) = lp->tighten_col_ub(index, old_ub);
 
-	save_reduced_costs(index, d_max);
+//	save_reduced_costs(index, d_max);
 }
 
 void lp_pruning::save_reduced_costs(int index, vector<vector<double> >& d) {

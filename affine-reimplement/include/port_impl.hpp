@@ -88,6 +88,8 @@ private:
 
 	void solve_max_x(int index, const double obj_coeff);
 
+	void call_solver();
+
 	//===================================
 
 	enum ERROR_CODES {

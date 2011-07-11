@@ -24,6 +24,7 @@
 #include <iostream>
 #include "port_impl.hpp"
 #include "diagnostics.hpp"
+#include "exceptions.hpp"
 
 extern "C" {
 
@@ -153,13 +154,14 @@ void port_impl::set_col_bounds(int index, double lb, double ub) {
 void port_impl::run_simplex() {
 
 // FIXME Only used by search_procedure to make a feasible basis before pruning
+//	call_solver();
 }
 
 double port_impl::tighten_col_lb(int i, const double lb) {
 
 	solve_max_x(i, -1);
 
-	const double new_lb = -X.at(i-1);
+	const double new_lb = X.at(i-1);
 
 	return (new_lb > lb) ? new_lb : lb;
 }
@@ -181,7 +183,7 @@ void port_impl::solve_max_x(int i, const double obj_coeff) {
 
 	try {
 
-		// FIXME Call FORTRAN solver
+		call_solver();
 	}
 	catch (...) {
 
@@ -191,6 +193,35 @@ void port_impl::solve_max_x(int i, const double obj_coeff) {
 	}
 
 	C.at(i-1) = 0.0;
+}
+
+void port_impl::call_solver() {
+
+	IA = IE = M;
+	int MAXITR = 3*N;
+	int IS = 2*(rows_added + slacks_added);
+	int ERRCOD = 0;
+
+	ASSERT(rows_added>=slacks_added);
+	ASSERT(IS<=SIMP.size());
+
+	linpas_(&A.at(0), &M, &N, &IA, &B.at(0), &C.at(0), &X.at(0),
+			&MAXITR, &CTX, &IS, &SIMP.at(0), &ISIMP.at(0), &IE, &ERRCOD);
+
+	sum_itr_count += itr_count;
+
+	itr_count = 0;
+
+//	cout << "Error code: " << ERRCOD << endl;
+
+	if (ERRCOD==NO_FEASIBLE_SOLUTION) {
+
+		throw infeasible_problem();
+	}
+	else if (ERRCOD) {
+
+		throw numerical_problems();
+	}
 }
 
 int port_impl::num_cols() const {

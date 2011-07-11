@@ -52,8 +52,8 @@ public:
 
 	void set_pruning_indices(const std::vector<std::vector<int> >& indices_to_prune_after_constraint);
 
-	// returns zero based index to be split, negative if none selected
-	int prune(const std::vector<int>& index_set);
+	// TODO returns zero based index to be split, negative if none selected?
+	void prune(const std::vector<int>& ); // index_set ignored
 
 	void show_iteration_count() const;
 

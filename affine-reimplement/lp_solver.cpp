@@ -26,14 +26,14 @@
 #include "lp_solver.hpp"
 #include "affine.hpp"
 #include "diagnostics.hpp"
-#include "glpk_impl.hpp"
+#include "port_impl.hpp"
 #include "lp_pruning.hpp"
 
 using std::vector;
 
 namespace asol {
 
-lp_solver::lp_solver() : lp(new glpk_impl), N_VARS(-1), TINY(1.0e-7), v(0) {
+lp_solver::lp_solver() : lp(new port_impl), N_VARS(-1), TINY(1.0e-7), v(0) {
 
 }
 
@@ -238,7 +238,7 @@ void lp_solver::set_col_bounds() {
 	}
 }
 
-int lp_solver::prune(const vector<int>& ) {
+void lp_solver::prune(const vector<int>& ) {
 
 	// FIXME Temporary hack!
 	vector<int> index_set;
@@ -261,7 +261,7 @@ int lp_solver::prune(const vector<int>& ) {
 		a.renormalize(lo.at(i), up.at(i));
 	}
 
-	return contractor.index_to_split();
+//	return contractor.index_to_split();
 }
 
 void lp_solver::show_iteration_count() const {

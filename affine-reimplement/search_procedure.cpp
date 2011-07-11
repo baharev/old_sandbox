@@ -307,8 +307,6 @@ void search_procedure::roll_back() {
 
 void search_procedure::contracting_step() {
 
-	index_to_split = -1;
-
 	ia_dag->set_box(box_orig, n_vars);
 
 	ia_dag->save_containment_info();
@@ -327,9 +325,9 @@ void search_procedure::contracting_step() {
 
 	aa_dag->evaluate_all();
 
-	lp->check_feasibility();
+	lp->check_feasibility(); // FIXME Once found feasible, cannot become infeas!!!
 
-	index_to_split = lp->prune(std::vector<int>());
+	lp->prune(std::vector<int>()); // Cannot throw infeasible problem
 
 	check_convergence();
 
